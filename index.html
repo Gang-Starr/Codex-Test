@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produktionsstückzahlen lokal auswerten</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Lokale Produktionsauswertung</p>
+      <h1>Tägliche Produktionsstückzahlen</h1>
+      <p>Erfassen, auswerten und exportieren – komplett lokal im Browser ohne Login oder Datenbank.</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card form-card" aria-labelledby="form-title">
+      <div class="section-heading">
+        <h2 id="form-title">Eintrag erfassen</h2>
+        <span class="storage-note">Speicherung: localStorage</span>
+      </div>
+
+      <form id="production-form" class="production-form">
+        <label>
+          Datum
+          <input type="date" id="date" required />
+        </label>
+        <label>
+          Projekt
+          <input type="text" id="project" placeholder="z. B. Projekt A" required />
+        </label>
+        <label>
+          Bauteil
+          <input type="text" id="part" placeholder="z. B. Gehäuse" required />
+        </label>
+        <label>
+          Maschine
+          <input type="text" id="machine" placeholder="z. B. M-01" required />
+        </label>
+        <label>
+          Zielmenge pro Tag
+          <input type="number" id="target" min="0" step="1" required />
+        </label>
+        <label>
+          Produzierte Stückzahl
+          <input type="number" id="produced" min="0" step="1" required />
+        </label>
+        <label>
+          Ausschuss
+          <input type="number" id="scrap" min="0" step="1" value="0" required />
+        </label>
+        <label class="full-width">
+          Kommentar
+          <textarea id="comment" rows="3" placeholder="Optionaler Hinweis"></textarea>
+        </label>
+
+        <button type="submit" class="primary-button">Eintrag speichern</button>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="summary-title">
+      <div class="section-heading">
+        <h2 id="summary-title">Management-Zusammenfassung</h2>
+      </div>
+      <div id="management-summary" class="management-summary"></div>
+      <div class="kpi-grid">
+        <article class="kpi">
+          <span>Gesamt-Gutmenge</span>
+          <strong id="total-good">0</strong>
+        </article>
+        <article class="kpi">
+          <span>Gesamt-Ausschuss</span>
+          <strong id="total-scrap">0</strong>
+        </article>
+        <article class="kpi">
+          <span>Gesamt-Abweichung</span>
+          <strong id="total-deviation">0</strong>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <section class="card controls">
+    <div class="section-heading">
+      <h2>Daten verwalten</h2>
+    </div>
+    <div class="button-row">
+      <button id="export-csv" type="button">CSV exportieren</button>
+      <label class="file-button">
+        CSV importieren
+        <input id="import-csv" type="file" accept=".csv,text/csv" />
+      </label>
+      <button id="clear-all" type="button" class="danger-button">Alle Daten löschen</button>
+    </div>
+  </section>
+
+  <section class="grid-two">
+    <section class="card" aria-labelledby="daily-title">
+      <h2 id="daily-title">Tagesübersicht</h2>
+      <div id="daily-overview" class="summary-list"></div>
+    </section>
+    <section class="card" aria-labelledby="group-title">
+      <h2 id="group-title">Summen nach Kategorien</h2>
+      <div class="tabs" role="tablist" aria-label="Summen nach Kategorien">
+        <button class="tab active" data-tab="project">Projekt</button>
+        <button class="tab" data-tab="part">Bauteil</button>
+        <button class="tab" data-tab="machine">Maschine</button>
+      </div>
+      <div id="group-summary" class="summary-list"></div>
+    </section>
+  </section>
+
+  <section class="grid-two">
+    <section class="card chart-card" aria-labelledby="chart-good-title">
+      <h2 id="chart-good-title">Diagramm: Gutmenge pro Tag</h2>
+      <canvas id="good-chart" width="640" height="280"></canvas>
+    </section>
+    <section class="card chart-card" aria-labelledby="chart-target-title">
+      <h2 id="chart-target-title">Diagramm: Zielmenge vs. Gutmenge</h2>
+      <canvas id="target-chart" width="640" height="280"></canvas>
+    </section>
+  </section>
+
+  <section class="card table-card" aria-labelledby="table-title">
+    <div class="section-heading">
+      <h2 id="table-title">Alle Eingaben</h2>
+      <span id="entry-count" class="storage-note">0 Einträge</span>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th><th>Datum</th><th>Projekt</th><th>Bauteil</th><th>Maschine</th><th>Ziel</th><th>Produziert</th><th>Ausschuss</th><th>Gutmenge</th><th>Abweichung</th><th>Ziel %</th><th>Kommentar</th><th>Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="entries-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
