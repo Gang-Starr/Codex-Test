@@ -18,7 +18,9 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 
 Die App unterstützt eine lokale Sprachauswahl für **Deutsch** und **Englisch**. Die Auswahl befindet sich oben rechts im blauen Header. Deutsch ist die Standardsprache. Wenn auf Englisch gewechselt wird, werden sichtbare Oberflächentexte, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte und die Management-Zusammenfassung auf Englisch angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
 
-Die gewählte Sprache wird im `localStorage` des Browsers gespeichert. Nach einem Neuladen wird automatisch die zuletzt gewählte Sprache geladen. Es wird keine externe Übersetzungsbibliothek verwendet; die Übersetzungen liegen lokal in `script.js`.
+Die gewählte Sprache wird im `localStorage` des Browsers gespeichert. Nach einem Neuladen wird automatisch die zuletzt gewählte Sprache geladen. Der `change`-Listener des Sprach-Dropdowns speichert die neue Auswahl, ruft die Übersetzungsfunktion auf und rendert die dynamischen Bereiche neu. Dadurch werden Header, Eingabemaske, KPI-Karten, Management-Zusammenfassung, Tagesübersicht, Stammdatenlisten, Filter, Diagramme und Tabelle sofort in der gewählten Sprache aktualisiert.
+
+Es wird keine externe Übersetzungsbibliothek verwendet; die Übersetzungen liegen lokal in `script.js`. Auch das Zahlenformat folgt der gewählten Sprache: Deutsch nutzt Komma als Dezimaltrennzeichen, Englisch nutzt Punkt als Dezimaltrennzeichen.
 
 Die App funktioniert weiterhin vollständig lokal ohne Server, Login oder Datenbank. Produktionsdaten, Stammdaten und die Sprachwahl bleiben im jeweiligen Browserprofil gespeichert.
 

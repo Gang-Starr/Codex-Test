@@ -17,8 +17,8 @@
       <label class="language-switcher" for="language-select">
         <span data-i18n="languageLabel">Sprache</span>
         <select id="language-select" aria-label="Sprache auswählen">
-          <option value="de" selected>Deutsch</option>
-          <option value="en">English</option>
+          <option value="de" selected data-i18n="languageGerman">Deutsch</option>
+          <option value="en" data-i18n="languageEnglish">English</option>
         </select>
       </label>
     </div>
@@ -124,9 +124,9 @@
   <section class="dashboard" aria-labelledby="dashboard-title">
     <div class="section-heading dashboard-heading"><h2 id="dashboard-title" data-i18n="dashboard">Dashboard</h2><span data-i18n="autoCharts">Automatisch aktualisierte Balkendiagramme</span></div>
     <div class="card dashboard-filter-card">
-      <label>Projektfilter<select id="project-filter"></select></label>
-      <label>Bauteilfilter<select id="part-filter"></select></label>
-      <label>Maschinenfilter<select id="machine-filter"></select></label>
+      <label><span data-i18n="projectFilter">Projektfilter</span><select id="project-filter"></select></label>
+      <label><span data-i18n="partFilter">Bauteilfilter</span><select id="part-filter"></select></label>
+      <label><span data-i18n="machineFilter">Maschinenfilter</span><select id="machine-filter"></select></label>
     </div>
     <div class="grid-two dashboard-grid">
       <section class="card chart-card"><h3>Gutmenge pro Tag</h3><canvas id="good-chart" width="640" height="300"></canvas></section>

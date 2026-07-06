@@ -437,6 +437,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   background: #fff;
   color: #163b73;
   font-weight: 800;
+  line-height: 1.2;
   box-shadow: 0 2px 8px rgba(0,0,0,.16);
 }
 .language-switcher select:focus {
