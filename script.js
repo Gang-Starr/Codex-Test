@@ -30,6 +30,7 @@ function applyTranslations() {
   document.querySelector('.header-language')?.setAttribute('aria-label', t('languageAria'));
   document.title = t('documentTitle');
   document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
+  updateHeaderTitleAttributes();
   if (languageSelect) {
     languageSelect.setAttribute('aria-label', t('languageAria'));
     const germanOption = languageSelect.querySelector('option[value="de"]');
@@ -56,6 +57,14 @@ function applyTranslations() {
   const headers = ['target','OEE','date','project','part','machine','targetQty','produced','scrap','good','deviation','targetAchievement','planTime','downtimeShort','cycleTimeShort','availability','performance','quality','OEE','comment','action'];
   document.querySelectorAll('th').forEach((th, index) => { th.textContent = t(headers[index]); });
 }
+
+function updateHeaderTitleAttributes() {
+  const headerTitle = document.querySelector('.header-title');
+  if (!headerTitle) return;
+  headerTitle.setAttribute('title', t('headerTitle'));
+  headerTitle.setAttribute('lang', currentLanguage);
+}
+
 function setText(selector, key) {
   const element = document.querySelector(selector);
   if (!element) return;
