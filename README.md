@@ -74,7 +74,7 @@ Beim ersten Start legt die App diese Beispielwerte lokal an:
 - OP-711
 - OP-714
 
-Im aufklappbaren Bereich **„Stammdaten verwalten“** werden drei kompakte Karten angezeigt: **Projekte**, **Bauteile** und **Maschinen**. Dort können Werte zusätzlich manuell hinzugefügt, umbenannt, archiviert und wieder aktiviert werden.
+Im aufklappbaren Bereich **„Stammdaten verwalten“** werden drei kompakte Karten angezeigt: **Projektliste**, **Bauteilliste** und **Maschinenliste**. Dort können Werte zusätzlich manuell hinzugefügt, umbenannt, archiviert und wieder aktiviert werden.
 
 ### Umbenennen
 
@@ -82,7 +82,7 @@ Zum Umbenennen wird der Name direkt in der jeweiligen Stammdatenzeile geändert 
 
 ### Archivieren und wieder aktivieren
 
-Mit **„Archivieren“** wird ein Stammdatenwert ausgeblendet, ohne Produktionsdaten zu löschen. Archivierte Werte erscheinen nicht mehr als Vorschlag in der Eingabemaske, bleiben aber in alten Produktionsdaten, Tabellen, Filtern und Auswertungen erhalten. Über **„Aktivieren“** kann ein archivierter Wert wieder als Vorschlag verfügbar gemacht werden.
+Mit **„Archivieren“** wird ein Stammdatenwert ausgeblendet, ohne Produktionsdaten zu löschen. Archivierte Werte erscheinen nicht mehr als Vorschlag in der Eingabemaske, bleiben aber in alten Produktionsdaten, Tabellen, Filtern und Auswertungen erhalten. Über **„Wieder aktivieren“** kann ein archivierter Wert wieder als Vorschlag verfügbar gemacht werden.
 
 Projektliste, Bauteilliste, Maschinenliste, Archivstatus, Änderungsdatum und Produktionsdaten werden in `localStorage` gespeichert. Beim Laden prüft die App vorhandene Produktionsdaten automatisch und übernimmt darin enthaltene Projekt-, Bauteil- und Maschinenwerte in die passenden Stammdatenlisten, sofern sie dort noch nicht vorhanden sind. Alle Daten bleiben lokal im Browserprofil des genutzten Geräts.
 

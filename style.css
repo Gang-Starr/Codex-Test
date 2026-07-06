@@ -364,11 +364,13 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   padding: 14px;
   min-width: 0;
 }
-.master-data-card h3 { margin: 0 0 10px; }
+.master-data-card h3 { margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .master-data-card .project-row {
   grid-template-columns: minmax(120px, 1fr);
 }
 .master-data-card .project-row button { width: 100%; padding: 8px 10px; }
+.master-data-card .project-meta { font-weight: 700; }
+.master-data-card .project-row.archived .project-meta { color: var(--danger); }
 
 @media (max-width: 1100px) {
   .master-data-grid { grid-template-columns: 1fr; }

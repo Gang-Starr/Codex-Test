@@ -227,7 +227,7 @@ function persistEntries() { localStorage.setItem(STORAGE_KEY, JSON.stringify(ent
 function loadMasterValues(key, defaults) {
   try {
     const stored = JSON.parse(localStorage.getItem(key) || '[]');
-    const base = [...defaults.map((name) => createMasterItem(name)), ...stored.map(normalizeMasterItem)];
+    const base = [...stored.map(normalizeMasterItem), ...defaults.map((name) => createMasterItem(name))];
     return dedupeMasterItems(base);
   } catch {
     return defaults.map((name) => createMasterItem(name));
@@ -292,7 +292,7 @@ function renderMasterList(type) {
     <div class="project-row ${item.status === 'archived' ? 'archived' : ''}" data-master-id="${item.id}">
       <div><input value="${escapeHtml(item.name)}" aria-label="${cfg.label} umbenennen" /><div class="project-meta">${item.status === 'archived' ? 'Archiviert' : 'Aktiv'} · geändert am ${formatDate((item.updatedAt || item.createdAt).slice(0, 10))}</div></div>
       <button type="button" data-action="rename">Umbenennen</button>
-      <button type="button" data-action="archive">${item.status === 'archived' ? 'Aktivieren' : 'Archivieren'}</button>
+      <button type="button" data-action="archive">${item.status === 'archived' ? 'Wieder aktivieren' : 'Archivieren'}</button>
     </div>`).join('') || emptyState(`Noch keine ${cfg.label}-Stammdaten vorhanden.`);
 }
 function addProjectFromInput() { addMasterValueFromInput('project'); }
