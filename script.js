@@ -3,7 +3,7 @@ const LEGACY_STORAGE_KEY = 'productionEntries.v1';
 const PROJECT_STORAGE_KEY = 'productionProjects.v1';
 const PART_STORAGE_KEY = 'productionParts.v1';
 const MACHINE_STORAGE_KEY = 'productionMachines.v1';
-const DEFAULT_PROJECTS = ['Garten', 'Z1', 'Projekt A', 'Projekt B', 'Testprojekt'];
+const DEFAULT_PROJECTS = ['Projekt A', 'Projekt B', 'Testprojekt'];
 const DEFAULT_PARTS = ['Bauteil A', 'Bauteil B', 'Gehäuse', 'Sleeve', 'Cartridge Holder'];
 const DEFAULT_MACHINES = ['Maschine 1', 'Maschine 2', 'M-01', 'OP-711', 'OP-714'];
 const CSV_HEADER = ['Datum','Projekt','Bauteil','Maschine','Zielmenge pro Tag','Produzierte Stückzahl','Ausschuss','Geplante Produktionszeit in Minuten','Maschinenstillstand in Minuten','Ideale Taktzeit je Stück in Sekunden','Kommentar'];
@@ -18,9 +18,12 @@ const form = document.querySelector('#production-form');
 const formError = document.querySelector('#form-error');
 const entriesBody = document.querySelector('#entries-body');
 const importInput = document.querySelector('#import-csv');
-const projectSelect = document.querySelector('#project');
-const partSelect = document.querySelector('#part');
-const machineSelect = document.querySelector('#machine');
+const projectInput = document.querySelector('#project');
+const partInput = document.querySelector('#part');
+const machineInput = document.querySelector('#machine');
+const projectOptions = document.querySelector('#project-options');
+const partOptions = document.querySelector('#part-options');
+const machineOptions = document.querySelector('#machine-options');
 const projectFilter = document.querySelector('#project-filter');
 const partFilter = document.querySelector('#part-filter');
 const machineFilter = document.querySelector('#machine-filter');
@@ -46,14 +49,16 @@ machineFilter.addEventListener('change', () => { selectedMachineFilter = machine
 document.querySelector('#add-project').addEventListener('click', addProjectFromInput);
 document.querySelector('#add-part').addEventListener('click', () => addMasterValueFromInput('part'));
 document.querySelector('#add-machine').addEventListener('click', () => addMasterValueFromInput('machine'));
-document.querySelector('#project-list').addEventListener('click', handleProjectAction);
+document.querySelector('#project-list').addEventListener('click', (event) => handleMasterAction(event, 'project'));
+document.querySelector('#part-list').addEventListener('click', (event) => handleMasterAction(event, 'part'));
+document.querySelector('#machine-list').addEventListener('click', (event) => handleMasterAction(event, 'machine'));
 document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => switchTab(tab)));
 entriesBody.addEventListener('click', (event) => {
   const button = event.target.closest('[data-delete-id]');
   if (button) deleteEntry(button.dataset.deleteId);
 });
 window.addEventListener('resize', () => renderCharts(filteredRows()));
-renderProjects();
+renderMasterData();
 render();
 
 function saveEntry(event) {
@@ -66,20 +71,24 @@ function saveEntry(event) {
   };
   const validationError = validateEntry(entry);
   if (validationError) { formError.textContent = validationError; return; }
+  entry.project = ensureMasterValue('project', entry.project);
+  entry.part = ensureMasterValue('part', entry.part);
+  entry.machine = ensureMasterValue('machine', entry.machine);
+  persistMasterData();
   entries.push(entry);
   persistEntries();
   form.reset();
   document.querySelector('#date').valueAsDate = new Date();
   document.querySelector('#scrap').value = 0;
-  renderProjects();
+  renderMasterData();
   render();
 }
 
 function validateEntry(entry) {
   if (!entry.date) return 'Bitte geben Sie ein Datum ein.';
-  if (!entry.project) return 'Bitte ein Projekt auswählen.';
-  if (!entry.part) return 'Bitte ein Bauteil auswählen.';
-  if (!entry.machine) return 'Bitte eine Maschine auswählen.';
+  if (!entry.project) return 'Bitte ein Projekt eingeben oder auswählen.';
+  if (!entry.part) return 'Bitte ein Bauteil eingeben oder auswählen.';
+  if (!entry.machine) return 'Bitte eine Maschine eingeben oder auswählen.';
   if (!entry.comment) return 'Bitte ergänzen Sie einen Kommentar zum Eintrag.';
   if (requiredNumberFields.some((field) => !Number.isFinite(entry[field]))) return 'Bitte füllen Sie Zielmenge, produzierte Stückzahl und Ausschuss mit gültigen Zahlen aus.';
   if (requiredNumberFields.some((field) => entry[field] < 0) || oeeNumberFields.some((field) => entry[field] !== null && entry[field] < 0)) return 'Negative Werte sind nicht erlaubt. Bitte korrigieren Sie die Eingabe.';
@@ -211,70 +220,95 @@ function deleteEntry(id) { if (!confirm('Diesen Eintrag wirklich löschen?')) re
 function clearAllEntries() { if (!entries.length || !confirm('Alle lokal gespeicherten Daten löschen?')) return; entries = []; persistEntries(); render(); }
 function exportCsv() { const exportRows = entries.filter((e) => (selectedProjectFilter === 'ALL' || e.project === selectedProjectFilter) && (selectedPartFilter === 'ALL' || e.part === selectedPartFilter) && (selectedMachineFilter === 'ALL' || e.machine === selectedMachineFilter)); downloadFile(`produktionsdaten-${today()}.csv`, [CSV_HEADER, ...exportRows.map((e) => [e.date,e.project,e.part,e.machine,e.target,e.produced,e.scrap,e.plannedTime,e.downtime,e.cycleTime,e.comment])].map((r) => r.map(csvEscape).join(';')).join('\n'), 'text/csv;charset=utf-8'); }
 function exportManagementSummary() { downloadFile(`management-zusammenfassung-${today()}.txt`, buildManagementSummary(filteredRows()), 'text/plain;charset=utf-8'); }
-function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:r[1] || '', part:r[2] || '', machine:r[3] || '', target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { ensureProject(entry.project); ensureMasterValue('part', entry.part); ensureMasterValue('machine', entry.machine); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); renderProjects(); render(); importInput.value = ''; formError.textContent = `${imported.length} CSV-Eintrag/Einträge importiert.`; }; reader.readAsText(file, 'utf-8'); }
+function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:normalizeText(r[1]), part:normalizeText(r[2]), machine:normalizeText(r[3]), target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project); entry.part = ensureMasterValue('part', entry.part); entry.machine = ensureMasterValue('machine', entry.machine); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); renderMasterData(); render(); importInput.value = ''; formError.textContent = `${imported.length} CSV-Eintrag/Einträge importiert.`; }; reader.readAsText(file, 'utf-8'); }
 function parseCsv(text) { return text.trim().split(/\r?\n/).filter(Boolean).map((line) => { const cells = []; let current = '', quoted = false; for (let i = 0; i < line.length; i++) { const c = line[i], n = line[i + 1]; if (c === '"' && quoted && n === '"') { current += '"'; i++; } else if (c === '"') quoted = !quoted; else if (c === ';' && !quoted) { cells.push(current); current = ''; } else current += c; } cells.push(current); return cells; }); }
 function downloadFile(filename, content, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); }
 function persistEntries() { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+function loadMasterValues(key, defaults) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(key) || '[]');
+    const base = [...defaults.map((name) => createMasterItem(name)), ...stored.map(normalizeMasterItem)];
+    return dedupeMasterItems(base);
+  } catch {
+    return defaults.map((name) => createMasterItem(name));
+  }
+}
+function normalizeText(value) { return String(value || '').trim().replace(/\s+/g, ' '); }
+function normalizeKey(value) { return normalizeText(value).toLocaleLowerCase('de-DE'); }
+function createMasterItem(name, status = 'active', createdAt = new Date().toISOString(), updatedAt = new Date().toISOString()) { return { id: createId(), name: normalizeText(name), status, createdAt, updatedAt }; }
+function normalizeMasterItem(item) {
+  if (typeof item === 'string') return createMasterItem(item);
+  return { id: item.id || createId(), name: normalizeText(item.name), status: item.status === 'archived' ? 'archived' : 'active', createdAt: item.createdAt || new Date().toISOString(), updatedAt: item.updatedAt || item.createdAt || new Date().toISOString() };
+}
+function dedupeMasterItems(list) {
+  const seen = new Set();
+  return list.map(normalizeMasterItem).filter((item) => { const key = normalizeKey(item.name); if (!key || seen.has(key)) return false; seen.add(key); return true; }).sort((a, b) => a.name.localeCompare(b.name));
+}
+function dedupeNames(values) { const seen = new Set(); return values.map(normalizeText).filter((value) => { const key = normalizeKey(value); if (!value || seen.has(key)) return false; seen.add(key); return true; }).sort((a, b) => a.localeCompare(b)); }
+function masterConfig(type) {
+  return {
+    project: { list: projects, storage: persistProjects, input: projectInput, options: projectOptions, listElement: '#project-list', label: 'Projekt', entryKey: 'project' },
+    part: { list: parts, storage: persistParts, input: partInput, options: partOptions, listElement: '#part-list', label: 'Bauteil', entryKey: 'part' },
+    machine: { list: machines, storage: persistMachines, input: machineInput, options: machineOptions, listElement: '#machine-list', label: 'Maschine', entryKey: 'machine' }
+  }[type];
+}
+function ensureMasterValue(type, value) {
+  const clean = normalizeText(value); if (!clean) return '';
+  const cfg = masterConfig(type);
+  const existing = cfg.list.find((item) => normalizeKey(item.name) === normalizeKey(clean));
+  if (existing) return existing.name;
+  cfg.list.push(createMasterItem(clean)); cfg.list.sort((a, b) => a.name.localeCompare(b.name));
+  return clean;
+}
+function addMasterValueFromInput(type) {
+  const input = document.querySelector(type === 'project' ? '#new-project-name' : type === 'part' ? '#new-part-name' : '#new-machine-name');
+  const cfg = masterConfig(type); const clean = normalizeText(input.value);
+  if (!clean) return showProjectMessage(`Bitte ${type === 'machine' ? 'eine' : 'ein'} ${cfg.label} eingeben.`);
+  if (cfg.list.some((item) => normalizeKey(item.name) === normalizeKey(clean))) return showProjectMessage(`${cfg.label} existiert bereits.`);
+  const canonical = ensureMasterValue(type, clean); cfg.storage(); input.value = ''; cfg.input.value = canonical; showProjectMessage(`${cfg.label} hinzugefügt.`); renderMasterData(); render();
+}
+function renderFilterOptions(select, allLabel, selectedValue, values) { const names = dedupeNames(values); select.innerHTML = `<option value="ALL">${allLabel}</option>` + names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join(''); select.value = names.includes(selectedValue) ? selectedValue : 'ALL'; }
+
+function loadProjects() { return loadMasterValues(PROJECT_STORAGE_KEY, DEFAULT_PROJECTS); }
 function persistProjects() { localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects)); }
 function persistParts() { localStorage.setItem(PART_STORAGE_KEY, JSON.stringify(parts)); }
 function persistMachines() { localStorage.setItem(MACHINE_STORAGE_KEY, JSON.stringify(machines)); }
 function persistMasterData() { persistProjects(); persistParts(); persistMachines(); }
-
-
-function loadMasterValues(key, defaults) {
-  try {
-    const stored = JSON.parse(localStorage.getItem(key) || '[]');
-    return dedupeNames([...defaults, ...stored]);
-  } catch {
-    return dedupeNames(defaults);
-  }
-}
-function normalizeText(value) { return String(value || '').trim().replace(/\s+/g, ' '); }
-function dedupeNames(values) { const seen = new Set(); return values.map(normalizeText).filter((value) => { const key = value.toLowerCase(); if (!value || seen.has(key)) return false; seen.add(key); return true; }).sort((a, b) => a.localeCompare(b)); }
-function ensureMasterValue(type, value) { const clean = normalizeText(value); if (!clean) return; const list = type === 'part' ? parts : machines; if (!list.some((item) => item.toLowerCase() === clean.toLowerCase())) list.push(clean); list.sort((a, b) => a.localeCompare(b)); }
-function addMasterValueFromInput(type) { const input = document.querySelector(type === 'part' ? '#new-part-name' : '#new-machine-name'); const label = type === 'part' ? 'Bauteil' : 'Maschine'; const clean = normalizeText(input.value); if (!clean) return showProjectMessage(`Bitte ${label === 'Bauteil' ? 'ein' : 'eine'} ${label} eingeben.`); const list = type === 'part' ? parts : machines; if (list.some((item) => item.toLowerCase() === clean.toLowerCase())) return showProjectMessage(`${label} existiert bereits.`); ensureMasterValue(type, clean); type === 'part' ? persistParts() : persistMachines(); input.value = ''; showProjectMessage(`${label} hinzugefügt.`); renderProjects(); (type === 'part' ? partSelect : machineSelect).value = clean; }
-function renderFilterOptions(select, allLabel, selectedValue, values) { const names = dedupeNames(values); select.innerHTML = `<option value="ALL">${allLabel}</option>` + names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join(''); select.value = names.includes(selectedValue) ? selectedValue : 'ALL'; }
-
-function loadProjects() {
-  try {
-    const raw = localStorage.getItem(PROJECT_STORAGE_KEY);
-    const stored = raw ? JSON.parse(raw) : [];
-    const base = [...DEFAULT_PROJECTS.map((name) => createProject(name)), ...stored];
-    return dedupeProjects(base.map(normalizeProject));
-  } catch {
-    return DEFAULT_PROJECTS.map((name) => createProject(name));
-  }
-}
-function createProject(name, status = 'active', createdAt = new Date().toISOString()) { return { id: createId(), name: String(name).trim(), status, createdAt }; }
-function normalizeProject(project) { return { id: project.id || createId(), name: String(project.name || '').trim(), status: project.status === 'archived' ? 'archived' : 'active', createdAt: project.createdAt || new Date().toISOString() }; }
-function dedupeProjects(list) { const seen = new Set(); return list.filter((project) => { const key = project.name.toLowerCase(); if (!project.name || seen.has(key)) return false; seen.add(key); return true; }); }
-function syncMasterDataFromEntries() { entries.forEach((entry) => { ensureProject(entry.project); ensureMasterValue('part', entry.part); ensureMasterValue('machine', entry.machine); }); persistMasterData(); }
-function syncProjectsFromEntries() { syncMasterDataFromEntries(); }
-function ensureProject(name) { const clean = String(name || '').trim(); if (!clean || projects.some((p) => p.name.toLowerCase() === clean.toLowerCase())) return; projects.push(createProject(clean)); }
-function activeProjects() { return projects.filter((project) => project.status === 'active').sort((a, b) => a.name.localeCompare(b.name)); }
-function renderProjects() { renderMasterOptions(); renderProjectList(); }
-function renderProjectOptions() { renderMasterOptions(); }
+function syncMasterDataFromEntries() { entries.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project); entry.part = ensureMasterValue('part', entry.part); entry.machine = ensureMasterValue('machine', entry.machine); }); persistEntries(); persistMasterData(); }
+function activeMasterItems(type) { return masterConfig(type).list.filter((item) => item.status === 'active').sort((a, b) => a.name.localeCompare(b.name)); }
+function renderMasterData() { renderMasterOptions(); renderMasterList('project'); renderMasterList('part'); renderMasterList('machine'); }
 function renderMasterOptions() {
-  projectSelect.innerHTML = '<option value="">Bitte Projekt auswählen</option>' + activeProjects().map((p) => `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join('');
-  partSelect.innerHTML = '<option value="">Bitte Bauteil auswählen</option>' + parts.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
-  machineSelect.innerHTML = '<option value="">Bitte Maschine auswählen</option>' + machines.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+  [['project', projectOptions], ['part', partOptions], ['machine', machineOptions]].forEach(([type, datalist]) => {
+    datalist.innerHTML = activeMasterItems(type).map((item) => `<option value="${escapeHtml(item.name)}"></option>`).join('');
+  });
   renderFilterOptions(projectFilter, 'Alle Projekte', selectedProjectFilter, [...projects.map((p) => p.name), ...entries.map((e) => e.project)]);
-  renderFilterOptions(partFilter, 'Alle Bauteile', selectedPartFilter, [...parts, ...entries.map((e) => e.part)]);
-  renderFilterOptions(machineFilter, 'Alle Maschinen', selectedMachineFilter, [...machines, ...entries.map((e) => e.machine)]);
+  renderFilterOptions(partFilter, 'Alle Bauteile', selectedPartFilter, [...parts.map((p) => p.name), ...entries.map((e) => e.part)]);
+  renderFilterOptions(machineFilter, 'Alle Maschinen', selectedMachineFilter, [...machines.map((m) => m.name), ...entries.map((e) => e.machine)]);
   selectedProjectFilter = projectFilter.value; selectedPartFilter = partFilter.value; selectedMachineFilter = machineFilter.value;
 }
-function renderProjectList() {
-  document.querySelector('#project-list').innerHTML = projects.slice().sort((a, b) => a.name.localeCompare(b.name)).map((project) => `
-    <div class="project-row ${project.status === 'archived' ? 'archived' : ''}" data-project-id="${project.id}">
-      <div><input value="${escapeHtml(project.name)}" aria-label="Projekt umbenennen" /><div class="project-meta">${project.status === 'archived' ? 'Archiviert' : 'Aktiv'} · erstellt am ${formatDate(project.createdAt.slice(0, 10))}</div></div>
+function renderMasterList(type) {
+  const cfg = masterConfig(type);
+  document.querySelector(cfg.listElement).innerHTML = cfg.list.slice().sort((a, b) => a.name.localeCompare(b.name)).map((item) => `
+    <div class="project-row ${item.status === 'archived' ? 'archived' : ''}" data-master-id="${item.id}">
+      <div><input value="${escapeHtml(item.name)}" aria-label="${cfg.label} umbenennen" /><div class="project-meta">${item.status === 'archived' ? 'Archiviert' : 'Aktiv'} · geändert am ${formatDate((item.updatedAt || item.createdAt).slice(0, 10))}</div></div>
       <button type="button" data-action="rename">Umbenennen</button>
-      <button type="button" data-action="archive">${project.status === 'archived' ? 'Aktivieren' : 'Archivieren'}</button>
-    </div>`).join('') || emptyState('Noch keine Projekte vorhanden.');
+      <button type="button" data-action="archive">${item.status === 'archived' ? 'Aktivieren' : 'Archivieren'}</button>
+    </div>`).join('') || emptyState(`Noch keine ${cfg.label}-Stammdaten vorhanden.`);
 }
-function addProjectFromInput() { const input = document.querySelector('#new-project-name'); const name = normalizeText(input.value); if (!name) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.name.toLowerCase() === name.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); projects.push(createProject(name)); persistProjects(); input.value = ''; showProjectMessage('Projekt hinzugefügt.'); renderProjects(); projectSelect.value = name; }
-function handleProjectAction(event) { const button = event.target.closest('button[data-action]'); if (!button) return; const row = button.closest('[data-project-id]'); const project = projects.find((p) => p.id === row.dataset.projectId); if (!project) return; if (button.dataset.action === 'rename') renameProject(project, row.querySelector('input').value); if (button.dataset.action === 'archive') toggleArchiveProject(project); }
-function renameProject(project, newName) { const clean = String(newName || '').trim(); if (!clean) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.id !== project.id && p.name.toLowerCase() === clean.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); const oldName = project.name; project.name = clean; entries = entries.map((entry) => entry.project === oldName ? { ...entry, project: clean } : entry); persistEntries(); persistProjects(); showProjectMessage('Projekt umbenannt. Bestehende Produktionsdaten bleiben zugeordnet.'); if (selectedProjectFilter === oldName) selectedProjectFilter = clean; renderProjects(); render(); }
-function toggleArchiveProject(project) { project.status = project.status === 'archived' ? 'active' : 'archived'; persistProjects(); showProjectMessage(project.status === 'archived' ? 'Projekt archiviert und im Eingabe-Dropdown ausgeblendet.' : 'Projekt wieder aktiviert.'); renderProjects(); render(); }
+function addProjectFromInput() { addMasterValueFromInput('project'); }
+function handleMasterAction(event, type) { const button = event.target.closest('button[data-action]'); if (!button) return; const cfg = masterConfig(type); const row = button.closest('[data-master-id]'); const item = cfg.list.find((master) => master.id === row.dataset.masterId); if (!item) return; if (button.dataset.action === 'rename') renameMasterValue(type, item, row.querySelector('input').value); if (button.dataset.action === 'archive') toggleArchiveMasterValue(type, item); }
+function renameMasterValue(type, item, newName) {
+  const cfg = masterConfig(type); const clean = normalizeText(newName);
+  if (!clean) return showProjectMessage(`Bitte ${type === 'machine' ? 'eine' : 'ein'} ${cfg.label} eingeben.`);
+  if (cfg.list.some((other) => other.id !== item.id && normalizeKey(other.name) === normalizeKey(clean))) return showProjectMessage(`${cfg.label} existiert bereits.`);
+  const oldName = item.name; item.name = clean; item.updatedAt = new Date().toISOString();
+  entries = entries.map((entry) => normalizeKey(entry[cfg.entryKey]) === normalizeKey(oldName) ? { ...entry, [cfg.entryKey]: clean } : entry);
+  if (selectedProjectFilter === oldName && type === 'project') selectedProjectFilter = clean;
+  if (selectedPartFilter === oldName && type === 'part') selectedPartFilter = clean;
+  if (selectedMachineFilter === oldName && type === 'machine') selectedMachineFilter = clean;
+  persistEntries(); cfg.storage(); showProjectMessage(`${cfg.label} umbenannt. Bestehende Produktionsdaten wurden aktualisiert.`); renderMasterData(); render();
+}
+function toggleArchiveMasterValue(type, item) { const cfg = masterConfig(type); item.status = item.status === 'archived' ? 'active' : 'archived'; item.updatedAt = new Date().toISOString(); cfg.storage(); showProjectMessage(item.status === 'archived' ? `${cfg.label} archiviert und als Vorschlag ausgeblendet.` : `${cfg.label} wieder aktiviert.`); renderMasterData(); render(); }
 function showProjectMessage(message) { document.querySelector('#master-data-message').textContent = message; }
 
 function loadEntries() { try { const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY); return (JSON.parse(raw) || []).map(normalizeEntry); } catch { return []; } }

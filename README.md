@@ -42,17 +42,23 @@ Statuslogik Zielerreichung:
 
 ## Stammdatenverwaltung für Projekt, Bauteil und Maschine
 
-Die Felder **Projekt**, **Bauteil** und **Maschine** sind keine Freitextfelder mehr. Produktionsdaten werden über Pflicht-Dropdowns zugeordnet. Wenn ein Wert fehlt, zeigt die App verständliche Meldungen an: **„Bitte ein Projekt auswählen.“**, **„Bitte ein Bauteil auswählen.“** oder **„Bitte eine Maschine auswählen.“**.
+Die Felder **Projekt**, **Bauteil** und **Maschine** sind kombinierte Eingabefelder mit `datalist`-Vorschlägen. Sie können einen vorhandenen Wert auswählen oder frei einen neuen Wert eintippen. Die Felder bleiben Pflichtfelder. Bei fehlenden Angaben meldet die App verständlich:
 
-Beim ersten Start legt die App diese Projekte lokal an:
+- **„Bitte ein Projekt eingeben oder auswählen.“**
+- **„Bitte ein Bauteil eingeben oder auswählen.“**
+- **„Bitte eine Maschine eingeben oder auswählen.“**
 
-- Garten
-- Z1
+Beim Speichern eines Produktionseintrags werden Projekt, Bauteil und Maschine bereinigt: Leerzeichen am Anfang und Ende werden entfernt, mehrere Leerzeichen werden zusammengefasst und doppelte Stammdaten werden unabhängig von Groß-/Kleinschreibung vermieden. Neue Werte werden automatisch in die jeweilige Stammdatenliste übernommen und stehen beim nächsten Eintrag wieder als Vorschlag bereit.
+
+Beim ersten Start legt die App diese Beispielwerte lokal an:
+
+**Projekte**
+
 - Projekt A
 - Projekt B
 - Testprojekt
 
-Zusätzlich werden beim ersten Start diese Bauteile angeboten:
+**Bauteile**
 
 - Bauteil A
 - Bauteil B
@@ -60,7 +66,7 @@ Zusätzlich werden beim ersten Start diese Bauteile angeboten:
 - Sleeve
 - Cartridge Holder
 
-Diese Maschinen sind standardmäßig enthalten:
+**Maschinen**
 
 - Maschine 1
 - Maschine 2
@@ -68,14 +74,17 @@ Diese Maschinen sind standardmäßig enthalten:
 - OP-711
 - OP-714
 
-Im aufklappbaren Bereich **„Stammdaten verwalten“** befinden sich platzsparende Eingabefelder für **Neues Projekt**, **Neues Bauteil** und **Neue Maschine**. Mit den Buttons **„Projekt hinzufügen“**, **„Bauteil hinzufügen“** und **„Maschine hinzufügen“** werden neue Werte sofort lokal gespeichert, im jeweiligen Dropdown angezeigt und stehen auch nach einem Neuladen weiter zur Verfügung.
+Im aufklappbaren Bereich **„Stammdaten verwalten“** werden drei kompakte Karten angezeigt: **Projekte**, **Bauteile** und **Maschinen**. Dort können Werte zusätzlich manuell hinzugefügt, umbenannt, archiviert und wieder aktiviert werden.
 
-Dort können Projekte lokal im Browser weiter verwaltet werden:
-- Bestehenden Namen im Projektfeld ändern und mit **„Umbenennen“** speichern. Bereits gespeicherte Produktionsdaten werden dabei auf den neuen Projektnamen umgestellt und bleiben erhalten.
-- Projekte mit **„Archivieren“** ausblenden. Archivierte Projekte erscheinen nicht mehr im Eingabe-Dropdown, bleiben aber in der Projektverwaltung und in bestehenden Produktionsdaten erhalten.
-- Archivierte Projekte können über **„Aktivieren“** wieder im Dropdown sichtbar gemacht werden.
+### Umbenennen
 
-Projektliste, Bauteilliste, Maschinenliste und Produktionsdaten werden in `localStorage` gespeichert. Pro Projekt speichert die App den Projektnamen, den Status `active`/`archived` und das Erstellungsdatum. Beim Laden prüft die App zusätzlich vorhandene Produktionsdaten: Projekt-, Bauteil- und Maschinenwerte aus älteren Freitext-Einträgen werden automatisch in die passenden Listen übernommen. Leerzeichen am Anfang oder Ende werden entfernt, doppelte Werte werden unabhängig von Groß-/Kleinschreibung vermieden.
+Zum Umbenennen wird der Name direkt in der jeweiligen Stammdatenzeile geändert und mit **„Umbenennen“** gespeichert. Die App verhindert doppelte Werte. Bestehende Produktionsdaten mit dem alten Namen werden automatisch auf den neuen Namen aktualisiert, damit Auswertungen, Filter, CSV-Export und historische Einträge konsistent bleiben.
+
+### Archivieren und wieder aktivieren
+
+Mit **„Archivieren“** wird ein Stammdatenwert ausgeblendet, ohne Produktionsdaten zu löschen. Archivierte Werte erscheinen nicht mehr als Vorschlag in der Eingabemaske, bleiben aber in alten Produktionsdaten, Tabellen, Filtern und Auswertungen erhalten. Über **„Aktivieren“** kann ein archivierter Wert wieder als Vorschlag verfügbar gemacht werden.
+
+Projektliste, Bauteilliste, Maschinenliste, Archivstatus, Änderungsdatum und Produktionsdaten werden in `localStorage` gespeichert. Beim Laden prüft die App vorhandene Produktionsdaten automatisch und übernimmt darin enthaltene Projekt-, Bauteil- und Maschinenwerte in die passenden Stammdatenlisten, sofern sie dort noch nicht vorhanden sind. Alle Daten bleiben lokal im Browserprofil des genutzten Geräts.
 
 ## Optionale OEE-Daten
 

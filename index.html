@@ -24,9 +24,9 @@
       <div id="form-error" class="form-error" role="alert" aria-live="polite"></div>
       <form id="production-form" class="production-form">
         <label>Datum<input type="date" id="date" required /></label>
-        <label>Projekt<select id="project" required></select></label>
-        <label>Bauteil<select id="part" required></select></label>
-        <label>Maschine<select id="machine" required></select></label>
+        <label>Projekt<input type="text" id="project" list="project-options" required placeholder="Projekt eingeben oder auswählen" autocomplete="off" /><datalist id="project-options"></datalist></label>
+        <label>Bauteil<input type="text" id="part" list="part-options" required placeholder="Bauteil eingeben oder auswählen" autocomplete="off" /><datalist id="part-options"></datalist></label>
+        <label>Maschine<input type="text" id="machine" list="machine-options" required placeholder="Maschine eingeben oder auswählen" autocomplete="off" /><datalist id="machine-options"></datalist></label>
         <label>Zielmenge pro Tag<input type="number" id="target" min="1" step="1" required /></label>
         <label>Produzierte Stückzahl<input type="number" id="produced" min="0" step="1" required /></label>
         <label>Ausschuss<input type="number" id="scrap" min="0" step="1" value="0" required /></label>
@@ -55,8 +55,20 @@
             <label>Neue Maschine<input type="text" id="new-machine-name" placeholder="z. B. M-02" /></label>
             <button id="add-machine" type="button">Maschine hinzufügen</button>
           </div>
-          <h3>Projektliste</h3>
-          <div id="project-list" class="project-list" aria-label="Projektliste"></div>
+          <div class="master-data-grid">
+            <section class="master-data-card" aria-labelledby="projects-master-title">
+              <h3 id="projects-master-title">Projekte</h3>
+              <div id="project-list" class="project-list" aria-label="Projektliste"></div>
+            </section>
+            <section class="master-data-card" aria-labelledby="parts-master-title">
+              <h3 id="parts-master-title">Bauteile</h3>
+              <div id="part-list" class="project-list" aria-label="Bauteilliste"></div>
+            </section>
+            <section class="master-data-card" aria-labelledby="machines-master-title">
+              <h3 id="machines-master-title">Maschinen</h3>
+              <div id="machine-list" class="project-list" aria-label="Maschinenliste"></div>
+            </section>
+          </div>
         </div>
       </details>
     </section>
