@@ -24,7 +24,13 @@
       <div id="form-error" class="form-error" role="alert" aria-live="polite"></div>
       <form id="production-form" class="production-form">
         <label>Datum<input type="date" id="date" required /></label>
-        <label>Projekt<select id="project" required></select></label>
+        <div class="project-input-group">
+          <label>Projekt<select id="project" required></select></label>
+          <div class="quick-project-add" aria-label="Neues Projekt hinzufügen">
+            <label>Neues Projekt<input type="text" id="new-project-name" placeholder="z. B. Kundenprojekt 2026" /></label>
+            <button id="add-project" type="button">Projekt hinzufügen</button>
+          </div>
+        </div>
         <label>Bauteil<input type="text" id="part" placeholder="z. B. Gehäuse" required /></label>
         <label>Maschine<input type="text" id="machine" placeholder="z. B. M-01" required /></label>
         <label>Zielmenge pro Tag<input type="number" id="target" min="1" step="1" required /></label>
@@ -46,10 +52,7 @@
         <summary>Projektverwaltung anzeigen</summary>
         <div class="project-panel">
           <div id="project-message" class="project-message" role="status" aria-live="polite"></div>
-          <div class="project-add-row">
-            <label>Projektname eingeben<input type="text" id="new-project-name" placeholder="z. B. Kundenprojekt 2026" /></label>
-            <button id="add-project" type="button">Projekt speichern</button>
-          </div>
+          <p class="project-panel-note">Neue Projekte können direkt beim Projektfeld ergänzt werden. Hier lassen sich gespeicherte Projekte umbenennen oder archivieren.</p>
           <div id="project-list" class="project-list" aria-label="Projektliste"></div>
         </div>
       </details>

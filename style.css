@@ -63,6 +63,33 @@ input, textarea {
 }
 input:focus, textarea:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--primary); }
 .full-width { grid-column: 1 / -1; }
+
+.project-input-group {
+  display: grid;
+  gap: 10px;
+}
+.quick-project-add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+  padding: 10px;
+  border: 1px solid #d7e3f5;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+.quick-project-add label {
+  font-size: .86rem;
+  color: var(--muted);
+}
+.quick-project-add input { padding: 9px 10px; background: #fff; }
+.quick-project-add button { padding: 9px 12px; white-space: nowrap; }
+.project-panel-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
 .oee-fieldset {
   border: 1px solid #cfe0fb;
   border-radius: 16px;
@@ -237,5 +264,5 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   padding: 16px;
 }
 @media (max-width: 640px) {
-  .project-add-row, .project-row { grid-template-columns: 1fr; }
+  .quick-project-add, .project-add-row, .project-row { grid-template-columns: 1fr; }
 }

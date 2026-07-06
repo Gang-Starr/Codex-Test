@@ -44,15 +44,17 @@ Statuslogik Zielerreichung:
 
 Das Feld **Projekt** ist kein Freitextfeld mehr. Produktionsdaten werden über ein Pflicht-Dropdown einem Projekt zugeordnet. Wenn kein Projekt ausgewählt wurde, zeigt die App beim Speichern die Meldung **„Bitte ein Projekt auswählen.“** an.
 
-Beim ersten Start legt die App diese Beispielprojekte lokal an:
+Beim ersten Start legt die App diese Projekte lokal an:
 
+- Garten
+- Z1
 - Projekt A
 - Projekt B
 - Testprojekt
 
-Unter **„Projektverwaltung anzeigen“** befindet sich ein kompakter aufklappbarer Bereich. Dort können Projekte lokal im Browser verwaltet werden:
+Direkt unter dem Projekt-Dropdown befindet sich die kompakte Funktion **„Neues Projekt“** mit dem Button **„Projekt hinzufügen“**. Damit wird ein Projekt sofort lokal gespeichert, im Dropdown angezeigt und steht auch nach einem Neuladen weiter zur Verfügung.
 
-- Neuen Projektnamen eingeben und mit **„Projekt speichern“** anlegen.
+Unter **„Projektverwaltung anzeigen“** befindet sich zusätzlich ein kompakter aufklappbarer Bereich. Dort können Projekte lokal im Browser weiter verwaltet werden:
 - Bestehenden Namen im Projektfeld ändern und mit **„Umbenennen“** speichern. Bereits gespeicherte Produktionsdaten werden dabei auf den neuen Projektnamen umgestellt und bleiben erhalten.
 - Projekte mit **„Archivieren“** ausblenden. Archivierte Projekte erscheinen nicht mehr im Eingabe-Dropdown, bleiben aber in der Projektverwaltung und in bestehenden Produktionsdaten erhalten.
 - Archivierte Projekte können über **„Aktivieren“** wieder im Dropdown sichtbar gemacht werden.

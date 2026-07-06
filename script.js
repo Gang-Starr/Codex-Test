@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'productionEntries.v2';
 const LEGACY_STORAGE_KEY = 'productionEntries.v1';
 const PROJECT_STORAGE_KEY = 'productionProjects.v1';
-const DEFAULT_PROJECTS = ['Projekt A','Projekt B','Testprojekt'];
+const DEFAULT_PROJECTS = ['Garten', 'Z1', 'Projekt A', 'Projekt B', 'Testprojekt'];
 const CSV_HEADER = ['Datum','Projekt','Bauteil','Maschine','Zielmenge pro Tag','Produzierte Stückzahl','Ausschuss','Geplante Produktionszeit in Minuten','Maschinenstillstand in Minuten','Ideale Taktzeit je Stück in Sekunden','Kommentar'];
 const requiredNumberFields = ['target','produced','scrap'];
 const oeeNumberFields = ['plannedTime','downtime','cycleTime'];
@@ -198,7 +198,7 @@ function loadProjects() {
   try {
     const raw = localStorage.getItem(PROJECT_STORAGE_KEY);
     const stored = raw ? JSON.parse(raw) : [];
-    const base = stored.length ? stored : DEFAULT_PROJECTS.map((name) => createProject(name));
+    const base = [...DEFAULT_PROJECTS.map((name) => createProject(name)), ...stored];
     return dedupeProjects(base.map(normalizeProject));
   } catch {
     return DEFAULT_PROJECTS.map((name) => createProject(name));
@@ -226,7 +226,7 @@ function renderProjectList() {
       <button type="button" data-action="archive">${project.status === 'archived' ? 'Aktivieren' : 'Archivieren'}</button>
     </div>`).join('') || emptyState('Noch keine Projekte vorhanden.');
 }
-function addProjectFromInput() { const input = document.querySelector('#new-project-name'); const name = input.value.trim(); if (!name) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.name.toLowerCase() === name.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); projects.push(createProject(name)); persistProjects(); input.value = ''; showProjectMessage('Projekt gespeichert.'); renderProjects(); }
+function addProjectFromInput() { const input = document.querySelector('#new-project-name'); const name = input.value.trim(); if (!name) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.name.toLowerCase() === name.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); projects.push(createProject(name)); persistProjects(); input.value = ''; showProjectMessage('Projekt hinzugefügt.'); renderProjects(); projectSelect.value = name; }
 function handleProjectAction(event) { const button = event.target.closest('button[data-action]'); if (!button) return; const row = button.closest('[data-project-id]'); const project = projects.find((p) => p.id === row.dataset.projectId); if (!project) return; if (button.dataset.action === 'rename') renameProject(project, row.querySelector('input').value); if (button.dataset.action === 'archive') toggleArchiveProject(project); }
 function renameProject(project, newName) { const clean = String(newName || '').trim(); if (!clean) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.id !== project.id && p.name.toLowerCase() === clean.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); const oldName = project.name; project.name = clean; entries = entries.map((entry) => entry.project === oldName ? { ...entry, project: clean } : entry); persistEntries(); persistProjects(); showProjectMessage('Projekt umbenannt. Bestehende Produktionsdaten bleiben zugeordnet.'); if (selectedProjectFilter === oldName) selectedProjectFilter = clean; renderProjects(); render(); }
 function toggleArchiveProject(project) { project.status = project.status === 'archived' ? 'active' : 'archived'; persistProjects(); showProjectMessage(project.status === 'archived' ? 'Projekt archiviert und im Eingabe-Dropdown ausgeblendet.' : 'Projekt wieder aktiviert.'); renderProjects(); render(); }
