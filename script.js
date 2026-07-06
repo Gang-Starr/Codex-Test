@@ -30,6 +30,7 @@ function applyTranslations() {
   document.querySelector('.header-language')?.setAttribute('aria-label', t('languageAria'));
   document.title = t('documentTitle');
   document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
+  normalizeHeaderTitleText();
   updateHeaderTitleAttributes();
   if (languageSelect) {
     languageSelect.setAttribute('aria-label', t('languageAria'));
@@ -63,6 +64,12 @@ function updateHeaderTitleAttributes() {
   if (!headerTitle) return;
   headerTitle.setAttribute('title', t('headerTitle'));
   headerTitle.setAttribute('lang', currentLanguage);
+}
+
+function normalizeHeaderTitleText() {
+  const headerTitle = document.querySelector('.header-title');
+  if (!headerTitle) return;
+  headerTitle.textContent = t('headerTitle').replace(/\s+/g, ' ').trim();
 }
 
 function setText(selector, key) {

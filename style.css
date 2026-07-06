@@ -394,16 +394,16 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: clamp(20px, 4vw, 56px);
+  gap: clamp(24px, 5vw, 72px);
 }
 .header-copy {
   flex: 1 1 auto;
   min-width: 0;
-  max-width: min(980px, calc(100% - 220px));
+  max-width: none;
 }
 .header-title {
   max-width: 100%;
-  font-size: clamp(2.35rem, 4.1vw, 3.4rem);
+  font-size: clamp(2rem, 3.25vw, 2.95rem);
   line-height: 1.08;
   letter-spacing: -0.035em;
   white-space: nowrap;
@@ -453,11 +453,11 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   border-color: #d7e8ff;
 }
 @media (max-width: 980px) {
-  .header-copy {
-    max-width: min(760px, calc(100% - 190px));
+  .app-header {
+    gap: clamp(18px, 3vw, 32px);
   }
   .header-title {
-    font-size: clamp(1.8rem, 3.8vw, 2.45rem);
+    font-size: clamp(1.65rem, 3.2vw, 2.15rem);
   }
 }
 @media (max-width: 760px) {
