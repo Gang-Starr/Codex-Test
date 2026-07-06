@@ -13,7 +13,15 @@
       <h1 data-i18n="headerTitle">Tägliche Produktionsstückzahlen & OEE</h1>
       <p data-i18n="headerSubtitle">Erfassen, auswerten und exportieren – komplett lokal im Browser ohne Login, Server oder Datenbank.</p>
     </div>
-    <label class="language-switcher" for="language-select"><span data-i18n="languageLabel">Sprache:</span><select id="language-select" aria-label="Sprache auswählen"><option value="de">Deutsch</option><option value="en">English</option></select></label>
+    <div class="header-language" aria-label="Sprachauswahl">
+      <label class="language-switcher" for="language-select">
+        <span data-i18n="languageLabel">Sprache</span>
+        <select id="language-select" aria-label="Sprache auswählen">
+          <option value="de" selected>Deutsch</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+    </div>
   </header>
 
   <main class="layout">
