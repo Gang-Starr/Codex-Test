@@ -1,7 +1,11 @@
 const STORAGE_KEY = 'productionEntries.v2';
 const LEGACY_STORAGE_KEY = 'productionEntries.v1';
 const PROJECT_STORAGE_KEY = 'productionProjects.v1';
+const PART_STORAGE_KEY = 'productionParts.v1';
+const MACHINE_STORAGE_KEY = 'productionMachines.v1';
 const DEFAULT_PROJECTS = ['Garten', 'Z1', 'Projekt A', 'Projekt B', 'Testprojekt'];
+const DEFAULT_PARTS = ['Bauteil A', 'Bauteil B', 'Gehäuse', 'Sleeve', 'Cartridge Holder'];
+const DEFAULT_MACHINES = ['Maschine 1', 'Maschine 2', 'M-01', 'OP-711', 'OP-714'];
 const CSV_HEADER = ['Datum','Projekt','Bauteil','Maschine','Zielmenge pro Tag','Produzierte Stückzahl','Ausschuss','Geplante Produktionszeit in Minuten','Maschinenstillstand in Minuten','Ideale Taktzeit je Stück in Sekunden','Kommentar'];
 const requiredNumberFields = ['target','produced','scrap'];
 const oeeNumberFields = ['plannedTime','downtime','cycleTime'];
@@ -15,12 +19,20 @@ const formError = document.querySelector('#form-error');
 const entriesBody = document.querySelector('#entries-body');
 const importInput = document.querySelector('#import-csv');
 const projectSelect = document.querySelector('#project');
+const partSelect = document.querySelector('#part');
+const machineSelect = document.querySelector('#machine');
 const projectFilter = document.querySelector('#project-filter');
+const partFilter = document.querySelector('#part-filter');
+const machineFilter = document.querySelector('#machine-filter');
 let entries = loadEntries();
 let projects = loadProjects();
+let parts = loadMasterValues(PART_STORAGE_KEY, DEFAULT_PARTS);
+let machines = loadMasterValues(MACHINE_STORAGE_KEY, DEFAULT_MACHINES);
 let selectedProjectFilter = 'ALL';
+let selectedPartFilter = 'ALL';
+let selectedMachineFilter = 'ALL';
 let activeGroup = 'project';
-syncProjectsFromEntries();
+syncMasterDataFromEntries();
 
 document.querySelector('#date').valueAsDate = new Date();
 form.addEventListener('submit', saveEntry);
@@ -29,7 +41,11 @@ document.querySelector('#export-csv').addEventListener('click', exportCsv);
 document.querySelector('#export-summary').addEventListener('click', exportManagementSummary);
 importInput.addEventListener('change', importCsv);
 projectFilter.addEventListener('change', () => { selectedProjectFilter = projectFilter.value; render(); });
+partFilter.addEventListener('change', () => { selectedPartFilter = partFilter.value; render(); });
+machineFilter.addEventListener('change', () => { selectedMachineFilter = machineFilter.value; render(); });
 document.querySelector('#add-project').addEventListener('click', addProjectFromInput);
+document.querySelector('#add-part').addEventListener('click', () => addMasterValueFromInput('part'));
+document.querySelector('#add-machine').addEventListener('click', () => addMasterValueFromInput('machine'));
 document.querySelector('#project-list').addEventListener('click', handleProjectAction);
 document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => switchTab(tab)));
 entriesBody.addEventListener('click', (event) => {
@@ -62,7 +78,8 @@ function saveEntry(event) {
 function validateEntry(entry) {
   if (!entry.date) return 'Bitte geben Sie ein Datum ein.';
   if (!entry.project) return 'Bitte ein Projekt auswählen.';
-  if (!entry.part || !entry.machine) return 'Bitte füllen Sie Bauteil und Maschine aus.';
+  if (!entry.part) return 'Bitte ein Bauteil auswählen.';
+  if (!entry.machine) return 'Bitte eine Maschine auswählen.';
   if (!entry.comment) return 'Bitte ergänzen Sie einen Kommentar zum Eintrag.';
   if (requiredNumberFields.some((field) => !Number.isFinite(entry[field]))) return 'Bitte füllen Sie Zielmenge, produzierte Stückzahl und Ausschuss mit gültigen Zahlen aus.';
   if (requiredNumberFields.some((field) => entry[field] < 0) || oeeNumberFields.some((field) => entry[field] !== null && entry[field] < 0)) return 'Negative Werte sind nicht erlaubt. Bitte korrigieren Sie die Eingabe.';
@@ -97,17 +114,23 @@ function enrich(entry) {
 }
 
 function normalizeEntry(entry) {
-  return { ...entry, target: toNumber(entry.target), produced: toNumber(entry.produced), scrap: toNumber(entry.scrap), plannedTime: toOptionalNumber(entry.plannedTime), downtime: toOptionalNumber(entry.downtime), cycleTime: toOptionalNumber(entry.cycleTime) };
+  return { ...entry, project: normalizeText(entry.project), part: normalizeText(entry.part), machine: normalizeText(entry.machine), target: toNumber(entry.target), produced: toNumber(entry.produced), scrap: toNumber(entry.scrap), plannedTime: toOptionalNumber(entry.plannedTime), downtime: toOptionalNumber(entry.downtime), cycleTime: toOptionalNumber(entry.cycleTime) };
 }
 
 function render() {
-  renderProjectOptions();
+  renderMasterOptions();
   const rows = filteredRows();
   renderTable(rows); renderTotals(rows); renderDailyOverview(rows); renderGroupSummary(rows); renderManagementSummary(rows); renderCharts(rows);
   document.querySelector('#entry-count').textContent = `${rows.length} Einträge`;
 }
 function enrichedRows() { return entries.map(enrich).sort((a, b) => a.date.localeCompare(b.date)); }
-function filteredRows() { const rows = enrichedRows(); return selectedProjectFilter === 'ALL' ? rows : rows.filter((row) => row.project === selectedProjectFilter); }
+function filteredRows() {
+  return enrichedRows().filter((row) =>
+    (selectedProjectFilter === 'ALL' || row.project === selectedProjectFilter) &&
+    (selectedPartFilter === 'ALL' || row.part === selectedPartFilter) &&
+    (selectedMachineFilter === 'ALL' || row.machine === selectedMachineFilter)
+  );
+}
 
 function renderTable(rows) {
   entriesBody.innerHTML = rows.map((e) => `
@@ -186,13 +209,31 @@ function oeeStatusLabel(s) { return ({ green:'Grün: OEE ≥ 85 %', yellow:'Gelb
 function switchTab(tab) { activeGroup = tab.dataset.tab; document.querySelectorAll('.tab').forEach((item) => item.classList.toggle('active', item === tab)); renderGroupSummary(filteredRows()); }
 function deleteEntry(id) { if (!confirm('Diesen Eintrag wirklich löschen?')) return; entries = entries.filter((entry) => entry.id !== id); persistEntries(); render(); }
 function clearAllEntries() { if (!entries.length || !confirm('Alle lokal gespeicherten Daten löschen?')) return; entries = []; persistEntries(); render(); }
-function exportCsv() { const exportRows = selectedProjectFilter === 'ALL' ? entries : entries.filter((e) => e.project === selectedProjectFilter); downloadFile(`produktionsdaten-${today()}.csv`, [CSV_HEADER, ...exportRows.map((e) => [e.date,e.project,e.part,e.machine,e.target,e.produced,e.scrap,e.plannedTime,e.downtime,e.cycleTime,e.comment])].map((r) => r.map(csvEscape).join(';')).join('\n'), 'text/csv;charset=utf-8'); }
+function exportCsv() { const exportRows = entries.filter((e) => (selectedProjectFilter === 'ALL' || e.project === selectedProjectFilter) && (selectedPartFilter === 'ALL' || e.part === selectedPartFilter) && (selectedMachineFilter === 'ALL' || e.machine === selectedMachineFilter)); downloadFile(`produktionsdaten-${today()}.csv`, [CSV_HEADER, ...exportRows.map((e) => [e.date,e.project,e.part,e.machine,e.target,e.produced,e.scrap,e.plannedTime,e.downtime,e.cycleTime,e.comment])].map((r) => r.map(csvEscape).join(';')).join('\n'), 'text/csv;charset=utf-8'); }
 function exportManagementSummary() { downloadFile(`management-zusammenfassung-${today()}.txt`, buildManagementSummary(filteredRows()), 'text/plain;charset=utf-8'); }
-function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:r[1] || '', part:r[2] || '', machine:r[3] || '', target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => ensureProject(entry.project)); entries = [...entries, ...imported]; persistEntries(); persistProjects(); renderProjects(); render(); importInput.value = ''; formError.textContent = `${imported.length} CSV-Eintrag/Einträge importiert.`; }; reader.readAsText(file, 'utf-8'); }
+function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:r[1] || '', part:r[2] || '', machine:r[3] || '', target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { ensureProject(entry.project); ensureMasterValue('part', entry.part); ensureMasterValue('machine', entry.machine); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); renderProjects(); render(); importInput.value = ''; formError.textContent = `${imported.length} CSV-Eintrag/Einträge importiert.`; }; reader.readAsText(file, 'utf-8'); }
 function parseCsv(text) { return text.trim().split(/\r?\n/).filter(Boolean).map((line) => { const cells = []; let current = '', quoted = false; for (let i = 0; i < line.length; i++) { const c = line[i], n = line[i + 1]; if (c === '"' && quoted && n === '"') { current += '"'; i++; } else if (c === '"') quoted = !quoted; else if (c === ';' && !quoted) { cells.push(current); current = ''; } else current += c; } cells.push(current); return cells; }); }
 function downloadFile(filename, content, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); }
 function persistEntries() { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
 function persistProjects() { localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects)); }
+function persistParts() { localStorage.setItem(PART_STORAGE_KEY, JSON.stringify(parts)); }
+function persistMachines() { localStorage.setItem(MACHINE_STORAGE_KEY, JSON.stringify(machines)); }
+function persistMasterData() { persistProjects(); persistParts(); persistMachines(); }
+
+
+function loadMasterValues(key, defaults) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(key) || '[]');
+    return dedupeNames([...defaults, ...stored]);
+  } catch {
+    return dedupeNames(defaults);
+  }
+}
+function normalizeText(value) { return String(value || '').trim().replace(/\s+/g, ' '); }
+function dedupeNames(values) { const seen = new Set(); return values.map(normalizeText).filter((value) => { const key = value.toLowerCase(); if (!value || seen.has(key)) return false; seen.add(key); return true; }).sort((a, b) => a.localeCompare(b)); }
+function ensureMasterValue(type, value) { const clean = normalizeText(value); if (!clean) return; const list = type === 'part' ? parts : machines; if (!list.some((item) => item.toLowerCase() === clean.toLowerCase())) list.push(clean); list.sort((a, b) => a.localeCompare(b)); }
+function addMasterValueFromInput(type) { const input = document.querySelector(type === 'part' ? '#new-part-name' : '#new-machine-name'); const label = type === 'part' ? 'Bauteil' : 'Maschine'; const clean = normalizeText(input.value); if (!clean) return showProjectMessage(`Bitte ${label === 'Bauteil' ? 'ein' : 'eine'} ${label} eingeben.`); const list = type === 'part' ? parts : machines; if (list.some((item) => item.toLowerCase() === clean.toLowerCase())) return showProjectMessage(`${label} existiert bereits.`); ensureMasterValue(type, clean); type === 'part' ? persistParts() : persistMachines(); input.value = ''; showProjectMessage(`${label} hinzugefügt.`); renderProjects(); (type === 'part' ? partSelect : machineSelect).value = clean; }
+function renderFilterOptions(select, allLabel, selectedValue, values) { const names = dedupeNames(values); select.innerHTML = `<option value="ALL">${allLabel}</option>` + names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join(''); select.value = names.includes(selectedValue) ? selectedValue : 'ALL'; }
 
 function loadProjects() {
   try {
@@ -207,16 +248,20 @@ function loadProjects() {
 function createProject(name, status = 'active', createdAt = new Date().toISOString()) { return { id: createId(), name: String(name).trim(), status, createdAt }; }
 function normalizeProject(project) { return { id: project.id || createId(), name: String(project.name || '').trim(), status: project.status === 'archived' ? 'archived' : 'active', createdAt: project.createdAt || new Date().toISOString() }; }
 function dedupeProjects(list) { const seen = new Set(); return list.filter((project) => { const key = project.name.toLowerCase(); if (!project.name || seen.has(key)) return false; seen.add(key); return true; }); }
-function syncProjectsFromEntries() { entries.forEach((entry) => ensureProject(entry.project)); persistProjects(); }
+function syncMasterDataFromEntries() { entries.forEach((entry) => { ensureProject(entry.project); ensureMasterValue('part', entry.part); ensureMasterValue('machine', entry.machine); }); persistMasterData(); }
+function syncProjectsFromEntries() { syncMasterDataFromEntries(); }
 function ensureProject(name) { const clean = String(name || '').trim(); if (!clean || projects.some((p) => p.name.toLowerCase() === clean.toLowerCase())) return; projects.push(createProject(clean)); }
 function activeProjects() { return projects.filter((project) => project.status === 'active').sort((a, b) => a.name.localeCompare(b.name)); }
-function renderProjects() { renderProjectOptions(); renderProjectList(); }
-function renderProjectOptions() {
+function renderProjects() { renderMasterOptions(); renderProjectList(); }
+function renderProjectOptions() { renderMasterOptions(); }
+function renderMasterOptions() {
   projectSelect.innerHTML = '<option value="">Bitte Projekt auswählen</option>' + activeProjects().map((p) => `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join('');
-  const filterNames = [...new Set([...projects.map((p) => p.name), ...entries.map((e) => e.project).filter(Boolean)])].sort((a, b) => a.localeCompare(b));
-  projectFilter.innerHTML = '<option value="ALL">Alle Projekte</option>' + filterNames.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
-  projectFilter.value = filterNames.includes(selectedProjectFilter) ? selectedProjectFilter : 'ALL';
-  selectedProjectFilter = projectFilter.value;
+  partSelect.innerHTML = '<option value="">Bitte Bauteil auswählen</option>' + parts.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+  machineSelect.innerHTML = '<option value="">Bitte Maschine auswählen</option>' + machines.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+  renderFilterOptions(projectFilter, 'Alle Projekte', selectedProjectFilter, [...projects.map((p) => p.name), ...entries.map((e) => e.project)]);
+  renderFilterOptions(partFilter, 'Alle Bauteile', selectedPartFilter, [...parts, ...entries.map((e) => e.part)]);
+  renderFilterOptions(machineFilter, 'Alle Maschinen', selectedMachineFilter, [...machines, ...entries.map((e) => e.machine)]);
+  selectedProjectFilter = projectFilter.value; selectedPartFilter = partFilter.value; selectedMachineFilter = machineFilter.value;
 }
 function renderProjectList() {
   document.querySelector('#project-list').innerHTML = projects.slice().sort((a, b) => a.name.localeCompare(b.name)).map((project) => `
@@ -226,11 +271,11 @@ function renderProjectList() {
       <button type="button" data-action="archive">${project.status === 'archived' ? 'Aktivieren' : 'Archivieren'}</button>
     </div>`).join('') || emptyState('Noch keine Projekte vorhanden.');
 }
-function addProjectFromInput() { const input = document.querySelector('#new-project-name'); const name = input.value.trim(); if (!name) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.name.toLowerCase() === name.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); projects.push(createProject(name)); persistProjects(); input.value = ''; showProjectMessage('Projekt hinzugefügt.'); renderProjects(); projectSelect.value = name; }
+function addProjectFromInput() { const input = document.querySelector('#new-project-name'); const name = normalizeText(input.value); if (!name) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.name.toLowerCase() === name.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); projects.push(createProject(name)); persistProjects(); input.value = ''; showProjectMessage('Projekt hinzugefügt.'); renderProjects(); projectSelect.value = name; }
 function handleProjectAction(event) { const button = event.target.closest('button[data-action]'); if (!button) return; const row = button.closest('[data-project-id]'); const project = projects.find((p) => p.id === row.dataset.projectId); if (!project) return; if (button.dataset.action === 'rename') renameProject(project, row.querySelector('input').value); if (button.dataset.action === 'archive') toggleArchiveProject(project); }
 function renameProject(project, newName) { const clean = String(newName || '').trim(); if (!clean) return showProjectMessage('Bitte einen Projektnamen eingeben.'); if (projects.some((p) => p.id !== project.id && p.name.toLowerCase() === clean.toLowerCase())) return showProjectMessage('Dieses Projekt existiert bereits.'); const oldName = project.name; project.name = clean; entries = entries.map((entry) => entry.project === oldName ? { ...entry, project: clean } : entry); persistEntries(); persistProjects(); showProjectMessage('Projekt umbenannt. Bestehende Produktionsdaten bleiben zugeordnet.'); if (selectedProjectFilter === oldName) selectedProjectFilter = clean; renderProjects(); render(); }
 function toggleArchiveProject(project) { project.status = project.status === 'archived' ? 'active' : 'archived'; persistProjects(); showProjectMessage(project.status === 'archived' ? 'Projekt archiviert und im Eingabe-Dropdown ausgeblendet.' : 'Projekt wieder aktiviert.'); renderProjects(); render(); }
-function showProjectMessage(message) { document.querySelector('#project-message').textContent = message; }
+function showProjectMessage(message) { document.querySelector('#master-data-message').textContent = message; }
 
 function loadEntries() { try { const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY); return (JSON.parse(raw) || []).map(normalizeEntry); } catch { return []; } }
 function groupBy(rows, key) { return rows.reduce((g, r) => { const k = r[key] || 'Ohne Angabe'; (g[k] ||= []).push(r); return g; }, {}); }

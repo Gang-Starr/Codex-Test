@@ -24,15 +24,9 @@
       <div id="form-error" class="form-error" role="alert" aria-live="polite"></div>
       <form id="production-form" class="production-form">
         <label>Datum<input type="date" id="date" required /></label>
-        <div class="project-input-group">
-          <label>Projekt<select id="project" required></select></label>
-          <div class="quick-project-add" aria-label="Neues Projekt hinzufügen">
-            <label>Neues Projekt<input type="text" id="new-project-name" placeholder="z. B. Kundenprojekt 2026" /></label>
-            <button id="add-project" type="button">Projekt hinzufügen</button>
-          </div>
-        </div>
-        <label>Bauteil<input type="text" id="part" placeholder="z. B. Gehäuse" required /></label>
-        <label>Maschine<input type="text" id="machine" placeholder="z. B. M-01" required /></label>
+        <label>Projekt<select id="project" required></select></label>
+        <label>Bauteil<select id="part" required></select></label>
+        <label>Maschine<select id="machine" required></select></label>
         <label>Zielmenge pro Tag<input type="number" id="target" min="1" step="1" required /></label>
         <label>Produzierte Stückzahl<input type="number" id="produced" min="0" step="1" required /></label>
         <label>Ausschuss<input type="number" id="scrap" min="0" step="1" value="0" required /></label>
@@ -48,11 +42,20 @@
         <label class="full-width">Kommentar<textarea id="comment" rows="3" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
         <button type="submit" class="primary-button">Eintrag speichern</button>
       </form>
-      <details class="project-management" id="project-management">
-        <summary>Projektverwaltung anzeigen</summary>
-        <div class="project-panel">
-          <div id="project-message" class="project-message" role="status" aria-live="polite"></div>
-          <p class="project-panel-note">Neue Projekte können direkt beim Projektfeld ergänzt werden. Hier lassen sich gespeicherte Projekte umbenennen oder archivieren.</p>
+      <details class="master-data-management" id="master-data-management">
+        <summary>Stammdaten verwalten</summary>
+        <div class="master-data-panel">
+          <div id="master-data-message" class="project-message" role="status" aria-live="polite"></div>
+          <p class="project-panel-note">Neue Projekte, Bauteile und Maschinen werden lokal gespeichert und nach dem Neuladen wieder angeboten.</p>
+          <div class="master-data-add-grid">
+            <label>Neues Projekt<input type="text" id="new-project-name" placeholder="z. B. Kundenprojekt 2026" /></label>
+            <button id="add-project" type="button">Projekt hinzufügen</button>
+            <label>Neues Bauteil<input type="text" id="new-part-name" placeholder="z. B. Deckel" /></label>
+            <button id="add-part" type="button">Bauteil hinzufügen</button>
+            <label>Neue Maschine<input type="text" id="new-machine-name" placeholder="z. B. M-02" /></label>
+            <button id="add-machine" type="button">Maschine hinzufügen</button>
+          </div>
+          <h3>Projektliste</h3>
           <div id="project-list" class="project-list" aria-label="Projektliste"></div>
         </div>
       </details>
@@ -101,6 +104,8 @@
     <div class="section-heading dashboard-heading"><h2 id="dashboard-title">Dashboard</h2><span>Automatisch aktualisierte Balkendiagramme</span></div>
     <div class="card dashboard-filter-card">
       <label>Projektfilter<select id="project-filter"></select></label>
+      <label>Bauteilfilter<select id="part-filter"></select></label>
+      <label>Maschinenfilter<select id="machine-filter"></select></label>
     </div>
     <div class="grid-two dashboard-grid">
       <section class="card chart-card"><h3>Gutmenge pro Tag</h3><canvas id="good-chart" width="640" height="300"></canvas></section>
