@@ -53,7 +53,7 @@ Die Felder dürfen leer bleiben. Ein Eintrag kann auch ohne OEE-Daten gespeicher
 
 Zusätzlich darf der Maschinenstillstand nicht größer sein als die geplante Produktionszeit.
 
-Wenn eines dieser OEE-Felder fehlt, behandelt die App OEE für diesen Eintrag als nicht vorhanden. Tabelle, KPI-Karten und Zusammenfassungen zeigen dann **„n/a“**. „n/a“ bedeutet, dass keine vollständigen OEE-Daten für die Berechnung vorhanden sind. Der OEE-Status ist grau und die OEE-Diagramme ignorieren diesen Datensatz.
+Wenn eines dieser OEE-Felder fehlt oder technisch nicht auswertbar ist, behandelt die App OEE für diesen Eintrag als nicht vorhanden. Tabelle, KPI-Karten und Platzhalter zeigen dann konsequent **„n/a“**. „n/a“ bedeutet, dass keine vollständigen OEE-Daten für die Berechnung vorhanden sind. Der OEE-Status ist grau und die OEE-Diagramme ignorieren diesen Datensatz.
 
 ## OEE-Berechnung
 

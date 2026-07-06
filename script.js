@@ -108,8 +108,8 @@ function renderTable(rows) {
 function renderTotals(rows) {
   const totals = sumRows(rows);
   setKpiText('#total-good', formatNumber(totals.good)); setKpiText('#total-scrap', formatNumber(totals.scrap)); setKpiText('#total-deviation', formatNumber(totals.deviation));
-  setKpiText('#avg-achievement', formatPercent(avg(rows, 'achievement'))); setKpiText('#avg-availability', formatPercent(avg(rows, 'availability')));
-  setKpiText('#avg-performance', formatPercent(avg(rows, 'performance'))); setKpiText('#avg-quality', formatPercent(avg(rows, 'quality'))); setKpiText('#avg-oee', formatPercent(avg(rows, 'oee')));
+  setKpiPercent('#avg-achievement', avg(rows, 'achievement')); setKpiPercent('#avg-availability', avg(rows, 'availability'));
+  setKpiPercent('#avg-performance', avg(rows, 'performance')); setKpiPercent('#avg-quality', avg(rows, 'quality')); setKpiPercent('#avg-oee', avg(rows, 'oee'));
   setKpiText('#oee-count', formatNumber(rows.filter((r) => r.hasValidOeeData).length)); setKpiText('#no-oee-count', formatNumber(rows.filter((r) => !r.hasValidOeeData).length));
 }
 
@@ -192,7 +192,15 @@ function formatOptionalNumber(number) { return isCalculable(number) ? formatNumb
 function formatPercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : NA_LABEL; }
 function formatOeePercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : formatNa(); }
 function formatNa() { return `<span class="na-value">${NA_LABEL}</span>`; }
-function setKpiText(selector, value) { const element = document.querySelector(selector); element.textContent = value; element.classList.toggle('na-value', value === NA_LABEL); }
+function setKpiPercent(selector, value) { setKpiText(selector, formatPercent(value)); }
+function setKpiText(selector, value) {
+  const element = document.querySelector(selector);
+  const displayValue = isMissingDisplayValue(value) ? NA_LABEL : String(value);
+  element.textContent = displayValue;
+  element.classList.toggle('na-value', displayValue === NA_LABEL);
+}
+
+function isMissingDisplayValue(value) { return value === null || value === undefined || value === '' || (typeof value === 'number' && !Number.isFinite(value)); }
 function csvEscape(value) { return `"${String(value ?? '').replaceAll('"', '""')}"`; }
 function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c])); }
 function emptyState(text) { return `<div class="summary-item"><span>${text}</span></div>`; }
