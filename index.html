@@ -27,13 +27,18 @@
         <label>Projekt<input type="text" id="project" placeholder="z. B. Projekt A" required /></label>
         <label>Bauteil<input type="text" id="part" placeholder="z. B. Gehäuse" required /></label>
         <label>Maschine<input type="text" id="machine" placeholder="z. B. M-01" required /></label>
-        <label>Zielmenge pro Tag<input type="number" id="target" min="0" step="1" required /></label>
+        <label>Zielmenge pro Tag<input type="number" id="target" min="1" step="1" required /></label>
         <label>Produzierte Stückzahl<input type="number" id="produced" min="0" step="1" required /></label>
         <label>Ausschuss<input type="number" id="scrap" min="0" step="1" value="0" required /></label>
-        <label>Geplante Produktionszeit in Minuten<input type="number" id="plannedTime" min="0" step="0.1" /></label>
-        <label>Maschinenstillstand in Minuten<input type="number" id="downtime" min="0" step="0.1" value="0" /></label>
-        <label>Ideale Taktzeit je Stück in Sekunden<input type="number" id="cycleTime" min="0" step="0.1" /></label>
-        <label class="full-width">Kommentar<textarea id="comment" rows="3" placeholder="Optionaler Hinweis"></textarea></label>
+        <fieldset class="oee-fieldset full-width">
+          <legend>Optional für OEE-Berechnung</legend>
+          <div class="oee-fields">
+            <label>Geplante Produktionszeit in Minuten<input type="number" id="plannedTime" min="0" step="0.1" placeholder="Optional für OEE-Berechnung" /></label>
+            <label>Maschinenstillstand in Minuten<input type="number" id="downtime" min="0" step="0.1" placeholder="Optional für OEE-Berechnung" /></label>
+            <label>Ideale Taktzeit je Stück in Sekunden<input type="number" id="cycleTime" min="0" step="0.1" placeholder="Optional für OEE-Berechnung" /></label>
+          </div>
+        </fieldset>
+        <label class="full-width">Kommentar<textarea id="comment" rows="3" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
         <button type="submit" class="primary-button">Eintrag speichern</button>
       </form>
     </section>
@@ -49,7 +54,9 @@
         <article class="kpi"><span>Ø Verfügbarkeit</span><strong id="avg-availability">n. b.</strong></article>
         <article class="kpi"><span>Ø Leistung</span><strong id="avg-performance">n. b.</strong></article>
         <article class="kpi"><span>Ø Qualität</span><strong id="avg-quality">n. b.</strong></article>
-        <article class="kpi"><span>Ø OEE</span><strong id="avg-oee">n. b.</strong></article>
+        <article class="kpi"><span>Ø OEE aus gültigen OEE-Einträgen</span><strong id="avg-oee">n. b.</strong></article>
+        <article class="kpi"><span>Einträge mit OEE-Berechnung</span><strong id="oee-count">0</strong></article>
+        <article class="kpi"><span>Einträge ohne OEE-Berechnung</span><strong id="no-oee-count">0</strong></article>
       </div>
     </section>
   </main>
