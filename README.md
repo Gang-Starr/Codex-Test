@@ -10,7 +10,7 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 
 - `index.html` – Struktur der Eingabemaske, Auswertungen, Dashboard, Tabelle und Bedienelemente
 - `style.css` – modernes, responsives Layout für Desktop, Tablet und Smartphone
-- `script.js` – Speicherung, Validierung, Berechnungen, CSV-Import/-Export, TXT-Export und Canvas-Diagramme
+- `script.js` – Speicherung, Projektverwaltung, Validierung, Berechnungen, CSV-Import/-Export, TXT-Export und Canvas-Diagramme
 - `README.md` – Beschreibung und Bedienhinweise
 
 ## Pflichtfelder für die normale Stückzahlauswertung
@@ -18,7 +18,7 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 Diese Felder werden für jeden Eintrag benötigt. Die normale Stückzahlauswertung funktioniert immer, auch wenn keine OEE-Daten erfasst werden:
 
 - Datum
-- Projekt
+- Projekt (Auswahl aus dem Projekt-Dropdown)
 - Bauteil
 - Maschine
 - Zielmenge pro Tag (muss größer als 0 sein)
@@ -38,6 +38,26 @@ Statuslogik Zielerreichung:
 - Gelb: Zielerreichung >= 90 % und < 100 %
 - Rot: Zielerreichung < 90 %
 - Grau: keine vollständigen oder gültigen Daten für eine Bewertung
+
+
+## Projektverwaltung
+
+Das Feld **Projekt** ist kein Freitextfeld mehr. Produktionsdaten werden über ein Pflicht-Dropdown einem Projekt zugeordnet. Wenn kein Projekt ausgewählt wurde, zeigt die App beim Speichern die Meldung **„Bitte ein Projekt auswählen.“** an.
+
+Beim ersten Start legt die App diese Beispielprojekte lokal an:
+
+- Projekt A
+- Projekt B
+- Testprojekt
+
+Unter **„Projektverwaltung anzeigen“** befindet sich ein kompakter aufklappbarer Bereich. Dort können Projekte lokal im Browser verwaltet werden:
+
+- Neuen Projektnamen eingeben und mit **„Projekt speichern“** anlegen.
+- Bestehenden Namen im Projektfeld ändern und mit **„Umbenennen“** speichern. Bereits gespeicherte Produktionsdaten werden dabei auf den neuen Projektnamen umgestellt und bleiben erhalten.
+- Projekte mit **„Archivieren“** ausblenden. Archivierte Projekte erscheinen nicht mehr im Eingabe-Dropdown, bleiben aber in der Projektverwaltung und in bestehenden Produktionsdaten erhalten.
+- Archivierte Projekte können über **„Aktivieren“** wieder im Dropdown sichtbar gemacht werden.
+
+Die Projektliste wird in `localStorage` gespeichert. Pro Projekt speichert die App den Projektnamen, den Status `active`/`archived` und das Erstellungsdatum. Beim Laden prüft die App zusätzlich vorhandene Produktionsdaten: Projektnamen aus älteren Freitext-Einträgen werden automatisch in die Projektliste übernommen, doppelte Projektnamen werden vermieden.
 
 ## Optionale OEE-Daten
 
@@ -77,7 +97,7 @@ Statuslogik OEE:
 
 ## Auswertungen und Dashboard
 
-Die App zeigt:
+Die App zeigt und aktualisiert passend zum gewählten Projektfilter:
 
 - Tabelle mit allen Eingaben und berechneten Kennzahlen
 - Tagesübersicht
@@ -100,9 +120,14 @@ Das Dashboard enthält responsive Canvas-Diagramme ohne externe Bibliothek:
 
 Wenn keine OEE-Daten vorhanden sind, zeigen die OEE-Diagramme **„Keine OEE-Daten vorhanden“**.
 
+
+### Projektfilter
+
+Im Dashboard gibt es einen **Projektfilter**. Der Nutzer kann **„Alle Projekte“** oder ein einzelnes Projekt auswählen. Sobald ein Projekt gewählt wird, aktualisieren sich Management-Zusammenfassung, KPI-Karten, Tagesübersicht, Summen, Tabelle, Diagramme und CSV-/TXT-Export auf die gefilterten Daten. Der Filter enthält auch Projektnamen aus alten Produktionsdaten, damit historische Einträge weiterhin auswertbar bleiben.
+
 ## CSV-Import und CSV-Export
 
-Der CSV-Export erzeugt eine Semikolon-getrennte Datei mit allen Spalten. Der Import hängt gültige importierte Zeilen an die bestehenden lokalen Daten an und berechnet danach alle Kennzahlen automatisch neu: Gutmenge, Abweichung, Zielerreichung, Zielstatus sowie – bei vollständigen OEE-Daten – Verfügbarkeit, Leistung, Qualität, OEE und OEE-Status.
+Der CSV-Export erzeugt eine Semikolon-getrennte Datei mit allen Spalten und enthält weiterhin die Spalte **Projekt**. Ist ein einzelnes Projekt im Projektfilter ausgewählt, exportiert die App die gefilterten Einträge; bei **„Alle Projekte“** werden alle Einträge exportiert. Der Import erkennt Projektwerte aus der CSV automatisch. Wenn eine importierte CSV ein Projekt enthält, das noch nicht in der Projektliste existiert, legt die App dieses Projekt automatisch mit Status `active` an. Der Import hängt gültige importierte Zeilen an die bestehenden lokalen Daten an und berechnet danach alle Kennzahlen automatisch neu: Gutmenge, Abweichung, Zielerreichung, Zielstatus sowie – bei vollständigen OEE-Daten – Verfügbarkeit, Leistung, Qualität, OEE und OEE-Status.
 
 CSV-Import funktioniert:
 

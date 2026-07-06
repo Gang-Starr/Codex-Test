@@ -24,7 +24,7 @@
       <div id="form-error" class="form-error" role="alert" aria-live="polite"></div>
       <form id="production-form" class="production-form">
         <label>Datum<input type="date" id="date" required /></label>
-        <label>Projekt<input type="text" id="project" placeholder="z. B. Projekt A" required /></label>
+        <label>Projekt<select id="project" required></select></label>
         <label>Bauteil<input type="text" id="part" placeholder="z. B. Gehäuse" required /></label>
         <label>Maschine<input type="text" id="machine" placeholder="z. B. M-01" required /></label>
         <label>Zielmenge pro Tag<input type="number" id="target" min="1" step="1" required /></label>
@@ -42,6 +42,17 @@
         <label class="full-width">Kommentar<textarea id="comment" rows="3" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
         <button type="submit" class="primary-button">Eintrag speichern</button>
       </form>
+      <details class="project-management" id="project-management">
+        <summary>Projektverwaltung anzeigen</summary>
+        <div class="project-panel">
+          <div id="project-message" class="project-message" role="status" aria-live="polite"></div>
+          <div class="project-add-row">
+            <label>Projektname eingeben<input type="text" id="new-project-name" placeholder="z. B. Kundenprojekt 2026" /></label>
+            <button id="add-project" type="button">Projekt speichern</button>
+          </div>
+          <div id="project-list" class="project-list" aria-label="Projektliste"></div>
+        </div>
+      </details>
     </section>
 
     <section class="card" aria-labelledby="summary-title">
@@ -85,6 +96,9 @@
 
   <section class="dashboard" aria-labelledby="dashboard-title">
     <div class="section-heading dashboard-heading"><h2 id="dashboard-title">Dashboard</h2><span>Automatisch aktualisierte Balkendiagramme</span></div>
+    <div class="card dashboard-filter-card">
+      <label>Projektfilter<select id="project-filter"></select></label>
+    </div>
     <div class="grid-two dashboard-grid">
       <section class="card chart-card"><h3>Gutmenge pro Tag</h3><canvas id="good-chart" width="640" height="300"></canvas></section>
       <section class="card chart-card"><h3>Zielmenge vs. Gutmenge pro Tag</h3><canvas id="target-chart" width="640" height="300"></canvas></section>
