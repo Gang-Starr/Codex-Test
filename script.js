@@ -57,11 +57,11 @@ function validateEntry(entry) {
   if (entry.scrap > entry.produced) return 'Ausschuss darf nicht größer als die produzierte Stückzahl sein.';
 
   const filledOeeFields = oeeNumberFields.filter((field) => entry[field] !== null);
-  if (entry.plannedTime !== null && entry.downtime !== null && entry.downtime > entry.plannedTime) return 'Maschinenstillstand darf nicht größer als die geplante Produktionszeit sein.';
   if (filledOeeFields.length === oeeNumberFields.length) {
     if (entry.plannedTime <= 0) return 'Für die OEE-Berechnung muss die geplante Produktionszeit größer als 0 Minuten sein.';
     if (entry.downtime < 0) return 'Für die OEE-Berechnung muss der Maschinenstillstand größer oder gleich 0 Minuten sein.';
     if (entry.cycleTime <= 0) return 'Für die OEE-Berechnung muss die ideale Taktzeit größer als 0 Sekunden sein.';
+    if (entry.downtime > entry.plannedTime) return 'Maschinenstillstand darf nicht größer als die geplante Produktionszeit sein.';
   }
   return '';
 }
@@ -71,7 +71,8 @@ function enrich(entry) {
   const good = normalized.produced - normalized.scrap;
   const deviation = good - normalized.target;
   const achievement = normalized.target > 0 ? (good / normalized.target) * 100 : null;
-  const hasValidOeeData = normalized.plannedTime > 0 && normalized.downtime >= 0 && normalized.cycleTime > 0 && normalized.downtime <= normalized.plannedTime;
+  const hasCompleteOeeData = oeeNumberFields.every((field) => normalized[field] !== null);
+  const hasValidOeeData = hasCompleteOeeData && normalized.plannedTime > 0 && normalized.downtime >= 0 && normalized.cycleTime > 0 && normalized.downtime <= normalized.plannedTime;
   const runtime = hasValidOeeData ? normalized.plannedTime - normalized.downtime : null;
   const availability = hasValidOeeData ? (runtime / normalized.plannedTime) * 100 : null;
   const theoretical = hasValidOeeData ? (runtime * 60) / normalized.cycleTime : null;
@@ -105,10 +106,10 @@ function renderTable(rows) {
 
 function renderTotals(rows) {
   const totals = sumRows(rows);
-  setText('#total-good', formatNumber(totals.good)); setText('#total-scrap', formatNumber(totals.scrap)); setText('#total-deviation', formatNumber(totals.deviation));
-  setText('#avg-achievement', formatPercent(avg(rows, 'achievement'))); setText('#avg-availability', formatPercent(avg(rows, 'availability')));
-  setText('#avg-performance', formatPercent(avg(rows, 'performance'))); setText('#avg-quality', formatPercent(avg(rows, 'quality'))); setText('#avg-oee', formatPercent(avg(rows, 'oee')));
-  setText('#oee-count', formatNumber(rows.filter((r) => r.hasValidOeeData).length)); setText('#no-oee-count', formatNumber(rows.filter((r) => !r.hasValidOeeData).length));
+  setKpiText('#total-good', formatNumber(totals.good)); setKpiText('#total-scrap', formatNumber(totals.scrap)); setKpiText('#total-deviation', formatNumber(totals.deviation));
+  setKpiText('#avg-achievement', formatPercent(avg(rows, 'achievement'))); setKpiText('#avg-availability', formatPercent(avg(rows, 'availability')));
+  setKpiText('#avg-performance', formatPercent(avg(rows, 'performance'))); setKpiText('#avg-quality', formatPercent(avg(rows, 'quality'))); setKpiText('#avg-oee', formatPercent(avg(rows, 'oee')));
+  setKpiText('#oee-count', formatNumber(rows.filter((r) => r.hasValidOeeData).length)); setKpiText('#no-oee-count', formatNumber(rows.filter((r) => !r.hasValidOeeData).length));
 }
 
 function renderDailyOverview(rows) {
@@ -127,7 +128,7 @@ function buildManagementSummary(rows) {
   const totals = aggregate(rows), redTargets = rows.filter((r) => r.targetStatus === 'red').length, warnings = rows.filter((r) => r.oeeWarning).length;
   const withOee = rows.filter((r) => r.hasValidOeeData).length, withoutOee = rows.length - withOee;
   const bestDay = dailyRows(rows).sort((a, b) => b.good - a.good)[0];
-  const oeeText = withOee ? `Die durchschnittliche OEE aus ${withOee} gültigen OEE-Einträgen liegt bei ${formatPercent(totals.oee)}.` : 'Es liegen keine gültigen OEE-Daten vor; die OEE wurde nicht berechnet.';
+  const oeeText = withOee ? `Für ${withOee} von ${rows.length} Einträgen konnte eine OEE berechnet werden. Die durchschnittliche OEE liegt bei ${formatPercent(totals.oee)}.` : 'Für die OEE-Berechnung liegen noch keine vollständigen OEE-Daten vor.';
   return `Insgesamt wurden ${formatNumber(totals.good)} Gutteile bei ${formatNumber(totals.scrap)} Ausschussteilen erreicht. Die durchschnittliche Zielerreichung liegt bei ${formatPercent(totals.achievement)}. ${redTargets} Einträge liegen unter 90 % Zielerreichung. ${withOee} Einträge enthalten gültige OEE-Daten, ${withoutOee} Einträge liegen ohne OEE-Daten vor. ${oeeText} Stärkster Tag ist ${formatDate(bestDay.date)} mit ${formatNumber(bestDay.good)} Gutteilen.${warnings ? ` Hinweis: ${warnings} OEE-Wert(e) liegen über 100 % und sollten geprüft werden.` : ' Es wurden keine OEE-Werte über 100 % erkannt.'}`;
 }
 
@@ -145,7 +146,7 @@ function renderCharts(rows) {
 function drawBarChart(canvas, labels, series, options = {}) {
   const rect = canvas.getBoundingClientRect(); canvas.width = Math.max(360, Math.floor(rect.width || canvas.width)); canvas.height = 300;
   const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  if (!labels.length) { ctx.fillStyle = '#68768a'; ctx.font = '16px Arial'; ctx.fillText(options.emptyMessage || 'Noch keine Daten vorhanden.', 24, 52); return; }
+  if (!labels.length) { ctx.fillStyle = '#68768a'; ctx.font = '14px Arial'; ctx.fillText(options.emptyMessage || 'Noch keine Daten vorhanden.', 24, 52); return; }
   const p = { l: 54, r: 18, t: 48, b: 58 }, w = canvas.width - p.l - p.r, h = canvas.height - p.t - p.b;
   const values = series.flatMap((s) => s.values.map((v) => Number(v) || 0)); const min = options.allowNegative ? Math.min(0, ...values) : 0; const max = Math.max(options.max || 1, ...values, 1); const span = max - min || 1; const zeroY = p.t + h - ((0 - min) / span) * h;
   ctx.strokeStyle = '#dce3ed'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, p.t + h); ctx.lineTo(p.l + w, p.t + h); ctx.stroke();
@@ -163,8 +164,8 @@ function isCalculable(value) { return Number.isFinite(value); }
 function targetStatus(value) { if (!isCalculable(value)) return 'gray'; return value >= 100 ? 'green' : value >= 90 ? 'yellow' : 'red'; }
 function oeeStatus(value) { if (!isCalculable(value)) return 'gray'; return value >= 85 ? 'green' : value >= 70 ? 'yellow' : 'red'; }
 function statusDot(status, title) { return `<span class="status-dot status-${status}" title="${title}"></span>`; }
-function targetStatusLabel(s) { return ({ green:'Grün: Zielerreichung ≥ 100 %', yellow:'Gelb: Zielerreichung 90–99,9 %', red:'Rot: Zielerreichung < 90 %', gray:'Grau: nicht berechenbar' })[s]; }
-function oeeStatusLabel(s) { return ({ green:'Grün: OEE ≥ 85 %', yellow:'Gelb: OEE 70–84,9 %', red:'Rot: OEE < 70 %', gray:'Grau: nicht berechenbar' })[s]; }
+function targetStatusLabel(s) { return ({ green:'Grün: Zielerreichung ≥ 100 %', yellow:'Gelb: Zielerreichung 90–99,9 %', red:'Rot: Zielerreichung < 90 %', gray:'Grau: keine vollständigen Daten' })[s]; }
+function oeeStatusLabel(s) { return ({ green:'Grün: OEE ≥ 85 %', yellow:'Gelb: OEE 70–84,9 %', red:'Rot: OEE < 70 %', gray:'Grau: keine vollständigen OEE-Daten' })[s]; }
 
 function switchTab(tab) { activeGroup = tab.dataset.tab; document.querySelectorAll('.tab').forEach((item) => item.classList.toggle('active', item === tab)); renderGroupSummary(enrichedRows()); }
 function deleteEntry(id) { if (!confirm('Diesen Eintrag wirklich löschen?')) return; entries = entries.filter((entry) => entry.id !== id); persistEntries(); render(); }
@@ -182,14 +183,15 @@ function getNumber(id) { return toNumber(document.querySelector(`#${id}`).value)
 function getOptionalNumber(id) { return toOptionalNumber(document.querySelector(`#${id}`).value); }
 function toNumber(value) { const number = Number(String(value ?? '').replace(',', '.')); return Number.isFinite(number) ? number : 0; }
 function toOptionalNumber(value) { if (value === null || value === undefined || String(value).trim() === '') return null; const number = Number(String(value).replace(',', '.')); return Number.isFinite(number) ? number : null; }
-function setText(selector, value) { document.querySelector(selector).textContent = value; }
 function createId() { return window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`; }
 function today() { return new Date().toISOString().slice(0, 10); }
 function formatDate(date) { return date ? new Intl.DateTimeFormat('de-DE').format(new Date(`${date}T00:00:00`)) : '-'; }
 function formatNumber(number) { return new Intl.NumberFormat('de-DE', { maximumFractionDigits: 1 }).format(number || 0); }
-function formatOptionalNumber(number) { return isCalculable(number) ? formatNumber(number) : 'nicht berechnet'; }
-function formatPercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : 'nicht berechenbar'; }
-function formatOeePercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : 'nicht berechnet'; }
+function formatOptionalNumber(number) { return isCalculable(number) ? formatNumber(number) : formatNa(); }
+function formatPercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : 'n/a'; }
+function formatOeePercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : formatNa(); }
+function formatNa() { return '<span class="na-value">n/a</span>'; }
+function setKpiText(selector, value) { const element = document.querySelector(selector); element.textContent = value; element.classList.toggle('na-value', value === 'n/a'); }
 function csvEscape(value) { return `"${String(value ?? '').replaceAll('"', '""')}"`; }
 function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c])); }
 function emptyState(text) { return `<div class="summary-item"><span>${text}</span></div>`; }

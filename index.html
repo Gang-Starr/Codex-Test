@@ -31,11 +31,12 @@
         <label>Produzierte Stückzahl<input type="number" id="produced" min="0" step="1" required /></label>
         <label>Ausschuss<input type="number" id="scrap" min="0" step="1" value="0" required /></label>
         <fieldset class="oee-fieldset full-width">
-          <legend>Optional für OEE-Berechnung</legend>
+          <legend>Optionale OEE-Daten</legend>
+          <p class="oee-help">Nur ausfüllen, wenn OEE berechnet werden soll.</p>
           <div class="oee-fields">
-            <label>Geplante Produktionszeit in Minuten<input type="number" id="plannedTime" min="0" step="0.1" placeholder="Optional für OEE-Berechnung" /></label>
-            <label>Maschinenstillstand in Minuten<input type="number" id="downtime" min="0" step="0.1" placeholder="Optional für OEE-Berechnung" /></label>
-            <label>Ideale Taktzeit je Stück in Sekunden<input type="number" id="cycleTime" min="0" step="0.1" placeholder="Optional für OEE-Berechnung" /></label>
+            <label>Geplante Produktionszeit in Minuten <span>(optional)</span><input type="number" id="plannedTime" min="0" step="0.1" placeholder="Leer lassen, wenn nicht benötigt" /></label>
+            <label>Maschinenstillstand in Minuten <span>(optional)</span><input type="number" id="downtime" min="0" step="0.1" placeholder="Leer lassen, wenn nicht benötigt" /></label>
+            <label>Ideale Taktzeit je Stück in Sekunden <span>(optional)</span><input type="number" id="cycleTime" min="0" step="0.1" placeholder="Leer lassen, wenn nicht benötigt" /></label>
           </div>
         </fieldset>
         <label class="full-width">Kommentar<textarea id="comment" rows="3" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
@@ -50,11 +51,11 @@
         <article class="kpi"><span>Gesamt-Gutmenge</span><strong id="total-good">0</strong></article>
         <article class="kpi"><span>Gesamt-Ausschuss</span><strong id="total-scrap">0</strong></article>
         <article class="kpi"><span>Gesamt-Abweichung</span><strong id="total-deviation">0</strong></article>
-        <article class="kpi"><span>Ø Zielerreichung</span><strong id="avg-achievement">n. b.</strong></article>
-        <article class="kpi"><span>Ø Verfügbarkeit</span><strong id="avg-availability">n. b.</strong></article>
-        <article class="kpi"><span>Ø Leistung</span><strong id="avg-performance">n. b.</strong></article>
-        <article class="kpi"><span>Ø Qualität</span><strong id="avg-quality">n. b.</strong></article>
-        <article class="kpi"><span>Ø OEE aus gültigen OEE-Einträgen</span><strong id="avg-oee">n. b.</strong></article>
+        <article class="kpi"><span>Ø Zielerreichung</span><strong id="avg-achievement">n/a</strong></article>
+        <article class="kpi"><span>Ø Verfügbarkeit</span><strong id="avg-availability">n/a</strong></article>
+        <article class="kpi"><span>Ø Leistung</span><strong id="avg-performance">n/a</strong></article>
+        <article class="kpi"><span>Ø Qualität</span><strong id="avg-quality">n/a</strong></article>
+        <article class="kpi"><span>Ø OEE aus gültigen OEE-Einträgen</span><strong id="avg-oee">n/a</strong></article>
         <article class="kpi"><span>Einträge mit OEE-Berechnung</span><strong id="oee-count">0</strong></article>
         <article class="kpi"><span>Einträge ohne OEE-Berechnung</span><strong id="no-oee-count">0</strong></article>
       </div>
