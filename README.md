@@ -1,10 +1,10 @@
 # Lokale Web-App für Produktionsstückzahlen und optionale OEE
 
-Diese Web-App erfasst tägliche Produktionsstückzahlen für Test- und Demo-Zwecke direkt im Browser. Sie berechnet Gutmenge, Abweichung, Zielerreichung, Status-Ampeln, KPI-Karten, Tabellen, Diagramme und eine kurze Management-Zusammenfassung.
+Diese Web-App ist eine einfache lokale Test-App zur täglichen Produktionsauswertung. Sie erfasst Stückzahlen im Browser, berechnet Gutmenge, Ausschuss, Abweichung, Zielerreichung, optionale OEE-Kennzahlen, KPI-Karten, Tabellen, Diagramme und eine Management-Zusammenfassung.
 
 Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Login und keine Server-Komponente. Daten werden im `localStorage` des jeweiligen Browsers gespeichert und bleiben nur auf diesem Gerät bzw. in diesem Browserprofil erhalten.
 
-> Wichtig: Diese App ist eine einfache lokale Test-App. Verwenden Sie keine echten Firmendaten, personenbezogenen Daten oder vertraulichen Produktionsdaten.
+> Wichtig: Verwenden Sie keine echten Firmendaten, personenbezogenen Daten oder vertraulichen Produktionsdaten.
 
 ## Dateien
 
@@ -15,7 +15,7 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 
 ## Pflichtfelder für die normale Stückzahlauswertung
 
-Diese Felder werden für jeden Eintrag benötigt. Die normale Stückzahlauswertung funktioniert immer, auch ohne OEE-Daten:
+Diese Felder werden für jeden Eintrag benötigt. Die normale Stückzahlauswertung funktioniert immer, auch wenn keine OEE-Daten erfasst werden:
 
 - Datum
 - Projekt
@@ -37,11 +37,15 @@ Statuslogik Zielerreichung:
 - Grün: Zielerreichung >= 100 %
 - Gelb: Zielerreichung >= 90 % und < 100 %
 - Rot: Zielerreichung < 90 %
-- Grau: nicht berechenbar
+- Grau: keine vollständigen oder gültigen Daten für eine Bewertung
 
-## Optionale OEE-Berechnung
+## Optionale OEE-Daten
 
-Die OEE-Berechnung ist optional. Die App berechnet OEE nur, wenn alle drei zusätzlichen OEE-Felder vollständig und gültig ausgefüllt sind:
+Die OEE-Berechnung ist optional. In der Eingabemaske gibt es dafür den optisch abgesetzten Bereich **„Optionale OEE-Daten“** mit dem Hinweis:
+
+> Nur ausfüllen, wenn OEE berechnet werden soll.
+
+Die Felder dürfen leer bleiben. Ein Eintrag kann auch ohne OEE-Daten gespeichert werden. Für die OEE-Berechnung werden zusätzlich diese drei Werte benötigt:
 
 - Geplante Produktionszeit in Minuten > 0
 - Maschinenstillstand in Minuten >= 0
@@ -49,9 +53,11 @@ Die OEE-Berechnung ist optional. Die App berechnet OEE nur, wenn alle drei zusä
 
 Zusätzlich darf der Maschinenstillstand nicht größer sein als die geplante Produktionszeit.
 
-Wenn eines dieser OEE-Felder fehlt oder ungültig ist, wird keine OEE berechnet. Die Tabelle zeigt dann **„nicht berechnet“**, der OEE-Status ist grau und die OEE-Diagramme ignorieren diesen Datensatz. Die Management-Zusammenfassung zählt getrennt, wie viele Einträge mit und ohne OEE-Berechnung vorliegen.
+Wenn eines dieser OEE-Felder fehlt, behandelt die App OEE für diesen Eintrag als nicht vorhanden. Tabelle, KPI-Karten und Zusammenfassungen zeigen dann **„n/a“**. Das bedeutet: Es liegen keine vollständigen OEE-Daten vor. Der OEE-Status ist grau und die OEE-Diagramme ignorieren diesen Datensatz.
 
-OEE-Formeln:
+## OEE-Berechnung
+
+Wenn alle optionalen OEE-Felder vollständig und gültig ausgefüllt sind, berechnet die App:
 
 - **Laufzeit in Minuten** = Geplante Produktionszeit − Maschinenstillstand
 - **Verfügbarkeit in Prozent** = Laufzeit / Geplante Produktionszeit × 100
@@ -67,7 +73,7 @@ Statuslogik OEE:
 - Grün: OEE >= 85 %
 - Gelb: OEE >= 70 % und < 85 %
 - Rot: OEE < 70 %
-- Grau: OEE nicht berechenbar
+- Grau: keine vollständigen OEE-Daten vorhanden
 
 ## Auswertungen und Dashboard
 
@@ -78,8 +84,8 @@ Die App zeigt:
 - Summen je Projekt, Bauteil und Maschine
 - Gesamt-Gutmenge, Gesamt-Ausschuss und Gesamt-Abweichung
 - Durchschnittliche Zielerreichung
-- Durchschnittliche Verfügbarkeit, Leistung, Qualität und OEE nur aus gültigen OEE-Einträgen
-- Anzahl Einträge mit OEE-Berechnung und ohne OEE-Berechnung
+- Durchschnittliche Verfügbarkeit, Leistung, Qualität und OEE nur aus Einträgen mit vollständigen OEE-Daten
+- Anzahl Einträge mit OEE-Berechnung und ohne vollständige OEE-Daten
 - Management-Zusammenfassung als Kurztext und TXT-Export
 - Ampelstatus je Zeile für Zielerreichung und OEE
 
@@ -89,14 +95,20 @@ Das Dashboard enthält responsive Canvas-Diagramme ohne externe Bibliothek:
 2. Zielmenge vs. Gutmenge pro Tag
 3. Ausschuss pro Tag
 4. Kumulierte Abweichung
-5. OEE pro Tag (nur gültige OEE-Einträge)
-6. OEE-Bestandteile Verfügbarkeit, Leistung und Qualität pro Tag (nur gültige OEE-Einträge)
+5. OEE pro Tag (nur Einträge mit gültiger OEE-Berechnung)
+6. OEE-Bestandteile Verfügbarkeit, Leistung und Qualität pro Tag (nur Einträge mit gültiger OEE-Berechnung)
 
 Wenn keine OEE-Daten vorhanden sind, zeigen die OEE-Diagramme **„Keine OEE-Daten vorhanden“**.
 
 ## CSV-Import und CSV-Export
 
-Der CSV-Export erzeugt eine Semikolon-getrennte Datei mit allen Spalten. Der Import hängt gültige importierte Zeilen an die bestehenden lokalen Daten an und berechnet danach alle Kennzahlen automatisch neu.
+Der CSV-Export erzeugt eine Semikolon-getrennte Datei mit allen Spalten. Der Import hängt gültige importierte Zeilen an die bestehenden lokalen Daten an und berechnet danach alle Kennzahlen automatisch neu: Gutmenge, Abweichung, Zielerreichung, Zielstatus sowie – bei vollständigen OEE-Daten – Verfügbarkeit, Leistung, Qualität, OEE und OEE-Status.
+
+CSV-Import funktioniert:
+
+- mit OEE-Spalten und gefüllten OEE-Werten
+- mit OEE-Spalten, aber leeren OEE-Werten
+- ohne OEE-Werte in einzelnen Zeilen
 
 Kopfzeile:
 
@@ -120,7 +132,7 @@ Datum;Projekt;Bauteil;Maschine;Zielmenge pro Tag;Produzierte Stückzahl;Ausschus
 2026-07-04;Projekt B;Deckel;M-02;800;810;8;;;;Nur Stückzahlen bewertet
 ```
 
-CSV-Import funktioniert mit gefüllten OEE-Spalten, leeren OEE-Spalten und einzelnen Zeilen ohne OEE-Werte. Für Einträge ohne gültige OEE-Daten wird OEE als **nicht berechnet** behandelt.
+Beim CSV-Export werden immer alle Spalten ausgegeben. Leere optionale OEE-Felder bleiben in der CSV-Datei leer. Für Einträge ohne vollständige OEE-Daten wird OEE in der App als **„n/a“** dargestellt.
 
 ## Export der Management-Zusammenfassung
 
