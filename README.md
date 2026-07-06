@@ -13,6 +13,15 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 - `script.js` – Speicherung, Projektverwaltung, Validierung, Berechnungen, CSV-Import/-Export, TXT-Export und Canvas-Diagramme
 - `README.md` – Beschreibung und Bedienhinweise
 
+
+## Sprache Deutsch / Englisch
+
+Die App unterstützt eine lokale Sprachauswahl für **Deutsch** und **Englisch**. Die Auswahl befindet sich oben rechts im blauen Header. Deutsch ist die Standardsprache. Wenn auf Englisch gewechselt wird, werden sichtbare Oberflächentexte, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte und die Management-Zusammenfassung auf Englisch angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
+
+Die gewählte Sprache wird im `localStorage` des Browsers gespeichert. Nach einem Neuladen wird automatisch die zuletzt gewählte Sprache geladen. Es wird keine externe Übersetzungsbibliothek verwendet; die Übersetzungen liegen lokal in `script.js`.
+
+Die App funktioniert weiterhin vollständig lokal ohne Server, Login oder Datenbank. Produktionsdaten, Stammdaten und die Sprachwahl bleiben im jeweiligen Browserprofil gespeichert.
+
 ## Pflichtfelder für die normale Stückzahlauswertung
 
 Diese Felder werden für jeden Eintrag benötigt. Die normale Stückzahlauswertung funktioniert immer, auch wenn keine OEE-Daten erfasst werden:

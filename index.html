@@ -8,42 +8,43 @@
 </head>
 <body>
   <header class="app-header">
-    <div>
-      <p class="eyebrow">Lokale Produktionsauswertung</p>
-      <h1>Tägliche Produktionsstückzahlen & OEE</h1>
-      <p>Erfassen, auswerten und exportieren – komplett lokal im Browser ohne Login, Server oder Datenbank.</p>
+    <div class="header-copy">
+      <p class="eyebrow" data-i18n="headerEyebrow">Lokale Produktionsauswertung</p>
+      <h1 data-i18n="headerTitle">Tägliche Produktionsstückzahlen & OEE</h1>
+      <p data-i18n="headerSubtitle">Erfassen, auswerten und exportieren – komplett lokal im Browser ohne Login, Server oder Datenbank.</p>
     </div>
+    <label class="language-switcher" for="language-select"><span data-i18n="languageLabel">Sprache:</span><select id="language-select" aria-label="Sprache auswählen"><option value="de">Deutsch</option><option value="en">English</option></select></label>
   </header>
 
   <main class="layout">
     <section class="card form-card" aria-labelledby="form-title">
       <div class="section-heading">
-        <h2 id="form-title">Eintrag erfassen</h2>
-        <span class="storage-note">Speicherung: localStorage</span>
+        <h2 id="form-title" data-i18n="formTitle">Eintrag erfassen</h2>
+        <span class="storage-note" data-i18n="storageNote">Speicherung: localStorage</span>
       </div>
       <div id="form-error" class="form-error" role="alert" aria-live="polite"></div>
       <form id="production-form" class="production-form">
-        <label>Datum<input type="date" id="date" required /></label>
-        <label>Projekt<input type="text" id="project" list="project-options" required placeholder="Projekt eingeben oder auswählen" autocomplete="off" /><datalist id="project-options"></datalist></label>
-        <label>Bauteil<input type="text" id="part" list="part-options" required placeholder="Bauteil eingeben oder auswählen" autocomplete="off" /><datalist id="part-options"></datalist></label>
-        <label>Maschine<input type="text" id="machine" list="machine-options" required placeholder="Maschine eingeben oder auswählen" autocomplete="off" /><datalist id="machine-options"></datalist></label>
-        <label>Zielmenge pro Tag<input type="number" id="target" min="1" step="1" required /></label>
-        <label>Produzierte Stückzahl<input type="number" id="produced" min="0" step="1" required /></label>
-        <label>Ausschuss<input type="number" id="scrap" min="0" step="1" value="0" required /></label>
+        <label><span data-i18n="date">Datum</span><input type="date" id="date" required /></label>
+        <label><span data-i18n="project">Projekt</span><input type="text" id="project" list="project-options" required placeholder="Projekt eingeben oder auswählen" autocomplete="off" /><datalist id="project-options"></datalist></label>
+        <label><span data-i18n="part">Bauteil</span><input type="text" id="part" list="part-options" required placeholder="Bauteil eingeben oder auswählen" autocomplete="off" /><datalist id="part-options"></datalist></label>
+        <label><span data-i18n="machine">Maschine</span><input type="text" id="machine" list="machine-options" required placeholder="Maschine eingeben oder auswählen" autocomplete="off" /><datalist id="machine-options"></datalist></label>
+        <label><span data-i18n="targetPerDay">Zielmenge pro Tag</span><input type="number" id="target" min="1" step="1" required /></label>
+        <label><span data-i18n="producedQty">Produzierte Stückzahl</span><input type="number" id="produced" min="0" step="1" required /></label>
+        <label><span data-i18n="scrap">Ausschuss</span><input type="number" id="scrap" min="0" step="1" value="0" required /></label>
         <fieldset class="oee-fieldset full-width">
-          <legend>Optionale OEE-Daten</legend>
-          <p class="oee-help">Nur ausfüllen, wenn OEE berechnet werden soll.</p>
+          <legend data-i18n="optionalOee">Optionale OEE-Daten</legend>
+          <p class="oee-help" data-i18n="oeeHelp">Nur ausfüllen, wenn OEE berechnet werden soll.</p>
           <div class="oee-fields">
-            <label>Geplante Produktionszeit in Minuten <span>(optional)</span><input type="number" id="plannedTime" min="0" step="0.1" placeholder="z. B. 480" /></label>
-            <label>Maschinenstillstand in Minuten <span>(optional)</span><input type="number" id="downtime" min="0" step="0.1" placeholder="z. B. 15" /></label>
-            <label>Ideale Taktzeit je Stück in Sekunden <span>(optional)</span><input type="number" id="cycleTime" min="0" step="0.1" placeholder="z. B. 1,2" /></label>
+            <label><span data-i18n="plannedTime">Geplante Produktionszeit in Minuten</span> <span data-i18n="optional">(optional)</span><input type="number" id="plannedTime" min="0" step="0.1" placeholder="z. B. 480" /></label>
+            <label><span data-i18n="downtime">Maschinenstillstand in Minuten</span> <span data-i18n="optional">(optional)</span><input type="number" id="downtime" min="0" step="0.1" placeholder="z. B. 15" /></label>
+            <label><span data-i18n="cycleTime">Ideale Taktzeit je Stück in Sekunden</span> <span data-i18n="optional">(optional)</span><input type="number" id="cycleTime" min="0" step="0.1" placeholder="z. B. 1,2" /></label>
           </div>
         </fieldset>
-        <label class="full-width">Kommentar<textarea id="comment" rows="3" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
-        <button type="submit" class="primary-button">Eintrag speichern</button>
+        <label class="full-width"><span data-i18n="comment">Kommentar</span><textarea id="comment" rows="3" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
+        <button type="submit" class="primary-button" data-i18n="saveEntry">Eintrag speichern</button>
       </form>
       <details class="master-data-management" id="master-data-management">
-        <summary>Stammdaten verwalten</summary>
+        <summary data-i18n="manageMasterData">Stammdaten verwalten</summary>
         <div class="master-data-panel">
           <div id="master-data-message" class="project-message" role="status" aria-live="polite"></div>
           <p class="project-panel-note">Neue Projekte, Bauteile und Maschinen werden lokal gespeichert und nach dem Neuladen wieder angeboten. Gelöschte Stammdatenwerte werden separat gemerkt und nicht automatisch aus alten Produktionsdaten wiederhergestellt.</p>
@@ -74,7 +75,7 @@
     </section>
 
     <section class="card" aria-labelledby="summary-title">
-      <div class="section-heading"><h2 id="summary-title">Management-Zusammenfassung</h2></div>
+      <div class="section-heading"><h2 id="summary-title" data-i18n="managementSummary">Management-Zusammenfassung</h2></div>
       <div id="management-summary" class="management-summary"></div>
       <div class="kpi-grid">
         <article class="kpi"><span>Gesamt-Gutmenge</span><strong id="total-good">0</strong></article>
@@ -92,7 +93,7 @@
   </main>
 
   <section class="card controls">
-    <div class="section-heading"><h2>Daten verwalten</h2></div>
+    <div class="section-heading"><h2 data-i18n="manageData">Daten verwalten</h2></div>
     <div class="button-row">
       <button id="export-csv" type="button">CSV exportieren</button>
       <button id="export-summary" type="button">Management-TXT exportieren</button>
@@ -102,9 +103,9 @@
   </section>
 
   <section class="grid-two">
-    <section class="card" aria-labelledby="daily-title"><h2 id="daily-title">Tagesübersicht</h2><div id="daily-overview" class="summary-list"></div></section>
+    <section class="card" aria-labelledby="daily-title"><h2 id="daily-title" data-i18n="dailyOverview">Tagesübersicht</h2><div id="daily-overview" class="summary-list"></div></section>
     <section class="card" aria-labelledby="group-title">
-      <h2 id="group-title">Summen nach Kategorien</h2>
+      <h2 id="group-title" data-i18n="categorySums">Summen nach Kategorien</h2>
       <div class="tabs" role="tablist" aria-label="Summen nach Kategorien">
         <button class="tab active" data-tab="project">Projekt</button><button class="tab" data-tab="part">Bauteil</button><button class="tab" data-tab="machine">Maschine</button>
       </div>
@@ -113,7 +114,7 @@
   </section>
 
   <section class="dashboard" aria-labelledby="dashboard-title">
-    <div class="section-heading dashboard-heading"><h2 id="dashboard-title">Dashboard</h2><span>Automatisch aktualisierte Balkendiagramme</span></div>
+    <div class="section-heading dashboard-heading"><h2 id="dashboard-title" data-i18n="dashboard">Dashboard</h2><span data-i18n="autoCharts">Automatisch aktualisierte Balkendiagramme</span></div>
     <div class="card dashboard-filter-card">
       <label>Projektfilter<select id="project-filter"></select></label>
       <label>Bauteilfilter<select id="part-filter"></select></label>
@@ -130,7 +131,7 @@
   </section>
 
   <section class="card table-card" aria-labelledby="table-title">
-    <div class="section-heading"><h2 id="table-title">Alle Eingaben</h2><span id="entry-count" class="storage-note">0 Einträge</span></div>
+    <div class="section-heading"><h2 id="table-title" data-i18n="allEntries">Alle Eingaben</h2><span id="entry-count" class="storage-note">0 Einträge</span></div>
     <div class="table-wrapper"><table><thead><tr><th>Ziel</th><th>OEE</th><th>Datum</th><th>Projekt</th><th>Bauteil</th><th>Maschine</th><th>Zielmenge</th><th>Produziert</th><th>Ausschuss</th><th>Gutmenge</th><th>Abweichung</th><th>Ziel %</th><th>Planzeit</th><th>Stillstand</th><th>Taktzeit</th><th>Verfüg.</th><th>Leistung</th><th>Qualität</th><th>OEE %</th><th>Kommentar</th><th>Aktion</th></tr></thead><tbody id="entries-body"></tbody></table></div>
   </section>
 
