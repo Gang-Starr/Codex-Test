@@ -378,3 +378,14 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
 @media (max-width: 640px) {
   .master-data-add-grid { grid-template-columns: 1fr; }
 }
+
+.master-delete-button {
+  border-color: #f3b8b3;
+  background: #fff5f5;
+  color: #b42318;
+  font-weight: 800;
+}
+.master-delete-button:hover {
+  background: #ffe3e0;
+  border-color: #e66a61;
+}

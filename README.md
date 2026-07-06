@@ -74,17 +74,25 @@ Beim ersten Start legt die App diese Beispielwerte lokal an:
 - OP-711
 - OP-714
 
-Im aufklappbaren Bereich **„Stammdaten verwalten“** werden drei kompakte Karten angezeigt: **Projektliste**, **Bauteilliste** und **Maschinenliste**. Dort können Werte zusätzlich manuell hinzugefügt, umbenannt, archiviert und wieder aktiviert werden.
+Im aufklappbaren Bereich **„Stammdaten verwalten“** werden drei kompakte Karten angezeigt: **Projektliste**, **Bauteilliste** und **Maschinenliste**. Dort können Werte zusätzlich manuell hinzugefügt, umbenannt oder gelöscht werden. Der Button **„Löschen“** ist als kritische Aktion hervorgehoben.
 
 ### Umbenennen
 
-Zum Umbenennen wird der Name direkt in der jeweiligen Stammdatenzeile geändert und mit **„Umbenennen“** gespeichert. Die App verhindert doppelte Werte. Bestehende Produktionsdaten mit dem alten Namen werden automatisch auf den neuen Namen aktualisiert, damit Auswertungen, Filter, CSV-Export und historische Einträge konsistent bleiben.
+Zum Umbenennen wird der Name direkt in der jeweiligen Stammdatenzeile geändert und mit **„Umbenennen“** gespeichert. Die App verhindert doppelte Werte. Bestehende Produktionsdaten mit dem alten Namen werden automatisch auf den neuen Namen aktualisiert, damit Dashboard, Auswertungen, Filter, CSV-Export und historische Einträge konsistent bleiben.
 
-### Archivieren und wieder aktivieren
+### Löschen von Stammdaten
 
-Mit **„Archivieren“** wird ein Stammdatenwert ausgeblendet, ohne Produktionsdaten zu löschen. Archivierte Werte erscheinen nicht mehr als Vorschlag in der Eingabemaske, bleiben aber in alten Produktionsdaten, Tabellen, Filtern und Auswertungen erhalten. Über **„Wieder aktivieren“** kann ein archivierter Wert wieder als Vorschlag verfügbar gemacht werden.
+Mit **„Löschen“** kann ein Projekt, Bauteil oder eine Maschine wirklich aus der Stammdatenliste entfernt werden. Vor jedem Löschvorgang fragt die App zur Sicherheit: **„Diesen Stammdatenwert wirklich löschen?“**
 
-Projektliste, Bauteilliste, Maschinenliste, Archivstatus, Änderungsdatum und Produktionsdaten werden in `localStorage` gespeichert. Beim Laden prüft die App vorhandene Produktionsdaten automatisch und übernimmt darin enthaltene Projekt-, Bauteil- und Maschinenwerte in die passenden Stammdatenlisten, sofern sie dort noch nicht vorhanden sind. Alle Daten bleiben lokal im Browserprofil des genutzten Geräts.
+Wenn der Wert noch nicht in Produktionsdaten verwendet wird, wird nur der Stammdatenwert gelöscht. Wenn bereits Produktionsdaten vorhanden sind, zeigt die App eine Auswahl:
+
+- **Nur aus Stammdatenliste löschen, Produktionsdaten behalten**: Der Wert verschwindet aus der Vorschlags- und Stammdatenliste. Historische Produktionsdaten bleiben unverändert und erscheinen weiterhin in Auswertungen, Tabellen, Diagrammen und CSV-Exporten.
+- **Stammdatenwert und zugehörige Produktionsdaten löschen**: Der Stammdatenwert und alle Produktionsdatensätze, die diesen Wert verwenden, werden gelöscht. Danach aktualisiert die App Dashboard, KPI-Karten, Tabelle, Tagesübersicht und Diagramme automatisch.
+- **Abbrechen**: Es wird nichts gelöscht; Stammdaten und Produktionsdaten bleiben unverändert.
+
+Gelöschte Stammdatenwerte werden separat in `localStorage` gemerkt. Dadurch werden sie beim Laden der App nicht automatisch wieder aus alten Produktionsdaten in die Stammdatenliste übernommen. Neue aktive Verwendungen bleiben möglich: Wenn ein gelöschter Wert später frei eingegeben und gespeichert oder über einen neuen CSV-Import eingebracht wird, wird er wieder bewusst in die jeweilige Stammdatenliste übernommen.
+
+Projektliste, Bauteilliste, Maschinenliste, gelöschte Stammdatenwerte, Änderungsdatum und Produktionsdaten werden in `localStorage` gespeichert. Beim Laden prüft die App vorhandene Produktionsdaten automatisch und übernimmt darin enthaltene Projekt-, Bauteil- und Maschinenwerte in die passenden Stammdatenlisten, sofern sie dort noch nicht vorhanden und nicht zuvor bewusst gelöscht wurden. Alle Daten bleiben lokal im Browserprofil des genutzten Geräts.
 
 ## Optionale OEE-Daten
 

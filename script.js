@@ -3,6 +3,7 @@ const LEGACY_STORAGE_KEY = 'productionEntries.v1';
 const PROJECT_STORAGE_KEY = 'productionProjects.v1';
 const PART_STORAGE_KEY = 'productionParts.v1';
 const MACHINE_STORAGE_KEY = 'productionMachines.v1';
+const DELETED_MASTER_STORAGE_KEY = 'productionDeletedMasterValues.v1';
 const DEFAULT_PROJECTS = ['Projekt A', 'Projekt B', 'Testprojekt'];
 const DEFAULT_PARTS = ['Bauteil A', 'Bauteil B', 'Gehäuse', 'Sleeve', 'Cartridge Holder'];
 const DEFAULT_MACHINES = ['Maschine 1', 'Maschine 2', 'M-01', 'OP-711', 'OP-714'];
@@ -28,9 +29,10 @@ const projectFilter = document.querySelector('#project-filter');
 const partFilter = document.querySelector('#part-filter');
 const machineFilter = document.querySelector('#machine-filter');
 let entries = loadEntries();
+let deletedMasterValues = loadDeletedMasterValues();
 let projects = loadProjects();
-let parts = loadMasterValues(PART_STORAGE_KEY, DEFAULT_PARTS);
-let machines = loadMasterValues(MACHINE_STORAGE_KEY, DEFAULT_MACHINES);
+let parts = loadMasterValues('part', PART_STORAGE_KEY, DEFAULT_PARTS);
+let machines = loadMasterValues('machine', MACHINE_STORAGE_KEY, DEFAULT_MACHINES);
 let selectedProjectFilter = 'ALL';
 let selectedPartFilter = 'ALL';
 let selectedMachineFilter = 'ALL';
@@ -71,10 +73,11 @@ function saveEntry(event) {
   };
   const validationError = validateEntry(entry);
   if (validationError) { formError.textContent = validationError; return; }
-  entry.project = ensureMasterValue('project', entry.project);
-  entry.part = ensureMasterValue('part', entry.part);
-  entry.machine = ensureMasterValue('machine', entry.machine);
+  entry.project = ensureMasterValue('project', entry.project, true);
+  entry.part = ensureMasterValue('part', entry.part, true);
+  entry.machine = ensureMasterValue('machine', entry.machine, true);
   persistMasterData();
+  persistDeletedMasterValues();
   entries.push(entry);
   persistEntries();
   form.reset();
@@ -220,17 +223,17 @@ function deleteEntry(id) { if (!confirm('Diesen Eintrag wirklich löschen?')) re
 function clearAllEntries() { if (!entries.length || !confirm('Alle lokal gespeicherten Daten löschen?')) return; entries = []; persistEntries(); render(); }
 function exportCsv() { const exportRows = entries.filter((e) => (selectedProjectFilter === 'ALL' || e.project === selectedProjectFilter) && (selectedPartFilter === 'ALL' || e.part === selectedPartFilter) && (selectedMachineFilter === 'ALL' || e.machine === selectedMachineFilter)); downloadFile(`produktionsdaten-${today()}.csv`, [CSV_HEADER, ...exportRows.map((e) => [e.date,e.project,e.part,e.machine,e.target,e.produced,e.scrap,e.plannedTime,e.downtime,e.cycleTime,e.comment])].map((r) => r.map(csvEscape).join(';')).join('\n'), 'text/csv;charset=utf-8'); }
 function exportManagementSummary() { downloadFile(`management-zusammenfassung-${today()}.txt`, buildManagementSummary(filteredRows()), 'text/plain;charset=utf-8'); }
-function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:normalizeText(r[1]), part:normalizeText(r[2]), machine:normalizeText(r[3]), target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project); entry.part = ensureMasterValue('part', entry.part); entry.machine = ensureMasterValue('machine', entry.machine); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); renderMasterData(); render(); importInput.value = ''; formError.textContent = `${imported.length} CSV-Eintrag/Einträge importiert.`; }; reader.readAsText(file, 'utf-8'); }
+function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:normalizeText(r[1]), part:normalizeText(r[2]), machine:normalizeText(r[3]), target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project, true); entry.part = ensureMasterValue('part', entry.part, true); entry.machine = ensureMasterValue('machine', entry.machine, true); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); persistDeletedMasterValues(); renderMasterData(); render(); importInput.value = ''; formError.textContent = `${imported.length} CSV-Eintrag/Einträge importiert.`; }; reader.readAsText(file, 'utf-8'); }
 function parseCsv(text) { return text.trim().split(/\r?\n/).filter(Boolean).map((line) => { const cells = []; let current = '', quoted = false; for (let i = 0; i < line.length; i++) { const c = line[i], n = line[i + 1]; if (c === '"' && quoted && n === '"') { current += '"'; i++; } else if (c === '"') quoted = !quoted; else if (c === ';' && !quoted) { cells.push(current); current = ''; } else current += c; } cells.push(current); return cells; }); }
 function downloadFile(filename, content, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); }
 function persistEntries() { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
-function loadMasterValues(key, defaults) {
+function loadMasterValues(type, key, defaults) {
   try {
     const stored = JSON.parse(localStorage.getItem(key) || '[]');
     const base = [...stored.map(normalizeMasterItem), ...defaults.map((name) => createMasterItem(name))];
-    return dedupeMasterItems(base);
+    return dedupeMasterItems(base).filter((item) => !isDeletedMasterValue(type, item.name));
   } catch {
-    return defaults.map((name) => createMasterItem(name));
+    return defaults.map((name) => createMasterItem(name)).filter((item) => !isDeletedMasterValue(type, item.name));
   }
 }
 function normalizeText(value) { return String(value || '').trim().replace(/\s+/g, ' '); }
@@ -252,11 +255,13 @@ function masterConfig(type) {
     machine: { list: machines, storage: persistMachines, input: machineInput, options: machineOptions, listElement: '#machine-list', label: 'Maschine', entryKey: 'machine' }
   }[type];
 }
-function ensureMasterValue(type, value) {
+function ensureMasterValue(type, value, reactivateDeleted = false) {
   const clean = normalizeText(value); if (!clean) return '';
   const cfg = masterConfig(type);
   const existing = cfg.list.find((item) => normalizeKey(item.name) === normalizeKey(clean));
   if (existing) return existing.name;
+  if (isDeletedMasterValue(type, clean) && !reactivateDeleted) return clean;
+  removeDeletedMasterValue(type, clean);
   cfg.list.push(createMasterItem(clean)); cfg.list.sort((a, b) => a.name.localeCompare(b.name));
   return clean;
 }
@@ -265,16 +270,16 @@ function addMasterValueFromInput(type) {
   const cfg = masterConfig(type); const clean = normalizeText(input.value);
   if (!clean) return showProjectMessage(`Bitte ${type === 'machine' ? 'eine' : 'ein'} ${cfg.label} eingeben.`);
   if (cfg.list.some((item) => normalizeKey(item.name) === normalizeKey(clean))) return showProjectMessage(`${cfg.label} existiert bereits.`);
-  const canonical = ensureMasterValue(type, clean); cfg.storage(); input.value = ''; cfg.input.value = canonical; showProjectMessage(`${cfg.label} hinzugefügt.`); renderMasterData(); render();
+  const canonical = ensureMasterValue(type, clean, true); persistDeletedMasterValues(); cfg.storage(); input.value = ''; cfg.input.value = canonical; showProjectMessage(`${cfg.label} hinzugefügt.`); renderMasterData(); render();
 }
 function renderFilterOptions(select, allLabel, selectedValue, values) { const names = dedupeNames(values); select.innerHTML = `<option value="ALL">${allLabel}</option>` + names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join(''); select.value = names.includes(selectedValue) ? selectedValue : 'ALL'; }
 
-function loadProjects() { return loadMasterValues(PROJECT_STORAGE_KEY, DEFAULT_PROJECTS); }
+function loadProjects() { return loadMasterValues('project', PROJECT_STORAGE_KEY, DEFAULT_PROJECTS); }
 function persistProjects() { localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects)); }
 function persistParts() { localStorage.setItem(PART_STORAGE_KEY, JSON.stringify(parts)); }
 function persistMachines() { localStorage.setItem(MACHINE_STORAGE_KEY, JSON.stringify(machines)); }
 function persistMasterData() { persistProjects(); persistParts(); persistMachines(); }
-function syncMasterDataFromEntries() { entries.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project); entry.part = ensureMasterValue('part', entry.part); entry.machine = ensureMasterValue('machine', entry.machine); }); persistEntries(); persistMasterData(); }
+function syncMasterDataFromEntries() { entries.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project); entry.part = ensureMasterValue('part', entry.part); entry.machine = ensureMasterValue('machine', entry.machine); }); persistEntries(); persistMasterData(); persistDeletedMasterValues(); }
 function activeMasterItems(type) { return masterConfig(type).list.filter((item) => item.status === 'active').sort((a, b) => a.name.localeCompare(b.name)); }
 function renderMasterData() { renderMasterOptions(); renderMasterList('project'); renderMasterList('part'); renderMasterList('machine'); }
 function renderMasterOptions() {
@@ -292,11 +297,11 @@ function renderMasterList(type) {
     <div class="project-row ${item.status === 'archived' ? 'archived' : ''}" data-master-id="${item.id}">
       <div><input value="${escapeHtml(item.name)}" aria-label="${cfg.label} umbenennen" /><div class="project-meta">${item.status === 'archived' ? 'Archiviert' : 'Aktiv'} · geändert am ${formatDate((item.updatedAt || item.createdAt).slice(0, 10))}</div></div>
       <button type="button" data-action="rename">Umbenennen</button>
-      <button type="button" data-action="archive">${item.status === 'archived' ? 'Wieder aktivieren' : 'Archivieren'}</button>
+      <button type="button" class="master-delete-button" data-action="delete">Löschen</button>
     </div>`).join('') || emptyState(`Noch keine ${cfg.label}-Stammdaten vorhanden.`);
 }
 function addProjectFromInput() { addMasterValueFromInput('project'); }
-function handleMasterAction(event, type) { const button = event.target.closest('button[data-action]'); if (!button) return; const cfg = masterConfig(type); const row = button.closest('[data-master-id]'); const item = cfg.list.find((master) => master.id === row.dataset.masterId); if (!item) return; if (button.dataset.action === 'rename') renameMasterValue(type, item, row.querySelector('input').value); if (button.dataset.action === 'archive') toggleArchiveMasterValue(type, item); }
+function handleMasterAction(event, type) { const button = event.target.closest('button[data-action]'); if (!button) return; const cfg = masterConfig(type); const row = button.closest('[data-master-id]'); const item = cfg.list.find((master) => master.id === row.dataset.masterId); if (!item) return; if (button.dataset.action === 'rename') renameMasterValue(type, item, row.querySelector('input').value); if (button.dataset.action === 'delete') deleteMasterValue(type, item); }
 function renameMasterValue(type, item, newName) {
   const cfg = masterConfig(type); const clean = normalizeText(newName);
   if (!clean) return showProjectMessage(`Bitte ${type === 'machine' ? 'eine' : 'ein'} ${cfg.label} eingeben.`);
@@ -308,7 +313,34 @@ function renameMasterValue(type, item, newName) {
   if (selectedMachineFilter === oldName && type === 'machine') selectedMachineFilter = clean;
   persistEntries(); cfg.storage(); showProjectMessage(`${cfg.label} umbenannt. Bestehende Produktionsdaten wurden aktualisiert.`); renderMasterData(); render();
 }
-function toggleArchiveMasterValue(type, item) { const cfg = masterConfig(type); item.status = item.status === 'archived' ? 'active' : 'archived'; item.updatedAt = new Date().toISOString(); cfg.storage(); showProjectMessage(item.status === 'archived' ? `${cfg.label} archiviert und als Vorschlag ausgeblendet.` : `${cfg.label} wieder aktiviert.`); renderMasterData(); render(); }
+function deleteMasterValue(type, item) {
+  const cfg = masterConfig(type);
+  if (!confirm('Diesen Stammdatenwert wirklich löschen?')) return;
+  const usedEntries = entries.filter((entry) => normalizeKey(entry[cfg.entryKey]) === normalizeKey(item.name));
+  let deleteProductionData = false;
+  if (usedEntries.length) {
+    const choice = prompt(`${cfg.label} „${item.name}“ wird in ${usedEntries.length} Produktionsdatensatz/Produktionsdatensätzen verwendet.\n\nDieser Wert wird noch in Produktionsdaten verwendet. Was möchten Sie tun?\n\nA = Nur aus Stammdatenliste löschen, Produktionsdaten behalten\nB = Stammdatenwert und zugehörige Produktionsdaten löschen\nC = Abbrechen`, 'A');
+    if (!choice || normalizeKey(choice) === 'c' || normalizeKey(choice).startsWith('abbrechen')) { showProjectMessage('Löschen abgebrochen. Alle Daten bleiben unverändert.'); return; }
+    if (normalizeKey(choice) === 'b') deleteProductionData = true;
+    else if (!(normalizeKey(choice) === 'a')) { showProjectMessage('Löschen abgebrochen. Bitte wählen Sie A, B oder C.'); return; }
+  }
+  cfg.list.splice(cfg.list.indexOf(item), 1);
+  rememberDeletedMasterValue(type, item.name);
+  if (deleteProductionData) entries = entries.filter((entry) => normalizeKey(entry[cfg.entryKey]) !== normalizeKey(item.name));
+  clearDeletedFilter(type, item.name);
+  persistEntries(); cfg.storage(); persistDeletedMasterValues(); renderMasterData(); render();
+  showProjectMessage(deleteProductionData ? `${cfg.label} und ${usedEntries.length} zugehörige Produktionsdatensätze gelöscht.` : `${cfg.label} aus Stammdatenliste gelöscht. Produktionsdaten bleiben erhalten.`);
+}
+function clearDeletedFilter(type, name) {
+  if (type === 'project' && selectedProjectFilter === name) selectedProjectFilter = 'ALL';
+  if (type === 'part' && selectedPartFilter === name) selectedPartFilter = 'ALL';
+  if (type === 'machine' && selectedMachineFilter === name) selectedMachineFilter = 'ALL';
+}
+function loadDeletedMasterValues() { try { const parsed = JSON.parse(localStorage.getItem(DELETED_MASTER_STORAGE_KEY) || '{}'); return { project: parsed.project || [], part: parsed.part || [], machine: parsed.machine || [] }; } catch { return { project: [], part: [], machine: [] }; } }
+function persistDeletedMasterValues() { localStorage.setItem(DELETED_MASTER_STORAGE_KEY, JSON.stringify(deletedMasterValues)); }
+function isDeletedMasterValue(type, name) { return deletedMasterValues[type]?.some((value) => normalizeKey(value) === normalizeKey(name)); }
+function rememberDeletedMasterValue(type, name) { if (!deletedMasterValues[type]) deletedMasterValues[type] = []; if (!isDeletedMasterValue(type, name)) deletedMasterValues[type].push(normalizeText(name)); }
+function removeDeletedMasterValue(type, name) { if (!deletedMasterValues[type]) deletedMasterValues[type] = []; deletedMasterValues[type] = deletedMasterValues[type].filter((value) => normalizeKey(value) !== normalizeKey(name)); }
 function showProjectMessage(message) { document.querySelector('#master-data-message').textContent = message; }
 
 function loadEntries() { try { const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY); return (JSON.parse(raw) || []).map(normalizeEntry); } catch { return []; } }
