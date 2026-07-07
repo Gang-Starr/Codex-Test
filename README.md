@@ -4,7 +4,7 @@ Diese Web-App ist eine einfache lokale Test-App zur täglichen Produktionsauswer
 
 Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Login und keine Server-Komponente. Daten werden im `localStorage` des jeweiligen Browsers gespeichert und bleiben nur auf diesem Gerät bzw. in diesem Browserprofil erhalten. Der Link selbst enthält keine Benutzerdaten und transportiert keine Produktions- oder Stammdaten.
 
-> Wichtig: Verwenden Sie keine echten Firmendaten, personenbezogenen Daten oder vertraulichen Produktionsdaten.
+> Wichtig: Die App zeigt im oberen Header-Bereich einen dezenten, gut lesbaren Hinweis: **„Offene Test-App – Produktionsdaten nur eingeben, wenn sie für diese Nutzung freigegeben sind. Keine personenbezogenen Daten eintragen.“** Auf Englisch lautet der Hinweis: **“Open test app – only enter production data approved for this use. Do not enter personal data.”** Der Hinweis wechselt mit der Sprachauswahl Deutsch / English.
 
 ## Dateien
 
@@ -16,7 +16,7 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 
 ## Sprache Deutsch / Englisch
 
-Die App unterstützt eine lokale Sprachauswahl für **Deutsch** und **Englisch**. Die Auswahl befindet sich oben rechts im blauen Header. Deutsch ist die Standardsprache. Wenn auf Englisch gewechselt wird, werden sichtbare Oberflächentexte, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte und die Management-Zusammenfassung auf Englisch angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
+Die App unterstützt eine lokale Sprachauswahl für **Deutsch** und **Englisch**. Die Auswahl befindet sich oben rechts im blauen Header. Deutsch ist die Standardsprache. Wenn auf Englisch gewechselt wird, werden sichtbare Oberflächentexte, der Header-Hinweis zur offenen Test-App, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte und die Management-Zusammenfassung auf Englisch angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
 
 Die gewählte Sprache wird im `localStorage` des Browsers gespeichert. Nach einem Neuladen wird automatisch die zuletzt gewählte Sprache geladen. Der `change`-Listener des Sprach-Dropdowns speichert die neue Auswahl, ruft die Übersetzungsfunktion auf und rendert die dynamischen Bereiche neu. Dadurch werden Header, Eingabemaske, KPI-Karten, Management-Zusammenfassung, Tagesübersicht, Stammdatenlisten, Filter, Diagramme und Tabelle sofort in der gewählten Sprache aktualisiert.
 
