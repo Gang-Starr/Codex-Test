@@ -1,6 +1,6 @@
 # Lokale Web-App für Produktionsstückzahlen und optionale OEE
 
-Diese Web-App ist eine einfache lokale Test-App zur täglichen Produktionsauswertung. Sie erfasst Stückzahlen im Browser, berechnet Gutmenge, Ausschuss, Abweichung, Zielerreichung, optionale OEE-Kennzahlen, KPI-Karten, Tabellen, Diagramme und eine Management-Zusammenfassung.
+Diese Web-App ist eine einfache lokale Test-App zur täglichen Produktionsauswertung. Sie erfasst Stückzahlen im Browser, berechnet Gutmenge, Ausschuss, Abweichung, Zielerreichung, optionale OEE-Kennzahlen, KPI-Karten, Tabellen, Diagramme und eine Management-Zusammenfassung. Nutzer sollen Produktionsdaten eintragen, die Einträge prüfen, die Daten als CSV exportieren und die CSV-Datei per E-Mail zurücksenden.
 
 Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Login und keine Server-Komponente. Daten werden im `localStorage` des jeweiligen Browsers gespeichert und bleiben nur auf diesem Gerät bzw. in diesem Browserprofil erhalten. Der Link selbst enthält keine Benutzerdaten und transportiert keine Produktions- oder Stammdaten.
 

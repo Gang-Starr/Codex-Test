@@ -27,6 +27,7 @@ function applyTranslations() {
   document.querySelector('.header-language')?.setAttribute('aria-label', t('languageAria'));
   document.title = t('documentTitle');
   document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
+  updateWorkflowHint();
   normalizeHeaderTitleText();
   updateHeaderTitleAttributes();
   if (languageSelect) {
@@ -77,6 +78,10 @@ function setText(selector, key) {
   else element.prepend(document.createTextNode(t(key)));
 }
 function setPlaceholder(selector, key) { const element = document.querySelector(selector); if (element) element.placeholder = t(key); }
+function updateWorkflowHint() {
+  const element = document.querySelector('#workflow-hint');
+  if (element) element.textContent = t('workflowHint');
+}
 
 function ensureLanguageSwitcher() {
   let select = document.querySelector('#language-select');
