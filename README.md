@@ -2,7 +2,7 @@
 
 Diese Web-App ist eine einfache lokale Test-App zur täglichen Produktionsauswertung. Sie erfasst Stückzahlen im Browser, berechnet Gutmenge, Ausschuss, Abweichung, Zielerreichung, optionale OEE-Kennzahlen, KPI-Karten, Tabellen, Diagramme und eine Management-Zusammenfassung.
 
-Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Login und keine Server-Komponente. Daten werden im `localStorage` des jeweiligen Browsers gespeichert und bleiben nur auf diesem Gerät bzw. in diesem Browserprofil erhalten.
+Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Login und keine Server-Komponente. Daten werden im `localStorage` des jeweiligen Browsers gespeichert und bleiben nur auf diesem Gerät bzw. in diesem Browserprofil erhalten. Der Link selbst enthält keine Benutzerdaten und transportiert keine Produktions- oder Stammdaten.
 
 > Wichtig: Verwenden Sie keine echten Firmendaten, personenbezogenen Daten oder vertraulichen Produktionsdaten.
 
@@ -53,6 +53,10 @@ Statuslogik Zielerreichung:
 
 ## Stammdatenverwaltung für Projekt, Bauteil und Maschine
 
+Die App startet ohne Beispiel-Stammdaten. Beim ersten Öffnen in einem neuen Browserprofil sind Produktionsdaten, Projektliste, Bauteilliste und Maschinenliste leer. Im Bereich **„Stammdaten verwalten“** erscheinen dann die Hinweise **„Keine Projekte vorhanden“**, **„Keine Bauteile vorhanden“** und **„Keine Maschinen vorhanden“**.
+
+Stammdaten entstehen nur durch echte Nutzereingaben: beim Speichern eines Produktionseintrags, durch manuelles Hinzufügen im Bereich **„Stammdaten verwalten“** oder durch einen CSV-Import. Vorhandene Daten aus `localStorage` werden weiterhin geladen und nicht automatisch gelöscht.
+
 Die Felder **Projekt**, **Bauteil** und **Maschine** sind kombinierte Eingabefelder mit `datalist`-Vorschlägen. Sie können einen vorhandenen Wert auswählen oder frei einen neuen Wert eintippen. Die Felder bleiben Pflichtfelder. Bei fehlenden Angaben meldet die App verständlich:
 
 - **„Bitte ein Projekt eingeben oder auswählen.“**
@@ -60,30 +64,6 @@ Die Felder **Projekt**, **Bauteil** und **Maschine** sind kombinierte Eingabefel
 - **„Bitte eine Maschine eingeben oder auswählen.“**
 
 Beim Speichern eines Produktionseintrags werden Projekt, Bauteil und Maschine bereinigt: Leerzeichen am Anfang und Ende werden entfernt, mehrere Leerzeichen werden zusammengefasst und doppelte Stammdaten werden unabhängig von Groß-/Kleinschreibung vermieden. Neue Werte werden automatisch in die jeweilige Stammdatenliste übernommen und stehen beim nächsten Eintrag wieder als Vorschlag bereit.
-
-Beim ersten Start legt die App diese Beispielwerte lokal an:
-
-**Projekte**
-
-- Projekt A
-- Projekt B
-- Testprojekt
-
-**Bauteile**
-
-- Bauteil A
-- Bauteil B
-- Gehäuse
-- Sleeve
-- Cartridge Holder
-
-**Maschinen**
-
-- Maschine 1
-- Maschine 2
-- M-01
-- OP-711
-- OP-714
 
 Im aufklappbaren Bereich **„Stammdaten verwalten“** werden drei kompakte Karten angezeigt: **Projektliste**, **Bauteilliste** und **Maschinenliste**. Dort können Werte zusätzlich manuell hinzugefügt, umbenannt oder gelöscht werden. Der Button **„Löschen“** ist als kritische Aktion hervorgehoben.
 
@@ -103,7 +83,7 @@ Wenn der Wert noch nicht in Produktionsdaten verwendet wird, wird nur der Stammd
 
 Gelöschte Stammdatenwerte werden separat in `localStorage` gemerkt. Dadurch werden sie beim Laden der App nicht automatisch wieder aus alten Produktionsdaten in die Stammdatenliste übernommen. Neue aktive Verwendungen bleiben möglich: Wenn ein gelöschter Wert später frei eingegeben und gespeichert oder über einen neuen CSV-Import eingebracht wird, wird er wieder bewusst in die jeweilige Stammdatenliste übernommen.
 
-Projektliste, Bauteilliste, Maschinenliste, gelöschte Stammdatenwerte, Änderungsdatum und Produktionsdaten werden in `localStorage` gespeichert. Beim Laden prüft die App vorhandene Produktionsdaten automatisch und übernimmt darin enthaltene Projekt-, Bauteil- und Maschinenwerte in die passenden Stammdatenlisten, sofern sie dort noch nicht vorhanden und nicht zuvor bewusst gelöscht wurden. Alle Daten bleiben lokal im Browserprofil des genutzten Geräts.
+Projektliste, Bauteilliste, Maschinenliste, gelöschte Stammdatenwerte, Änderungsdatum und Produktionsdaten werden in `localStorage` gespeichert. Der Button **„Alle Daten löschen“** entfernt Produktionsdaten, Projekt-, Bauteil- und Maschinen-Stammdaten, gelöschte Stammdatenwerte und setzt die Filterauswahl zurück; danach ist die App wieder komplett leer. Beim Laden prüft die App vorhandene Produktionsdaten automatisch und übernimmt darin enthaltene Projekt-, Bauteil- und Maschinenwerte in die passenden Stammdatenlisten, sofern sie dort noch nicht vorhanden und nicht zuvor bewusst gelöscht wurden. Alle Daten bleiben lokal im Browserprofil des genutzten Geräts.
 
 ## Optionale OEE-Daten
 
@@ -191,16 +171,16 @@ Beispiel mit OEE-Daten:
 
 ```csv
 Datum;Projekt;Bauteil;Maschine;Zielmenge pro Tag;Produzierte Stückzahl;Ausschuss;Geplante Produktionszeit in Minuten;Maschinenstillstand in Minuten;Ideale Taktzeit je Stück in Sekunden;Kommentar
-2026-07-01;Projekt A;Gehäuse;M-01;1000;980;20;480;35;25;Anlaufprobleme am Morgen
-2026-07-02;Projekt A;Gehäuse;M-01;1000;1040;10;480;20;25;Stabiler Lauf
+2026-07-01;Kundenauftrag 2026;Deckel;M-02;1000;980;20;480;35;25;Anlaufprobleme am Morgen
+2026-07-02;Kundenauftrag 2026;Deckel;M-02;1000;1040;10;480;20;25;Stabiler Lauf
 ```
 
 Beispiel ohne OEE-Daten:
 
 ```csv
 Datum;Projekt;Bauteil;Maschine;Zielmenge pro Tag;Produzierte Stückzahl;Ausschuss;Geplante Produktionszeit in Minuten;Maschinenstillstand in Minuten;Ideale Taktzeit je Stück in Sekunden;Kommentar
-2026-07-03;Projekt B;Deckel;M-02;800;760;15;;;;OEE-Daten wurden nicht erfasst
-2026-07-04;Projekt B;Deckel;M-02;800;810;8;;;;Nur Stückzahlen bewertet
+2026-07-03;Serviceauftrag 2026;Dichtung;M-03;800;760;15;;;;OEE-Daten wurden nicht erfasst
+2026-07-04;Serviceauftrag 2026;Dichtung;M-03;800;810;8;;;;Nur Stückzahlen bewertet
 ```
 
 Beim CSV-Export werden immer alle Spalten ausgegeben. Leere optionale OEE-Felder bleiben in der CSV-Datei leer. Für Einträge ohne vollständige OEE-Daten wird OEE in der App als **„n/a“** dargestellt.
