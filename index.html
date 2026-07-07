@@ -103,7 +103,12 @@
 
   <section class="card controls">
     <div class="section-heading"><h2 data-i18n="manageData">Daten verwalten</h2></div>
-    <p id="workflow-hint" class="workflow-hint" data-i18n="workflowHint">Ablauf: Produktionsdaten eintragen → Einträge prüfen → CSV exportieren → CSV-Datei per E-Mail zurücksenden.</p>
+    <ol id="workflow-hint" class="workflow-hint workflow-steps" aria-label="Ablauf Daten verwalten">
+      <li data-step="1" data-i18n="workflowStepEnter">Daten eingeben</li>
+      <li data-step="2" data-i18n="workflowStepCheck">Einträge prüfen</li>
+      <li data-step="3" data-i18n="workflowStepExport">CSV exportieren</li>
+      <li data-step="4" data-i18n="workflowStepSend">CSV per E-Mail zurücksenden</li>
+    </ol>
     <div class="button-row">
       <button id="export-csv" type="button">CSV exportieren</button>
       <button id="export-summary" type="button">Management-TXT exportieren</button>

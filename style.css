@@ -159,15 +159,57 @@ button:hover, .file-button:hover { filter: brightness(.97); }
 .file-button input { display: none; }
 .workflow-hint {
   margin: -4px 0 18px;
-  padding: 10px 12px;
-  border: 1px solid #d7e3f5;
-  border-left: 3px solid var(--primary);
-  border-radius: 12px;
-  background: #f8fbff;
   color: #42526b;
   font-size: .94rem;
-  font-weight: 600;
-  line-height: 1.45;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.workflow-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+  list-style: none;
+  counter-reset: workflow;
+  border: 1px solid #cfe0fb;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f8fbff, #f1f6ff);
+}
+.workflow-steps li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 9px 12px 9px 10px;
+  border: 1px solid #d7e3f5;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .86);
+  color: #243b5a;
+  box-shadow: 0 8px 20px rgba(31, 46, 71, .06);
+}
+.workflow-steps li::before {
+  content: attr(data-step);
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 800;
+}
+.workflow-steps li:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  transform: translate(50%, -50%);
+  z-index: 1;
+  color: var(--primary);
+  font-weight: 800;
 }
 
 .button-row { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -616,4 +658,14 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   .danger-zone { width: min(100% - 20px, 1440px); margin: 28px auto 20px; }
   .reset-dialog-content { padding: 18px; }
   .reset-dialog-actions { flex-direction: column-reverse; }
+}
+
+@media (max-width: 860px) {
+  .workflow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workflow-steps li:nth-child(2)::after { content: none; }
+}
+
+@media (max-width: 560px) {
+  .workflow-steps { grid-template-columns: 1fr; }
+  .workflow-steps li::after { content: none !important; }
 }
