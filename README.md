@@ -4,7 +4,7 @@ Diese Web-App ist eine einfache lokale Test-App zur täglichen Produktionsauswer
 
 Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Login und keine Server-Komponente. Daten werden im `localStorage` des jeweiligen Browsers gespeichert und bleiben nur auf diesem Gerät bzw. in diesem Browserprofil erhalten. Der Link selbst enthält keine Benutzerdaten und transportiert keine Produktions- oder Stammdaten.
 
-> Wichtig: Die App zeigt im oberen Header-Bereich einen dezenten, gut lesbaren Hinweis: **„Offene Test-App – Produktionsdaten nur eingeben, wenn sie für diese Nutzung freigegeben sind. Keine personenbezogenen Daten eintragen.“** Auf Englisch lautet der Hinweis: **“Open test app – only enter production data approved for this use. Do not enter personal data.”** Der Hinweis wechselt mit der Sprachauswahl Deutsch / English.
+> Wichtig: Die App zeigt im oberen Header-Bereich einen dezenten, gut lesbaren Hinweis: **„Offene Test-App – nur freigegebene Produktionsdaten eingeben. Keine personenbezogenen Daten.“** Auf Englisch lautet der Hinweis: **“Open test app – only enter approved production data. No personal data.”** Der Hinweis wechselt mit der Sprachauswahl Deutsch / English.
 
 ## Dateien
 

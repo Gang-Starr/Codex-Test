@@ -32,14 +32,14 @@ body {
 .header-notice {
   display: inline-block;
   margin-top: 14px !important;
-  padding: 10px 14px;
+  padding: 7px 11px;
   border: 1px solid rgba(255, 255, 255, .38);
-  border-radius: 12px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, .12);
   color: #f7fbff !important;
-  font-size: .95rem;
+  font-size: .88rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.25;
   box-shadow: 0 8px 24px rgba(9, 30, 66, .12);
 }
 .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-weight: 700; font-size: .8rem; }
