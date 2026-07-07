@@ -142,6 +142,17 @@ button:hover, .file-button:hover { filter: brightness(.97); }
 .primary-button:hover { background: var(--primary-dark); }
 .danger-button { background: #fde8e7; color: var(--danger); }
 .file-button input { display: none; }
+.workflow-hint {
+  margin: -4px 0 18px;
+  padding: 12px 14px;
+  border: 1px solid #cfe0fb;
+  border-left: 4px solid var(--primary);
+  border-radius: 12px;
+  background: #f4f8ff;
+  color: #243b5a;
+  font-weight: 700;
+}
+
 .button-row { display: flex; flex-wrap: wrap; gap: 12px; }
 
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 20px; }
