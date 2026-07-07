@@ -14,14 +14,17 @@
       <p data-i18n="headerSubtitle">Erfassen, auswerten und exportieren – komplett lokal im Browser ohne Login, Server oder Datenbank.</p>
       <p class="header-notice" data-i18n="headerNotice">Offene Test-App – nur freigegebene Produktionsdaten eingeben. Keine personenbezogenen Daten.</p>
     </div>
-    <div class="header-language" aria-label="Sprachauswahl">
-      <label class="language-switcher" for="language-select">
-        <span data-i18n="languageLabel">Sprache</span>
-        <select id="language-select" aria-label="Sprache auswählen">
-          <option value="de" selected data-i18n="languageGerman">Deutsch</option>
-          <option value="en" data-i18n="languageEnglish">English</option>
-        </select>
-      </label>
+    <div class="header-actions" aria-label="Sprachauswahl und Hilfe">
+      <div class="header-language" aria-label="Sprachauswahl">
+        <label class="language-switcher" for="language-select">
+          <span data-i18n="languageLabel">Sprache</span>
+          <select id="language-select" aria-label="Sprache auswählen">
+            <option value="de" selected data-i18n="languageGerman">Deutsch</option>
+            <option value="en" data-i18n="languageEnglish">English</option>
+          </select>
+        </label>
+      </div>
+      <button id="info-button" type="button" class="info-button" data-i18n="infoButton" aria-haspopup="dialog" aria-controls="info-dialog">ⓘ Info / Anleitung</button>
     </div>
   </header>
 
@@ -187,6 +190,44 @@
     <p data-i18n="dangerZoneHint">Hier können alle lokal gespeicherten App-Daten dieses Browsers gelöscht werden.</p>
     <button id="reset-app" type="button" class="reset-app-button" data-i18n="resetAppButton">App zurücksetzen</button>
   </section>
+
+  <dialog id="info-dialog" class="info-dialog" aria-labelledby="info-dialog-title">
+    <div class="info-dialog-content">
+      <div class="info-dialog-header">
+        <h2 id="info-dialog-title" data-i18n="infoTitle">So funktioniert die App</h2>
+        <button id="info-close-x" type="button" class="info-close-x" data-i18n-aria="infoCloseAria" aria-label="Info-Fenster schließen">×</button>
+      </div>
+      <div class="info-dialog-body">
+        <p class="info-intro" data-i18n="infoIntro">Diese App dient zur einfachen Erfassung täglicher Produktionsdaten. Die Daten werden lokal im Browser gespeichert und nicht automatisch versendet.</p>
+        <section class="info-section">
+          <h3 data-i18n="infoWorkflowTitle">Ablauf</h3>
+          <ol>
+            <li data-i18n="infoWorkflow1">Produktionsdaten eingeben</li>
+            <li data-i18n="infoWorkflow2">Eintrag speichern</li>
+            <li data-i18n="infoWorkflow3">Einträge prüfen</li>
+            <li data-i18n="infoWorkflow4">CSV exportieren</li>
+            <li data-i18n="infoWorkflow5">CSV-Datei per E-Mail zurücksenden</li>
+          </ol>
+        </section>
+        <section class="info-section">
+          <h3 data-i18n="infoNotesTitle">Wichtige Hinweise</h3>
+          <ul>
+            <li data-i18n="infoNote1">Die App ist eine offene Test-App.</li>
+            <li data-i18n="infoNote2">Bitte nur freigegebene Produktionsdaten eingeben.</li>
+            <li data-i18n="infoNote3">Keine personenbezogenen Daten eintragen.</li>
+            <li data-i18n="infoNote4">Die Daten bleiben lokal im Browser dieses Geräts.</li>
+            <li data-i18n="infoNote5">Wenn Sie die App an einem anderen Gerät öffnen, sind die lokal gespeicherten Daten dort nicht automatisch vorhanden.</li>
+          </ul>
+        </section>
+        <section class="info-section"><h3 data-i18n="infoOeeTitle">Optionale OEE-Daten</h3><p data-i18n="infoOeeText">OEE-Daten müssen nur ausgefüllt werden, wenn OEE berechnet werden soll. Wenn keine OEE-Daten eingetragen werden, zeigt die App bei OEE-Kennzahlen n/a an.</p></section>
+        <section class="info-section"><h3 data-i18n="infoCsvTitle">CSV</h3><p data-i18n="infoCsvText">Über CSV exportieren können die erfassten Daten heruntergeladen und anschließend per E-Mail zurückgesendet werden. Über CSV importieren können vorhandene CSV-Daten wieder geladen werden.</p></section>
+        <section class="info-section"><h3 data-i18n="infoResetTitle">App zurücksetzen</h3><p data-i18n="infoResetText">Über App zurücksetzen können alle lokal gespeicherten Daten dieses Browsers gelöscht werden. Dieser Schritt kann nicht rückgängig gemacht werden.</p></section>
+      </div>
+      <div class="info-dialog-actions">
+        <button id="info-close-button" type="button" class="secondary-button" data-i18n="infoCloseButton">Schließen</button>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="reset-dialog" class="reset-dialog" aria-labelledby="reset-dialog-title">
     <form method="dialog" class="reset-dialog-content">

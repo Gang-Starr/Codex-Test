@@ -24,6 +24,22 @@ Es wird keine externe Übersetzungsbibliothek verwendet; die Übersetzungen lieg
 
 Die App funktioniert weiterhin vollständig lokal ohne Server, Login oder Datenbank. Produktionsdaten, Stammdaten und die Sprachwahl bleiben im jeweiligen Browserprofil gespeichert.
 
+## Info-Button in der App
+
+Direkt im Header der App befindet sich unter der Sprachauswahl ein Info-Button. Auf Deutsch lautet er **„ⓘ Info / Anleitung“**, auf Englisch **“ⓘ Info / Guide”**. Er öffnet ein kompaktes Info-Fenster mit den wichtigsten Nutzungshinweisen, damit Nutzer auch dann ohne zusätzliche Dokumente starten können, wenn sie nur den App-Link erhalten haben.
+
+Das Info-Fenster erklärt kurz:
+
+- den Ablauf vom Eingeben der Produktionsdaten über Speichern, Prüfen und CSV-Export bis zur manuellen Rücksendung per E-Mail,
+- wichtige Hinweise zur offenen Test-App, zu freigegebenen Produktionsdaten und zum Verzicht auf personenbezogene Daten,
+- dass die App Daten lokal im Browser dieses Geräts speichert,
+- dass die App keine Daten automatisch versendet,
+- dass OEE-Daten optional sind und fehlende OEE-Kennzahlen als `n/a` erscheinen,
+- wie CSV-Export und CSV-Import verwendet werden,
+- dass **„App zurücksetzen“** alle lokal gespeicherten Daten dieses Browsers löscht und nicht rückgängig gemacht werden kann.
+
+CSV-Dateien müssen weiterhin manuell über **„CSV exportieren“** heruntergeladen und anschließend per E-Mail zurückgesendet werden. Über **„CSV importieren“** können vorhandene CSV-Daten wieder geladen werden. Der Info-Button und der gesamte Info-Text wechseln mit der bestehenden Sprachauswahl Deutsch / English.
+
 ## Pflichtfelder für die normale Stückzahlauswertung
 
 Diese Felder werden für jeden Eintrag benötigt. Die normale Stückzahlauswertung funktioniert immer, auch wenn keine OEE-Daten erfasst werden:

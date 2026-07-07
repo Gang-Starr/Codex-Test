@@ -26,6 +26,14 @@ Object.assign(translations.en, {
   validateData: 'Check data', dataValidationOk: 'No anomalies found.', dataValidationIssues: 'Anomalies found:', entry: 'Entry', validationProjectMissingShort: 'Check that a project is present.', validationPartMissingShort: 'Check that a part is present.', validationMachineMissingShort: 'Check that a machine is present.', validationScrapNonNegative: 'Scrap must be 0 or higher.', validationOeePartial: 'OEE data is partially filled in. For an OEE calculation, please complete planned time, downtime and cycle time.',
   periodFilter: 'Period', allData: 'All data', last7Days: 'Last 7 days', last14Days: 'Last 14 days', last30Days: 'Last 30 days', currentCalendarWeek: 'Current calendar week', lastCalendarWeek: 'Last calendar week', customPeriod: 'Custom date range', displayMode: 'Display', dailyValues: 'Daily values', weeklyValues: 'Weekly values', monthlyValues: 'Monthly values', periodFrom: 'From', periodTo: 'To', chartRecommendation: 'For many days, weekly or monthly values are recommended for better readability.', calendarWeekShort: 'CW'
 });
+
+Object.assign(translations.de, {
+  infoButton: 'ⓘ Info / Anleitung', infoCloseAria: 'Info-Fenster schließen', infoTitle: 'So funktioniert die App', infoIntro: 'Diese App dient zur einfachen Erfassung täglicher Produktionsdaten. Die Daten werden lokal im Browser gespeichert und nicht automatisch versendet.', infoWorkflowTitle: 'Ablauf', infoWorkflow1: 'Produktionsdaten eingeben', infoWorkflow2: 'Eintrag speichern', infoWorkflow3: 'Einträge prüfen', infoWorkflow4: 'CSV exportieren', infoWorkflow5: 'CSV-Datei per E-Mail zurücksenden', infoNotesTitle: 'Wichtige Hinweise', infoNote1: 'Die App ist eine offene Test-App.', infoNote2: 'Bitte nur freigegebene Produktionsdaten eingeben.', infoNote3: 'Keine personenbezogenen Daten eintragen.', infoNote4: 'Die Daten bleiben lokal im Browser dieses Geräts.', infoNote5: 'Wenn Sie die App an einem anderen Gerät öffnen, sind die lokal gespeicherten Daten dort nicht automatisch vorhanden.', infoOeeTitle: 'Optionale OEE-Daten', infoOeeText: 'OEE-Daten müssen nur ausgefüllt werden, wenn OEE berechnet werden soll. Wenn keine OEE-Daten eingetragen werden, zeigt die App bei OEE-Kennzahlen n/a an.', infoCsvTitle: 'CSV', infoCsvText: 'Über CSV exportieren können die erfassten Daten heruntergeladen und anschließend per E-Mail zurückgesendet werden. Über CSV importieren können vorhandene CSV-Daten wieder geladen werden.', infoResetTitle: 'App zurücksetzen', infoResetText: 'Über App zurücksetzen können alle lokal gespeicherten Daten dieses Browsers gelöscht werden. Dieser Schritt kann nicht rückgängig gemacht werden.', infoCloseButton: 'Schließen'
+});
+Object.assign(translations.en, {
+  infoButton: 'ⓘ Info / Guide', infoCloseAria: 'Close info window', infoTitle: 'How to use this app', infoIntro: 'This app is used to enter daily production data. The data is stored locally in the browser and is not sent automatically.', infoWorkflowTitle: 'Workflow', infoWorkflow1: 'Enter production data', infoWorkflow2: 'Save entry', infoWorkflow3: 'Check entries', infoWorkflow4: 'Export CSV', infoWorkflow5: 'Send the CSV file back by email', infoNotesTitle: 'Important notes', infoNote1: 'This is an open test app.', infoNote2: 'Only enter production data approved for this use.', infoNote3: 'Do not enter personal data.', infoNote4: 'The data stays locally in the browser on this device.', infoNote5: 'If you open the app on another device, the locally saved data is not available there automatically.', infoOeeTitle: 'Optional OEE data', infoOeeText: 'OEE data only needs to be filled in if OEE should be calculated. If no OEE data is entered, the app shows n/a for OEE indicators.', infoCsvTitle: 'CSV', infoCsvText: 'Use Export CSV to download the entered data and send it back by email. Use Import CSV to load existing CSV data again.', infoResetTitle: 'Reset app', infoResetText: 'Use Reset app to delete all locally stored data from this browser. This step cannot be undone.', infoCloseButton: 'Close'
+});
+
 let currentLanguage = loadLanguage();
 let showTableOeeColumns = loadTableOeeColumnsPreference();
 let showOeeCharts = loadOeeChartsPreference();
@@ -41,6 +49,7 @@ function applyTranslations() {
   document.querySelector('.header-language')?.setAttribute('aria-label', t('languageAria'));
   document.title = t('documentTitle');
   document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-aria]').forEach((element) => { element.setAttribute('aria-label', t(element.dataset.i18nAria)); });
   updateWorkflowHint();
   normalizeHeaderTitleText();
   updateHeaderTitleAttributes();
@@ -114,16 +123,19 @@ function ensureLanguageSwitcher() {
   if (!header) return null;
 
   const wrapper = document.createElement('div');
-  wrapper.className = 'header-language';
-  wrapper.setAttribute('aria-label', 'Sprachauswahl');
+  wrapper.className = 'header-actions';
+  wrapper.setAttribute('aria-label', 'Sprachauswahl und Hilfe');
   wrapper.innerHTML = `
+    <div class="header-language" aria-label="Sprachauswahl">
     <label class="language-switcher" for="language-select">
       <span data-i18n="languageLabel">Sprache</span>
       <select id="language-select" aria-label="Sprache auswählen">
         <option value="de" selected>Deutsch</option>
         <option value="en">English</option>
       </select>
-    </label>`;
+    </label>
+    </div>
+    <button id="info-button" type="button" class="info-button" data-i18n="infoButton" aria-haspopup="dialog" aria-controls="info-dialog">ⓘ Info / Anleitung</button>`;
   header.append(wrapper);
   select = wrapper.querySelector('#language-select');
   return select;
@@ -165,6 +177,10 @@ const oeeChartsContent = document.querySelector('#oee-charts-content');
 const languageSelect = ensureLanguageSwitcher();
 const oeeDetails = document.querySelector('#oee-details');
 const oeeInputs = oeeNumberFields.map((field) => document.querySelector(`#${field}`)).filter(Boolean);
+const infoDialog = document.querySelector('#info-dialog');
+const infoButton = document.querySelector('#info-button');
+const infoCloseButton = document.querySelector('#info-close-button');
+const infoCloseX = document.querySelector('#info-close-x');
 const resetDialog = document.querySelector('#reset-dialog');
 const resetAppButton = document.querySelector('#reset-app');
 const resetConfirmInput = document.querySelector('#reset-confirm-input');
@@ -187,10 +203,14 @@ document.querySelector('#date').valueAsDate = new Date();
 form.addEventListener('submit', saveEntry);
 if (oeeDetails) oeeDetails.addEventListener('toggle', updateOeeSummaryLabel);
 oeeInputs.forEach((input) => input.addEventListener('input', keepOeeOpenWhenFilled));
+if (infoButton) infoButton.addEventListener('click', openInfoDialog);
+if (infoCloseButton) infoCloseButton.addEventListener('click', closeInfoDialog);
+if (infoCloseX) infoCloseX.addEventListener('click', closeInfoDialog);
 if (resetAppButton) resetAppButton.addEventListener('click', openResetDialog);
 if (resetConfirmInput) resetConfirmInput.addEventListener('input', updateResetDialogState);
 if (confirmResetButton) confirmResetButton.addEventListener('click', resetAppData);
 if (cancelResetButton) cancelResetButton.addEventListener('click', closeResetDialog);
+if (infoDialog) infoDialog.addEventListener('cancel', closeInfoDialog);
 if (resetDialog) resetDialog.addEventListener('cancel', closeResetDialog);
 if (validateDataButton) validateDataButton.addEventListener('click', validateStoredData);
 if (downloadCsvTemplateButton) downloadCsvTemplateButton.addEventListener('click', downloadCsvTemplate);
@@ -223,6 +243,19 @@ applyTranslations();
 renderMasterData();
 render();
 
+
+
+function openInfoDialog() {
+  if (!infoDialog) return;
+  if (typeof infoDialog.showModal === 'function') infoDialog.showModal();
+  else infoDialog.setAttribute('open', '');
+}
+
+function closeInfoDialog() {
+  if (!infoDialog) return;
+  if (typeof infoDialog.close === 'function') infoDialog.close();
+  else infoDialog.removeAttribute('open');
+}
 
 function loadOeeChartsPreference() {
   return localStorage.getItem(OEE_CHARTS_STORAGE_KEY) === 'expanded';
