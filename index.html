@@ -155,13 +155,23 @@
       <p id="chart-recommendation" class="chart-recommendation"></p>
     </div>
     <div class="grid-two dashboard-grid">
-      <section class="card chart-card"><h3>Gutmenge pro Tag</h3><canvas id="good-chart" width="640" height="300"></canvas></section>
-      <section class="card chart-card"><h3>Zielmenge vs. Gutmenge pro Tag</h3><canvas id="target-chart" width="640" height="300"></canvas></section>
-      <section class="card chart-card"><h3>Ausschuss pro Tag</h3><canvas id="scrap-chart" width="640" height="300"></canvas></section>
-      <section class="card chart-card"><h3>OEE pro Tag</h3><canvas id="oee-chart" width="640" height="300"></canvas></section>
-      <section class="card chart-card"><h3>OEE-Bestandteile pro Tag</h3><canvas id="oee-parts-chart" width="640" height="300"></canvas></section>
-      <section class="card chart-card"><h3>Kumulierte Abweichung</h3><canvas id="cumulative-deviation-chart" width="640" height="300"></canvas></section>
+      <section class="card chart-card"><h3 data-i18n="goodPerDay">Gutmenge pro Tag</h3><canvas id="good-chart" width="640" height="300"></canvas></section>
+      <section class="card chart-card"><h3 data-i18n="targetVsGood">Zielmenge vs. Gutmenge pro Tag</h3><canvas id="target-chart" width="640" height="300"></canvas></section>
+      <section class="card chart-card"><h3 data-i18n="scrapPerDay">Ausschuss pro Tag</h3><canvas id="scrap-chart" width="640" height="300"></canvas></section>
+      <section class="card chart-card"><h3 data-i18n="cumulativeDeviation">Kumulierte Abweichung</h3><canvas id="cumulative-deviation-chart" width="640" height="300"></canvas></section>
     </div>
+    <section id="oee-charts-section" class="card oee-charts-section" aria-labelledby="oee-charts-title">
+      <button id="oee-charts-toggle" class="oee-charts-toggle" type="button" aria-expanded="false" aria-controls="oee-charts-content">
+        <span class="oee-charts-icon" aria-hidden="true">▸</span>
+        <span id="oee-charts-title" data-i18n="showOeeCharts">OEE-Diagramme anzeigen</span>
+      </button>
+      <div id="oee-charts-content" class="oee-charts-content" hidden>
+        <div class="grid-two dashboard-grid oee-charts-grid">
+          <section class="card chart-card"><h3 data-i18n="oeePerDay">OEE pro Tag</h3><canvas id="oee-chart" width="640" height="300"></canvas></section>
+          <section class="card chart-card"><h3 data-i18n="oeePartsPerDay">OEE-Bestandteile pro Tag</h3><canvas id="oee-parts-chart" width="640" height="300"></canvas></section>
+        </div>
+      </div>
+    </section>
   </section>
 
   <section class="card table-card" aria-labelledby="table-title">

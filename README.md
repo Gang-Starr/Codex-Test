@@ -143,16 +143,21 @@ Die App zeigt und aktualisiert passend zu den gewählten Projekt-, Bauteil- und 
 - Management-Zusammenfassung als Kurztext und TXT-Export
 - Ampelstatus je Zeile für Zielerreichung und OEE
 
-Das Dashboard enthält responsive Canvas-Diagramme ohne externe Bibliothek:
+Das Dashboard enthält responsive Canvas-Diagramme ohne externe Bibliothek. Direkt sichtbar bleiben die Standarddiagramme:
 
 1. Gutmenge pro Tag
 2. Zielmenge vs. Gutmenge pro Tag
 3. Ausschuss pro Tag
 4. Kumulierte Abweichung
-5. OEE pro Tag (nur Einträge mit gültiger OEE-Berechnung)
-6. OEE-Bestandteile Verfügbarkeit, Leistung und Qualität pro Tag (nur Einträge mit gültiger OEE-Berechnung)
 
-Wenn keine OEE-Daten vorhanden sind, zeigen die OEE-Diagramme **„Keine OEE-Daten vorhanden“**.
+Die OEE-Diagramme sind optional sichtbar und liegen in einem eigenen einklappbaren Bereich im Dashboard:
+
+- OEE pro Tag (nur Einträge mit gültiger OEE-Berechnung)
+- OEE-Bestandteile Verfügbarkeit, Leistung und Qualität pro Tag (nur Einträge mit gültiger OEE-Berechnung)
+
+Der Bereich ist beim ersten Öffnen standardmäßig eingeklappt. Über **„OEE-Diagramme anzeigen“** / **„Show OEE charts“** wird er geöffnet, über **„OEE-Diagramme ausblenden“** / **„Hide OEE charts“** wieder geschlossen. Der letzte Zustand wird lokal im `localStorage` des Browsers gespeichert und nach dem Neuladen wiederhergestellt.
+
+Wenn keine OEE-Daten vorhanden sind und der Bereich geöffnet wird, zeigen die OEE-Diagramme **„Keine OEE-Daten vorhanden“** bzw. **“No OEE data available”**.
 
 
 ### Dashboard-Filter
