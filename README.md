@@ -157,7 +157,11 @@ Wenn keine OEE-Daten vorhanden sind, zeigen die OEE-Diagramme **„Keine OEE-Dat
 
 ### Dashboard-Filter
 
-Im Dashboard gibt es Filter für **Projekt**, **Bauteil** und **Maschine**. Der Nutzer kann jeweils **„Alle Projekte“**, **„Alle Bauteile“** bzw. **„Alle Maschinen“** oder einen einzelnen Wert auswählen. Sobald ein Filter geändert wird, aktualisieren sich Management-Zusammenfassung, KPI-Karten, Tagesübersicht, Summen nach Kategorien, Tabelle, Diagramme sowie CSV-/TXT-Export auf die gefilterten Daten. Die Filter enthalten auch Werte aus alten Produktionsdaten, damit historische Einträge weiterhin auswertbar bleiben.
+Im Dashboard gibt es Filter für **Projekt**, **Bauteil** und **Maschine**. Der Nutzer kann jeweils **„Alle Projekte“**, **„Alle Bauteile“** bzw. **„Alle Maschinen“** oder einen einzelnen Wert auswählen. Zusätzlich gibt es einen Diagrammfilter **„Zeitraum“** mit **„Alle Daten“**, **„Letzte 7 Tage“**, **„Letzte 14 Tage“**, **„Letzte 30 Tage“**, **„Aktuelle Kalenderwoche“**, **„Letzte Kalenderwoche“** und **„Benutzerdefinierter Zeitraum von/bis“**.
+
+Für die Diagramme kann außerdem die **Darstellung** zwischen **Tageswerten**, **Wochenwerten** und **Monatswerten** gewechselt werden. Tageswerte bleiben für kurze Zeiträume gut lesbar; bei vielen Tagen zeigt die App eine Empfehlung, Wochen- oder Monatswerte zu verwenden. Wochenwerte fassen je Kalenderwoche Gutmenge, Zielmenge, Ausschuss und Abweichung als Summe zusammen. OEE, Verfügbarkeit, Leistung und Qualität werden dabei als Durchschnitt nur aus gültigen OEE-Einträgen berechnet. Monatswerte fassen die Werte entsprechend je Monat zusammen.
+
+Zeitraum, benutzerdefinierte Von-/Bis-Daten und Darstellungsmodus werden lokal im `localStorage` gespeichert und nach einem Neuladen wiederhergestellt. Sobald ein Filter geändert wird, aktualisieren sich Management-Zusammenfassung, KPI-Karten, Tagesübersicht, Summen nach Kategorien, Tabelle, Diagramme sowie CSV-/TXT-Export auf die gefilterten Daten. Die Filter enthalten auch Werte aus alten Produktionsdaten, damit historische Einträge weiterhin auswertbar bleiben.
 
 ## CSV-Import und CSV-Export
 

@@ -5,6 +5,7 @@ const PART_STORAGE_KEY = 'productionParts.v1';
 const MACHINE_STORAGE_KEY = 'productionMachines.v1';
 const DELETED_MASTER_STORAGE_KEY = 'productionDeletedMasterValues.v1';
 const LANGUAGE_STORAGE_KEY = 'productionLanguage.v1';
+const CHART_SETTINGS_STORAGE_KEY = 'productionChartSettings.v1';
 
 const translations = {
   de: {
@@ -14,6 +15,13 @@ const translations = {
     documentTitle: 'Production quantities & OEE local analysis', languageAria: 'Select language', headerEyebrow: 'Local production analysis', headerTitle: 'Daily production quantities & OEE', headerSubtitle: 'Enter, analyze and export data – completely local in the browser without login, server or database.', headerNotice: 'Open test app – only enter production data approved for this use. Do not enter personal data.', workflowHint: 'Workflow: Enter production data → check entries → export CSV → send the CSV file back by email.', languageLabel: 'Language', languageGerman: 'German', languageEnglish: 'English', formTitle: 'Enter production data', storageNote: 'Storage: localStorage', date: 'Date', project: 'Project', part: 'Part', machine: 'Machine', targetPerDay: 'Daily target quantity', producedQty: 'Produced quantity', scrap: 'Scrap', optionalOee: 'Optional OEE data', oeeHelp: 'Only fill in if OEE should be calculated.', optional: '(optional)', plannedTime: 'Planned production time in minutes', downtime: 'Machine downtime in minutes', cycleTime: 'Ideal cycle time per part in seconds', comment: 'Comment', saveEntry: 'Save entry', manageMasterData: 'Manage master data', masterNote: 'The app starts without sample master data. New projects, parts and machines are created by saving, manual addition or CSV import.', newProject: 'New project', newPart: 'New part', newMachine: 'New machine', addProject: 'Add project', addPart: 'Add part', addMachine: 'Add machine', projectList: 'Project list', partList: 'Part list', machineList: 'Machine list', managementSummary: 'Management summary', totalGood: 'Total good parts', totalScrap: 'Total scrap', totalDeviation: 'Total deviation', avgAchievement: 'Avg. target achievement', avgAvailability: 'Avg. availability', avgPerformance: 'Avg. performance', avgQuality: 'Avg. quality', avgOee: 'Avg. OEE from valid OEE entries', oeeCount: 'Entries with OEE calculation', noOeeCount: 'Entries without OEE calculation', manageData: 'Manage data', exportCsv: 'Export CSV', exportSummary: 'Export management TXT', importCsv: 'Import CSV', clearAll: 'Delete all data', dailyOverview: 'Daily overview', categorySums: 'Totals by category', dashboard: 'Dashboard', autoCharts: 'Automatically updated bar charts', projectFilter: 'Project filter', partFilter: 'Part filter', machineFilter: 'Machine filter', goodPerDay: 'Good parts per day', targetVsGood: 'Target quantity vs. good parts per day', scrapPerDay: 'Scrap per day', oeePerDay: 'OEE per day', oeePartsPerDay: 'OEE components per day', cumulativeDeviation: 'Cumulative deviation', allEntries: 'All entries', entries: 'entries', noData: 'No data available yet.', noDataSummary: 'No data available yet. Enter or import production data to get a summary.', allProjects: 'All projects', allParts: 'All parts', allMachines: 'All machines', target: 'Target', targetQty: 'Target quantity', produced: 'Produced', good: 'Good parts', deviation: 'Deviation', targetPct: 'Target achievement', targetAchievement: 'Target achievement', availability: 'Availability', performance: 'Performance', quality: 'Quality', planTime: 'Plan time', downtimeShort: 'Downtime', cycleTimeShort: 'Cycle time', availabilityShort: 'Avail.', action: 'Action', delete: 'Delete', rename: 'Rename', active: 'Active', archived: 'Archived', changedOn: 'changed on', goodShort: 'Good', deviationShort: 'Dev.', noOeeData: 'No OEE data available', invalidInput: 'Invalid input.', noValue: 'No value', confirmDeleteEntry: 'Really delete this entry?', confirmClearAll: 'Really delete all data?', importSuccess: 'CSV imported successfully.', validationDate: 'Please enter a date.', validationProject: 'Please enter or select a project.', validationPart: 'Please enter or select a part.', validationMachine: 'Please enter or select a machine.', validationComment: 'Please add a comment for the entry.', validationRequiredNumbers: 'Please enter valid numbers for target quantity, produced quantity and scrap.', validationNegative: 'Negative values are not allowed. Please correct the input.', validationTargetPositive: 'The target quantity per day must be greater than 0.', validationProducedPositive: 'The produced quantity must be 0 or higher.', validationScrapTooHigh: 'Scrap must not be greater than produced quantity.', validationPlannedPositive: 'For OEE calculation, planned production time must be greater than 0 minutes.', validationDowntimePositive: 'For OEE calculation, machine downtime must be 0 or higher.', validationCyclePositive: 'For OEE calculation, ideal cycle time must be greater than 0 seconds.', validationDowntimeTooHigh: 'Machine downtime must not be greater than planned production time.', placeholderProject: 'Enter or select project', placeholderPart: 'Enter or select part', placeholderMachine: 'Enter or select machine', placeholderPlanned: 'Optional: enter minutes', placeholderDowntime: 'Optional: enter minutes', placeholderCycle: 'Optional: enter seconds', placeholderComment: 'Required: short note about the production day', placeholderNewProject: 'Enter project name', placeholderNewPart: 'Enter part name', placeholderNewMachine: 'Enter machine name', noProjects: 'No projects available', noParts: 'No parts available', noMachines: 'No machines available', dangerZoneTitle: 'Danger zone', dangerZoneHint: 'Here you can delete all locally stored app data from this browser.', resetAppButton: 'Reset app', resetConfirmMessage: 'Do you really want to delete all locally stored app data? This action cannot be undone.', resetConfirmInstruction: 'Please type RESET to confirm deletion.', resetCancelButton: 'Cancel', resetDeleteButton: 'Delete permanently'
   }
 };
+
+Object.assign(translations.de, {
+  periodFilter: 'Zeitraum', allData: 'Alle Daten', last7Days: 'Letzte 7 Tage', last14Days: 'Letzte 14 Tage', last30Days: 'Letzte 30 Tage', currentCalendarWeek: 'Aktuelle Kalenderwoche', lastCalendarWeek: 'Letzte Kalenderwoche', customPeriod: 'Benutzerdefinierter Zeitraum', displayMode: 'Darstellung', dailyValues: 'Tageswerte', weeklyValues: 'Wochenwerte', monthlyValues: 'Monatswerte', periodFrom: 'Von', periodTo: 'Bis', chartRecommendation: 'Bei vielen Tagen empfehlen wir Wochen- oder Monatswerte für bessere Lesbarkeit.', calendarWeekShort: 'KW'
+});
+Object.assign(translations.en, {
+  periodFilter: 'Period', allData: 'All data', last7Days: 'Last 7 days', last14Days: 'Last 14 days', last30Days: 'Last 30 days', currentCalendarWeek: 'Current calendar week', lastCalendarWeek: 'Last calendar week', customPeriod: 'Custom date range', displayMode: 'Display', dailyValues: 'Daily values', weeklyValues: 'Weekly values', monthlyValues: 'Monthly values', periodFrom: 'From', periodTo: 'To', chartRecommendation: 'For many days, weekly or monthly values are recommended for better readability.', calendarWeekShort: 'CW'
+});
 let currentLanguage = loadLanguage();
 function t(key) { return translations[currentLanguage]?.[key] || translations.de[key] || key; }
 
@@ -51,6 +59,11 @@ function applyTranslations() {
   document.querySelector('.dashboard-filter-card label:nth-child(1)').append(projectFilter);
   document.querySelector('.dashboard-filter-card label:nth-child(2)').append(partFilter);
   document.querySelector('.dashboard-filter-card label:nth-child(3)').append(machineFilter);
+  setText('.dashboard-filter-card label:nth-child(4) span', 'periodFilter');
+  setText('.dashboard-filter-card label:nth-child(5) span', 'displayMode');
+  setText('.dashboard-filter-card label:nth-child(6) span', 'periodFrom');
+  setText('.dashboard-filter-card label:nth-child(7) span', 'periodTo');
+  updateChartControlLabels();
   ['goodPerDay','targetVsGood','scrapPerDay','oeePerDay','oeePartsPerDay','cumulativeDeviation'].forEach((key, index) => setText(`.chart-card:nth-child(${index + 1}) h3`, key));
   document.querySelectorAll('.kpi span').forEach((element, index) => { const keys = ['totalGood','totalScrap','totalDeviation','avgAchievement','avgAvailability','avgPerformance','avgQuality','avgOee','oeeCount','noOeeCount']; element.textContent = t(keys[index]); });
   const headers = ['target','OEE','date','project','part','machine','targetQty','produced','scrap','good','deviation','targetAchievement','planTime','downtimeShort','cycleTimeShort','availability','performance','quality','OEE','comment','action'];
@@ -128,6 +141,11 @@ const machineOptions = document.querySelector('#machine-options');
 const projectFilter = document.querySelector('#project-filter');
 const partFilter = document.querySelector('#part-filter');
 const machineFilter = document.querySelector('#machine-filter');
+const periodFilter = document.querySelector('#period-filter');
+const displayModeSelect = document.querySelector('#display-mode');
+const periodFromInput = document.querySelector('#period-from');
+const periodToInput = document.querySelector('#period-to');
+const chartRecommendation = document.querySelector('#chart-recommendation');
 const languageSelect = ensureLanguageSwitcher();
 const resetDialog = document.querySelector('#reset-dialog');
 const resetAppButton = document.querySelector('#reset-app');
@@ -142,6 +160,7 @@ let machines = loadMasterValues('machine', MACHINE_STORAGE_KEY);
 let selectedProjectFilter = 'ALL';
 let selectedPartFilter = 'ALL';
 let selectedMachineFilter = 'ALL';
+let chartSettings = loadChartSettings();
 let activeGroup = 'project';
 syncMasterDataFromEntries();
 if (languageSelect) languageSelect.value = currentLanguage;
@@ -161,6 +180,10 @@ if (languageSelect) languageSelect.addEventListener('change', () => { currentLan
 projectFilter.addEventListener('change', () => { selectedProjectFilter = projectFilter.value; render(); });
 partFilter.addEventListener('change', () => { selectedPartFilter = partFilter.value; render(); });
 machineFilter.addEventListener('change', () => { selectedMachineFilter = machineFilter.value; render(); });
+periodFilter.addEventListener('change', () => { chartSettings.period = periodFilter.value; persistChartSettings(); render(); });
+displayModeSelect.addEventListener('change', () => { chartSettings.display = displayModeSelect.value; persistChartSettings(); render(); });
+periodFromInput.addEventListener('change', () => { chartSettings.from = periodFromInput.value; persistChartSettings(); render(); });
+periodToInput.addEventListener('change', () => { chartSettings.to = periodToInput.value; persistChartSettings(); render(); });
 document.querySelector('#add-project').addEventListener('click', addProjectFromInput);
 document.querySelector('#add-part').addEventListener('click', () => addMasterValueFromInput('part'));
 document.querySelector('#add-machine').addEventListener('click', () => addMasterValueFromInput('machine'));
@@ -245,8 +268,10 @@ function normalizeEntry(entry) {
 
 function render() {
   renderMasterOptions();
+  renderChartControls();
   const rows = filteredRows();
-  renderTable(rows); renderTotals(rows); renderDailyOverview(rows); renderGroupSummary(rows); renderManagementSummary(rows); renderCharts(rows);
+  const chartFilteredRows = rows.filter((row) => isWithinSelectedPeriod(row.date));
+  renderTable(rows); renderTotals(rows); renderDailyOverview(rows); renderGroupSummary(rows); renderManagementSummary(rows); renderCharts(chartFilteredRows);
   document.querySelector('#entry-count').textContent = `${rows.length} ${t('entries')}`;
 }
 function enrichedRows() { return entries.map(enrich).sort((a, b) => a.date.localeCompare(b.date)); }
@@ -302,14 +327,15 @@ function buildManagementSummary(rows) {
 }
 
 function renderCharts(rows) {
-  const days = dailyRows(rows), labels = days.map((d) => formatDate(d.date));
-  const oeeDays = dailyRows(rows.filter((r) => r.hasValidOeeData)), oeeLabels = oeeDays.map((d) => formatDate(d.date));
-  drawBarChart(charts.good, labels, [{ label: t('good'), values: days.map((d) => d.good), color: '#1f6feb' }]);
-  drawBarChart(charts.target, labels, [{ label: t('targetQty'), values: days.map((d) => d.target), color: '#7a869a' }, { label: t('good'), values: days.map((d) => d.good), color: '#1f9d55' }]);
-  drawBarChart(charts.scrap, labels, [{ label: t('scrap'), values: days.map((d) => d.scrap), color: '#d93025' }]);
-  drawBarChart(charts.oee, oeeLabels, [{ label: 'OEE %', values: oeeDays.map((d) => d.oee ?? 0), color: '#6f42c1' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
-  drawBarChart(charts.oeeParts, oeeLabels, [{ label: t('availability'), values: oeeDays.map((d) => d.availability ?? 0), color: '#1f6feb' }, { label: t('performance'), values: oeeDays.map((d) => d.performance ?? 0), color: '#f2b705' }, { label: t('quality'), values: oeeDays.map((d) => d.quality ?? 0), color: '#1f9d55' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
-  let cumulative = 0; drawBarChart(charts.cumulative, labels, [{ label: t('cumulativeDeviation'), values: days.map((d) => { cumulative += d.deviation; return cumulative; }), color: '#0f766e' }], { allowNegative: true });
+  const buckets = chartRows(rows), labels = buckets.map((d) => d.label);
+  const oeeBuckets = buckets.filter((d) => d.hasValidOeeData);
+  const oeeLabels = oeeBuckets.map((d) => d.label);
+  drawBarChart(charts.good, labels, [{ label: t('good'), values: buckets.map((d) => d.good), color: '#1f6feb' }]);
+  drawBarChart(charts.target, labels, [{ label: t('targetQty'), values: buckets.map((d) => d.target), color: '#7a869a' }, { label: t('good'), values: buckets.map((d) => d.good), color: '#1f9d55' }]);
+  drawBarChart(charts.scrap, labels, [{ label: t('scrap'), values: buckets.map((d) => d.scrap), color: '#d93025' }]);
+  drawBarChart(charts.oee, oeeLabels, [{ label: 'OEE %', values: oeeBuckets.map((d) => d.oee ?? 0), color: '#6f42c1' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
+  drawBarChart(charts.oeeParts, oeeLabels, [{ label: t('availability'), values: oeeBuckets.map((d) => d.availability ?? 0), color: '#1f6feb' }, { label: t('performance'), values: oeeBuckets.map((d) => d.performance ?? 0), color: '#f2b705' }, { label: t('quality'), values: oeeBuckets.map((d) => d.quality ?? 0), color: '#1f9d55' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
+  let cumulative = 0; drawBarChart(charts.cumulative, labels, [{ label: t('cumulativeDeviation'), values: buckets.map((d) => { cumulative += d.deviation; return cumulative; }), color: '#0f766e' }], { allowNegative: true });
 }
 
 function drawBarChart(canvas, labels, series, options = {}) {
@@ -321,11 +347,29 @@ function drawBarChart(canvas, labels, series, options = {}) {
   ctx.strokeStyle = '#dce3ed'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, p.t + h); ctx.lineTo(p.l + w, p.t + h); ctx.stroke();
   for (let i = 0; i <= 4; i++) { const y = p.t + (h / 4) * i; const val = max - (span / 4) * i; ctx.fillStyle = '#68768a'; ctx.font = '11px Arial'; ctx.fillText(options.percent ? `${val.toFixed(0)}%` : Math.round(val), 8, y + 4); ctx.strokeStyle = '#eef2f7'; ctx.beginPath(); ctx.moveTo(p.l, y); ctx.lineTo(p.l + w, y); ctx.stroke(); }
   const groupW = w / labels.length, barW = Math.max(6, Math.min(34, (groupW - 12) / series.length));
-  labels.forEach((label, i) => { series.forEach((s, si) => { const value = Number(s.values[i]) || 0; const barH = Math.abs(value / span) * h; const x = p.l + i * groupW + (groupW - barW * series.length) / 2 + si * barW; const y = value >= 0 ? zeroY - barH : zeroY; ctx.fillStyle = s.color; ctx.fillRect(x, y, barW - 2, Math.max(1, barH)); }); ctx.save(); ctx.translate(p.l + i * groupW + groupW / 2, canvas.height - 17); ctx.rotate(-0.45); ctx.fillStyle = '#68768a'; ctx.font = '11px Arial'; ctx.fillText(label, -26, 0); ctx.restore(); });
+  const labelStep = Math.max(1, Math.ceil(labels.length / Math.max(4, Math.floor(w / 72))));
+  labels.forEach((label, i) => { series.forEach((s, si) => { const value = Number(s.values[i]) || 0; const barH = Math.abs(value / span) * h; const x = p.l + i * groupW + (groupW - barW * series.length) / 2 + si * barW; const y = value >= 0 ? zeroY - barH : zeroY; ctx.fillStyle = s.color; ctx.fillRect(x, y, Math.max(2, barW - 2), Math.max(1, barH)); }); if (i % labelStep === 0 || labels.length <= 10 || i === labels.length - 1) { ctx.save(); ctx.translate(p.l + i * groupW + groupW / 2, canvas.height - 17); ctx.rotate(labels.length > 6 ? -0.45 : 0); ctx.fillStyle = '#68768a'; ctx.font = '11px Arial'; ctx.fillText(label, labels.length > 6 ? -26 : -18, 0); ctx.restore(); } });
   series.forEach((s, i) => { ctx.fillStyle = s.color; ctx.fillRect(p.l + i * 145, 16, 13, 13); ctx.fillStyle = '#1d2733'; ctx.font = '12px Arial'; ctx.fillText(s.label, p.l + 18 + i * 145, 27); });
 }
 
-function dailyRows(rows) { return Object.entries(groupBy(rows, 'date')).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) => ({ date, ...aggregate(items), count: items.length })); }
+function dailyRows(rows) { return Object.entries(groupBy(rows, 'date')).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) => ({ date, label: formatDate(date), ...aggregate(items), count: items.length, hasValidOeeData: items.some((r) => r.hasValidOeeData) })); }
+function chartRows(rows) {
+  if (chartSettings.display === 'week') return aggregateByPeriod(rows, weekBucket);
+  if (chartSettings.display === 'month') return aggregateByPeriod(rows, monthBucket);
+  return dailyRows(rows);
+}
+function aggregateByPeriod(rows, bucketFn) {
+  const grouped = rows.reduce((groups, row) => { const bucket = bucketFn(row.date); (groups[bucket.key] ||= { bucket, rows: [] }).rows.push(row); return groups; }, {});
+  return Object.values(grouped).sort((a, b) => a.bucket.key.localeCompare(b.bucket.key)).map(({ bucket, rows }) => ({ date: bucket.key, label: bucket.label, ...aggregate(rows), count: rows.length, hasValidOeeData: rows.some((r) => r.hasValidOeeData) }));
+}
+function weekBucket(date) { const d = parseLocalDate(date); const year = isoWeekYear(d); const week = isoWeekNumber(d); return { key: `${year}-W${String(week).padStart(2, '0')}`, label: `${t('calendarWeekShort')} ${week}/${year}` }; }
+function monthBucket(date) { const d = parseLocalDate(date); const key = date.slice(0, 7); return { key, label: new Intl.DateTimeFormat(currentLanguage === 'en' ? 'en-US' : 'de-DE', { month: 'short', year: 'numeric' }).format(d) }; }
+function renderChartControls() { periodFilter.value = chartSettings.period; displayModeSelect.value = chartSettings.display; periodFromInput.value = chartSettings.from || ''; periodToInput.value = chartSettings.to || ''; document.querySelectorAll('.custom-date-filter').forEach((el) => el.classList.toggle('is-hidden', chartSettings.period !== 'CUSTOM')); const days = countDistinctDates(filteredRowsWithoutPeriod()); chartRecommendation.textContent = chartSettings.display === 'day' && days > 30 ? t('chartRecommendation') : ''; }
+function updateChartControlLabels() { setSelectOptions(periodFilter, [['ALL','allData'],['LAST_7','last7Days'],['LAST_14','last14Days'],['LAST_30','last30Days'],['CURRENT_WEEK','currentCalendarWeek'],['LAST_WEEK','lastCalendarWeek'],['CUSTOM','customPeriod']]); setSelectOptions(displayModeSelect, [['day','dailyValues'],['week','weeklyValues'],['month','monthlyValues']]); }
+function setSelectOptions(select, options) { if (!select) return; options.forEach(([value, key]) => { const option = select.querySelector(`option[value="${value}"]`); if (option) option.textContent = t(key); }); }
+function filteredRowsWithoutPeriod() { return enrichedRows().filter((row) => (selectedProjectFilter === 'ALL' || row.project === selectedProjectFilter) && (selectedPartFilter === 'ALL' || row.part === selectedPartFilter) && (selectedMachineFilter === 'ALL' || row.machine === selectedMachineFilter)); }
+function countDistinctDates(rows) { return new Set(rows.map((row) => row.date)).size; }
+
 function aggregate(rows) { const sums = sumRows(rows); return { ...sums, achievement: sums.target > 0 ? (sums.good / sums.target) * 100 : null, availability: avg(rows, 'availability'), performance: avg(rows, 'performance'), quality: avg(rows, 'quality'), oee: avg(rows, 'oee') }; }
 function sumRows(rows) { return rows.reduce((s, r) => ({ target: s.target + r.target, good: s.good + r.good, scrap: s.scrap + r.scrap, deviation: s.deviation + r.deviation }), { target: 0, good: 0, scrap: 0, deviation: 0 }); }
 function avg(rows, key) { const vals = rows.map((r) => r[key]).filter(isCalculable); return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null; }
@@ -374,6 +418,7 @@ function clearLocalAppState() {
   selectedProjectFilter = 'ALL';
   selectedPartFilter = 'ALL';
   selectedMachineFilter = 'ALL';
+  chartSettings = { period: 'ALL', display: 'day', from: '', to: '' };
   Object.keys(localStorage).filter(isAppStorageKey).forEach((key) => localStorage.removeItem(key));
   resetProductionForm();
   clearMasterDataInputs();
@@ -519,6 +564,18 @@ function rememberDeletedMasterValue(type, name) { if (!deletedMasterValues[type]
 function removeDeletedMasterValue(type, name) { if (!deletedMasterValues[type]) deletedMasterValues[type] = []; deletedMasterValues[type] = deletedMasterValues[type].filter((value) => normalizeKey(value) !== normalizeKey(name)); }
 function showProjectMessage(message) { document.querySelector('#master-data-message').textContent = message; }
 
+function loadChartSettings() { try { const stored = JSON.parse(localStorage.getItem(CHART_SETTINGS_STORAGE_KEY) || '{}'); return { period: ['ALL','LAST_7','LAST_14','LAST_30','CURRENT_WEEK','LAST_WEEK','CUSTOM'].includes(stored.period) ? stored.period : 'ALL', display: ['day','week','month'].includes(stored.display) ? stored.display : 'day', from: stored.from || '', to: stored.to || '' }; } catch { return { period: 'ALL', display: 'day', from: '', to: '' }; } }
+function persistChartSettings() { localStorage.setItem(CHART_SETTINGS_STORAGE_KEY, JSON.stringify(chartSettings)); }
+function isWithinSelectedPeriod(date) { const range = selectedDateRange(); if (!range) return true; return (!range.from || date >= range.from) && (!range.to || date <= range.to); }
+function selectedDateRange() { const todayDate = parseLocalDate(today()); if (chartSettings.period === 'LAST_7') return rollingRange(todayDate, 7); if (chartSettings.period === 'LAST_14') return rollingRange(todayDate, 14); if (chartSettings.period === 'LAST_30') return rollingRange(todayDate, 30); if (chartSettings.period === 'CURRENT_WEEK') return weekRange(todayDate, 0); if (chartSettings.period === 'LAST_WEEK') return weekRange(todayDate, -1); if (chartSettings.period === 'CUSTOM') return { from: chartSettings.from || null, to: chartSettings.to || null }; return null; }
+function rollingRange(end, days) { const from = addDays(end, -(days - 1)); return { from: toIsoDate(from), to: toIsoDate(end) }; }
+function weekRange(date, offsetWeeks) { const start = addDays(startOfWeek(date), offsetWeeks * 7); return { from: toIsoDate(start), to: toIsoDate(addDays(start, 6)) }; }
+function parseLocalDate(date) { return new Date(`${date}T00:00:00`); }
+function addDays(date, days) { const copy = new Date(date); copy.setDate(copy.getDate() + days); return copy; }
+function startOfWeek(date) { const copy = new Date(date); const day = (copy.getDay() + 6) % 7; copy.setDate(copy.getDate() - day); return copy; }
+function toIsoDate(date) { return date.toISOString().slice(0, 10); }
+function isoWeekYear(date) { const copy = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); copy.setUTCDate(copy.getUTCDate() + 4 - (copy.getUTCDay() || 7)); return copy.getUTCFullYear(); }
+function isoWeekNumber(date) { const copy = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); copy.setUTCDate(copy.getUTCDate() + 4 - (copy.getUTCDay() || 7)); const yearStart = new Date(Date.UTC(copy.getUTCFullYear(), 0, 1)); return Math.ceil((((copy - yearStart) / 86400000) + 1) / 7); }
 function loadEntries() { try { const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY); return (JSON.parse(raw) || []).map(normalizeEntry); } catch { return []; } }
 function groupBy(rows, key) { return rows.reduce((g, r) => { const k = r[key] || t('noValue'); (g[k] ||= []).push(r); return g; }, {}); }
 function getValue(id) { return document.querySelector(`#${id}`).value.trim(); }

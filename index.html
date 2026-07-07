@@ -129,6 +129,23 @@
       <label><span data-i18n="projectFilter">Projektfilter</span><select id="project-filter"></select></label>
       <label><span data-i18n="partFilter">Bauteilfilter</span><select id="part-filter"></select></label>
       <label><span data-i18n="machineFilter">Maschinenfilter</span><select id="machine-filter"></select></label>
+      <label><span data-i18n="periodFilter">Zeitraum</span><select id="period-filter">
+        <option value="ALL">Alle Daten</option>
+        <option value="LAST_7">Letzte 7 Tage</option>
+        <option value="LAST_14">Letzte 14 Tage</option>
+        <option value="LAST_30">Letzte 30 Tage</option>
+        <option value="CURRENT_WEEK">Aktuelle Kalenderwoche</option>
+        <option value="LAST_WEEK">Letzte Kalenderwoche</option>
+        <option value="CUSTOM">Benutzerdefinierter Zeitraum</option>
+      </select></label>
+      <label><span data-i18n="displayMode">Darstellung</span><select id="display-mode">
+        <option value="day">Tageswerte</option>
+        <option value="week">Wochenwerte</option>
+        <option value="month">Monatswerte</option>
+      </select></label>
+      <label class="custom-date-filter"><span data-i18n="periodFrom">Von</span><input id="period-from" type="date"></label>
+      <label class="custom-date-filter"><span data-i18n="periodTo">Bis</span><input id="period-to" type="date"></label>
+      <p id="chart-recommendation" class="chart-recommendation"></p>
     </div>
     <div class="grid-two dashboard-grid">
       <section class="card chart-card"><h3>Gutmenge pro Tag</h3><canvas id="good-chart" width="640" height="300"></canvas></section>
