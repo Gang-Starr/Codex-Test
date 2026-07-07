@@ -40,16 +40,16 @@
         <label><span data-i18n="targetPerDay">Zielmenge pro Tag</span><input type="number" id="target" min="1" step="1" required /></label>
         <label><span data-i18n="producedQty">Produzierte Stückzahl</span><input type="number" id="produced" min="0" step="1" required /></label>
         <label><span data-i18n="scrap">Ausschuss</span><input type="number" id="scrap" min="0" step="1" value="0" required /></label>
-        <fieldset class="oee-fieldset full-width">
-          <legend data-i18n="optionalOee">Optionale OEE-Daten</legend>
+        <details class="oee-fieldset full-width" id="oee-details">
+          <summary><span class="oee-summary-title" data-i18n="showOeeData">OEE-Daten anzeigen</span><span class="oee-summary-status" data-i18n="optionalOee">Optionale OEE-Daten</span></summary>
           <p class="oee-help" data-i18n="oeeHelp">Nur ausfüllen, wenn OEE berechnet werden soll.</p>
           <div class="oee-fields">
             <label><span data-i18n="plannedTime">Geplante Produktionszeit in Minuten</span> <span data-i18n="optional">(optional)</span><input type="number" id="plannedTime" min="0" step="0.1" placeholder="Optional: Minuten eingeben" /></label>
             <label><span data-i18n="downtime">Maschinenstillstand in Minuten</span> <span data-i18n="optional">(optional)</span><input type="number" id="downtime" min="0" step="0.1" placeholder="Optional: Minuten eingeben" /></label>
             <label><span data-i18n="cycleTime">Ideale Taktzeit je Stück in Sekunden</span> <span data-i18n="optional">(optional)</span><input type="number" id="cycleTime" min="0" step="0.1" placeholder="Optional: Sekunden eingeben" /></label>
           </div>
-        </fieldset>
-        <label class="full-width"><span data-i18n="comment">Kommentar</span><textarea id="comment" rows="3" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
+        </details>
+        <label class="comment-field full-width"><span data-i18n="comment">Kommentar</span><textarea id="comment" rows="2" placeholder="Pflichtfeld: kurzer Hinweis zum Produktionstag" required></textarea></label>
         <button type="submit" class="primary-button" data-i18n="saveEntry">Eintrag speichern</button>
       </form>
       <details class="master-data-management" id="master-data-management">

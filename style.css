@@ -61,8 +61,8 @@ h2 { margin: 0 0 14px; font-size: 1.25rem; }
 .section-heading h2 { margin: 0; }
 .storage-note { color: var(--muted); font-size: .9rem; }
 
-.production-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-label { display: grid; gap: 6px; font-weight: 700; color: #344054; }
+.production-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+label { display: grid; gap: 5px; font-weight: 700; color: #344054; }
 input, textarea, button, .file-button {
   font: inherit;
   border-radius: 10px;
@@ -70,7 +70,7 @@ input, textarea, button, .file-button {
 input, textarea {
   width: 100%;
   border: 1px solid var(--line);
-  padding: 11px 12px;
+  padding: 9px 12px;
   background: #fbfcfe;
   color: var(--text);
 }
@@ -105,25 +105,40 @@ input:focus, textarea:focus { outline: 3px solid rgba(31, 111, 235, .18); border
 
 .oee-fieldset {
   border: 1px solid #cfe0fb;
-  border-radius: 16px;
-  padding: 18px;
-  margin: 8px 0 0;
+  border-radius: 14px;
+  margin: 4px 0 0;
   background: linear-gradient(180deg, #f8fbff, #f3f7ff);
+  overflow: hidden;
 }
-.oee-fieldset legend {
-  padding: 0 8px;
+.oee-fieldset summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
   color: #315f9f;
   font-weight: 800;
+  list-style-position: inside;
+}
+.oee-summary-status {
+  color: var(--muted);
+  font-size: .84rem;
+  font-weight: 700;
 }
 .oee-help {
-  margin: 0 0 14px;
+  margin: 0 14px 10px;
   color: var(--muted);
-  font-size: .9rem;
+  font-size: .86rem;
 }
-.oee-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.oee-fields label { font-size: .92rem; color: #475467; }
-.oee-fields label span { color: var(--muted); font-weight: 600; font-size: .84rem; }
+.oee-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 0 14px 14px; }
+.oee-fields label { font-size: .88rem; color: #475467; }
+.oee-fields label span { color: var(--muted); font-weight: 600; font-size: .8rem; }
 .oee-fields input { background: #fff; border-style: dashed; }
+.comment-field textarea {
+  min-height: 72px;
+  resize: vertical;
+}
 
 button, .file-button {
   border: 0;
@@ -227,6 +242,10 @@ td { font-size: .94rem; }
   height: 300px;
 }
 @media (max-width: 640px) {
+  .production-form { gap: 14px; }
+  input, textarea { padding: 11px 12px; }
+  .oee-fieldset summary { align-items: flex-start; flex-direction: column; }
+  .comment-field textarea { min-height: 96px; }
   .layout, .grid-two, .controls, .table-card, .dashboard { width: min(100% - 20px, 1440px); margin: 16px auto; }
   .card { padding: 18px; border-radius: 14px; }
   .section-heading { align-items: flex-start; flex-direction: column; }
