@@ -16,9 +16,9 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 
 ## Sprache Deutsch / Englisch
 
-Die App unterstützt eine lokale Sprachauswahl für **Deutsch** und **Englisch**. Die Auswahl befindet sich oben rechts im blauen Header. Deutsch ist die Standardsprache. Wenn auf Englisch gewechselt wird, werden sichtbare Oberflächentexte, der Header-Hinweis zur offenen Test-App, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte und die Management-Zusammenfassung auf Englisch angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
+Die App unterstützt eine lokale Sprachauswahl für **Deutsch** und **Englisch**. Die Auswahl befindet sich oben rechts im blauen Header. Deutsch ist die Standardsprache. Wenn auf Englisch gewechselt wird, werden sichtbare Oberflächentexte, der Header-Hinweis zur offenen Test-App, der Footer-Autorenhinweis, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte und die Management-Zusammenfassung auf Englisch angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
 
-Die gewählte Sprache wird im `localStorage` des Browsers gespeichert. Nach einem Neuladen wird automatisch die zuletzt gewählte Sprache geladen. Der `change`-Listener des Sprach-Dropdowns speichert die neue Auswahl, ruft die Übersetzungsfunktion auf und rendert die dynamischen Bereiche neu. Dadurch werden Header, Eingabemaske, KPI-Karten, Management-Zusammenfassung, Tagesübersicht, Stammdatenlisten, Filter, Diagramme und Tabelle sofort in der gewählten Sprache aktualisiert.
+Die gewählte Sprache wird im `localStorage` des Browsers gespeichert. Nach einem Neuladen wird automatisch die zuletzt gewählte Sprache geladen. Der `change`-Listener des Sprach-Dropdowns speichert die neue Auswahl, ruft die Übersetzungsfunktion auf und rendert die dynamischen Bereiche neu. Dadurch werden Header, Eingabemaske, KPI-Karten, Management-Zusammenfassung, Tagesübersicht, Stammdatenlisten, Filter, Diagramme, Tabelle und Footer sofort in der gewählten Sprache aktualisiert.
 
 Es wird keine externe Übersetzungsbibliothek verwendet; die Übersetzungen liegen lokal in `script.js`. Auch das Zahlenformat folgt der gewählten Sprache: Deutsch nutzt Komma als Dezimaltrennzeichen, Englisch nutzt Punkt als Dezimaltrennzeichen.
 
@@ -103,7 +103,9 @@ Projektliste, Bauteilliste, Maschinenliste, gelöschte Stammdatenwerte, Änderun
 
 ## Gefahrenbereich und sicherer App-Reset
 
-Am Ende der App befindet sich ein deutlich abgesetzter Bereich **„Gefahrenbereich“** / **“Danger zone”**. Nur dort können Nutzer über **„App zurücksetzen“** / **“Reset app”** alle lokalen Browserdaten der App löschen. Die Funktion ist bewusst nicht im normalen Bereich **„Daten verwalten“** platziert, sondern ganz unten auf der Seite, damit Import-/Exportaktionen klar vom vollständigen App-Reset getrennt sind.
+Am Ende der App befindet sich ein deutlich abgesetzter Bereich **„Gefahrenbereich“** / **“Danger zone”**. Nur dort können Nutzer über **„App zurücksetzen“** / **“Reset app”** alle lokalen Browserdaten der App löschen. Die Funktion ist bewusst nicht im normalen Bereich **„Daten verwalten“** platziert, sondern unten auf der Seite, damit Import-/Exportaktionen klar vom vollständigen App-Reset getrennt sind.
+
+Direkt unterhalb des Gefahrenbereichs steht der dezente Footer mit Autorenhinweis. Auf Deutsch lautet er **„Production Tracking App · Konzept & Prototyp: JSE · 2026“**, auf Englisch **“Production Tracking App · Concept & prototype by JSE · 2026”**. Der Footer nutzt dieselbe lokale Übersetzungslogik aus `script.js` wie die übrigen Oberflächentexte und wechselt mit der Sprachauswahl Deutsch / English.
 
 Die App speichert Produktionsdaten, Projekt-Stammdaten, Bauteil-Stammdaten, Maschinen-Stammdaten, gelöschte oder archivierte Stammdatenwerte und weitere app-spezifische Zustände lokal im `localStorage` dieses Browsers. Der Reset löscht alle lokalen App-Daten dieses Browsers, darunter Produktionsdaten, Stammdaten, gelöschte Stammdatenwerte, Filterzustände, Formularwerte, gespeicherte CSV-Importzustände und alle app-spezifischen `localStorage`-Keys. Die gewählte Sprache kann erhalten bleiben, damit die Oberfläche nach dem Reset weiterhin in der zuletzt ausgewählten Sprache angezeigt wird.
 

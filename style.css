@@ -771,8 +771,25 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   flex-wrap: wrap;
 }
 
+
+.app-footer {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto 32px;
+  padding: 0 4px;
+  color: var(--muted);
+  text-align: center;
+}
+.app-footer p {
+  margin: 0;
+  padding-top: 6px;
+  font-size: .84rem;
+  line-height: 1.45;
+  letter-spacing: .01em;
+}
+
 @media (max-width: 640px) {
-  .danger-zone { width: min(100% - 20px, 1440px); margin: 28px auto 20px; }
+  .danger-zone { width: min(100% - 20px, 1440px); margin: 28px auto 18px; }
+  .app-footer { width: min(100% - 20px, 1440px); margin-bottom: 24px; }
   .reset-dialog-content { padding: 18px; }
   .reset-dialog-actions { flex-direction: column-reverse; }
 }
