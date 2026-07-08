@@ -798,6 +798,19 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   line-height: 1.45;
   letter-spacing: .01em;
 }
+.footer-doc-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  opacity: .82;
+  transition: opacity .2s ease, color .2s ease;
+}
+.footer-doc-link:hover,
+.footer-doc-link:focus-visible {
+  color: var(--primary-dark);
+  opacity: 1;
+}
 
 @media (max-width: 640px) {
   .danger-zone { width: min(100% - 20px, 1440px); margin: 28px auto 18px; }
