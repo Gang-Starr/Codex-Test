@@ -51,13 +51,19 @@ Diese Felder werden für jeden Eintrag benötigt. Die normale Stückzahlauswertu
 - Zielmenge pro Tag (muss größer als 0 sein)
 - Produzierte Stückzahl (muss größer oder gleich 0 sein)
 - Ausschuss (darf nicht größer als die produzierte Stückzahl sein)
-- Kommentar
+- Kommentar (grundsätzlich optional; bei Zielabweichung, Ausschuss oder Stillstand ist ein kurzer Kommentar erforderlich)
 
 Berechnungen:
 
 - **Gutmenge** = Produzierte Stückzahl − Ausschuss
 - **Abweichung** = Gutmenge − Zielmenge
 - **Zielerreichung in Prozent** = Gutmenge / Zielmenge × 100
+
+Kommentarlogik:
+
+- Das Kommentarfeld ist grundsätzlich optional.
+- Ein kurzer Kommentar ist erforderlich, wenn ein Eintrag auffällig ist: Zielerreichung < 90 %, Abweichung < 0, Ausschuss > 0 oder Maschinenstillstand > 0.
+- Beim Speichern und bei „Daten prüfen“ weist die App auf fehlende Kommentare zu solchen Auffälligkeiten hin.
 
 Statuslogik Zielerreichung:
 

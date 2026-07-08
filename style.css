@@ -137,9 +137,15 @@ input:focus, textarea:focus { outline: 3px solid rgba(31, 111, 235, .18); border
 .oee-fields label { font-size: .88rem; color: #475467; }
 .oee-fields label span { color: var(--muted); font-weight: 600; font-size: .8rem; }
 .oee-fields input { background: #fff; border-style: dashed; }
+.comment-field .optional-note {
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 600;
+}
 .comment-field textarea {
   min-height: 72px;
   resize: vertical;
+  border-style: dashed;
 }
 
 button, .file-button {
