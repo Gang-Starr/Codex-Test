@@ -583,7 +583,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   visibility: visible;
   opacity: 1;
   width: auto;
-  min-width: 128px;
+  min-width: 144px;
   padding: 8px 34px 8px 10px;
   border: 2px solid #fff;
   background: #fff;

@@ -4,7 +4,7 @@ Diese Web-App ist eine einfache lokale Test-App zur täglichen Produktionsauswer
 
 Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Login und keine Server-Komponente. Daten werden im `localStorage` des jeweiligen Browsers gespeichert und bleiben nur auf diesem Gerät bzw. in diesem Browserprofil erhalten. Der Link selbst enthält keine Benutzerdaten und transportiert keine Produktions- oder Stammdaten.
 
-> Wichtig: Die App zeigt im oberen Header-Bereich einen dezenten, gut lesbaren Hinweis: **„Offene Test-App – nur freigegebene Produktionsdaten eingeben. Keine personenbezogenen Daten.“** Auf Englisch lautet der Hinweis: **“Open test app – only enter approved production data. No personal data.”** Der Hinweis wechselt mit der Sprachauswahl Deutsch / English.
+> Wichtig: Die App zeigt im oberen Header-Bereich einen dezenten, gut lesbaren Hinweis: **„Offene Test-App – nur freigegebene Produktionsdaten eingeben. Keine personenbezogenen Daten.“** Auf Englisch lautet der Hinweis: **“Open test app – only enter approved production data. No personal data.”** Der Hinweis wechselt mit der Sprachauswahl Deutsch / English / Italiano.
 
 ## Dateien
 
@@ -14,13 +14,13 @@ Die App läuft vollständig lokal im Browser. Es gibt keine Datenbank, kein Logi
 - `README.md` – Beschreibung und Bedienhinweise
 
 
-## Sprache Deutsch / Englisch
+## Sprache Deutsch / Englisch / Italienisch
 
-Die App unterstützt eine lokale Sprachauswahl für **Deutsch** und **Englisch**. Die Auswahl befindet sich oben rechts im blauen Header. Deutsch ist die Standardsprache. Wenn auf Englisch gewechselt wird, werden sichtbare Oberflächentexte, der Header-Hinweis zur offenen Test-App, der Footer-Autorenhinweis, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte und die Management-Zusammenfassung auf Englisch angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
+Die App unterstützt eine lokale Sprachauswahl für **Deutsch**, **Englisch** und **Italienisch**. Die Auswahl befindet sich oben rechts im blauen Header und enthält **Deutsch**, **English** und **Italiano**. Deutsch ist die Standardsprache. Wenn auf Englisch oder Italienisch gewechselt wird, werden sichtbare Oberflächentexte, der Header-Hinweis zur offenen Test-App, der Footer-Autorenhinweis, Hinweise, Fehlermeldungen, Tabellenbeschriftungen, Diagrammtexte, das Info-Fenster, der Reset-Dialog, die Datenprüfung und die Management-Zusammenfassung in der gewählten Sprache angezeigt. Beim Wechsel zurück werden die Texte wieder auf Deutsch dargestellt.
 
 Die gewählte Sprache wird im `localStorage` des Browsers gespeichert. Nach einem Neuladen wird automatisch die zuletzt gewählte Sprache geladen. Der `change`-Listener des Sprach-Dropdowns speichert die neue Auswahl, ruft die Übersetzungsfunktion auf und rendert die dynamischen Bereiche neu. Dadurch werden Header, Eingabemaske, KPI-Karten, Management-Zusammenfassung, Tagesübersicht, Stammdatenlisten, Filter, Diagramme, Tabelle und Footer sofort in der gewählten Sprache aktualisiert.
 
-Es wird keine externe Übersetzungsbibliothek verwendet; die Übersetzungen liegen lokal in `script.js`. Auch das Zahlenformat folgt der gewählten Sprache: Deutsch nutzt Komma als Dezimaltrennzeichen, Englisch nutzt Punkt als Dezimaltrennzeichen.
+Es wird keine externe Übersetzungsbibliothek verwendet; die Übersetzungen liegen lokal in `script.js`. Auch das Zahlenformat folgt der gewählten Sprache: Deutsch und Italienisch nutzen Komma als Dezimaltrennzeichen, Englisch nutzt Punkt als Dezimaltrennzeichen.
 
 Die App funktioniert weiterhin vollständig lokal ohne Server, Login oder Datenbank. Produktionsdaten, Stammdaten und die Sprachwahl bleiben im jeweiligen Browserprofil gespeichert.
 
@@ -38,7 +38,7 @@ Das Info-Fenster erklärt kurz:
 - wie CSV-Export und CSV-Import verwendet werden,
 - dass **„App zurücksetzen“** alle lokal gespeicherten Daten dieses Browsers löscht und nicht rückgängig gemacht werden kann.
 
-CSV-Dateien müssen weiterhin manuell über **„CSV exportieren“** heruntergeladen und anschließend per E-Mail zurückgesendet werden. Über **„CSV importieren“** können vorhandene CSV-Daten wieder geladen werden. Der Info-Button und der gesamte Info-Text wechseln mit der bestehenden Sprachauswahl Deutsch / English.
+CSV-Dateien müssen weiterhin manuell über **„CSV exportieren“** heruntergeladen und anschließend per E-Mail zurückgesendet werden. Über **„CSV importieren“** können vorhandene CSV-Daten wieder geladen werden. Der Info-Button und der gesamte Info-Text wechseln mit der bestehenden Sprachauswahl Deutsch / English / Italiano.
 
 ## Pflichtfelder für die normale Stückzahlauswertung
 
@@ -181,7 +181,7 @@ Die OEE-Diagramme sind optional sichtbar und liegen in einem eigenen einklappbar
 
 Der Bereich ist beim ersten Öffnen standardmäßig eingeklappt. Über **„OEE-Diagramme anzeigen“** / **„Show OEE charts“** wird er geöffnet, über **„OEE-Diagramme ausblenden“** / **„Hide OEE charts“** wieder geschlossen. Der letzte Zustand wird lokal im `localStorage` des Browsers gespeichert und nach dem Neuladen wiederhergestellt.
 
-Wenn keine OEE-Daten vorhanden sind und der Bereich geöffnet wird, zeigen die OEE-Diagramme **„Keine OEE-Daten vorhanden“** bzw. **“No OEE data available”**.
+Wenn keine OEE-Daten vorhanden sind und der Bereich geöffnet wird, zeigen die OEE-Diagramme **„Keine OEE-Daten vorhanden“**, **“No OEE data available”** bzw. **“Nessun dato OEE disponibile”**.
 
 
 ### Dashboard-Filter
