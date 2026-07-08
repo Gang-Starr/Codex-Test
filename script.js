@@ -5,6 +5,8 @@ const PART_STORAGE_KEY = 'productionParts.v1';
 const MACHINE_STORAGE_KEY = 'productionMachines.v1';
 const DELETED_MASTER_STORAGE_KEY = 'productionDeletedMasterValues.v1';
 const LANGUAGE_STORAGE_KEY = 'productionLanguage.v1';
+const SUPPORTED_LANGUAGES = ['de', 'en', 'it'];
+const DEFAULT_LANGUAGE = 'en';
 const CHART_SETTINGS_STORAGE_KEY = 'productionChartSettings.v1';
 const TABLE_OEE_COLUMNS_STORAGE_KEY = 'productionTableOeeColumns.v1';
 const OEE_CHARTS_STORAGE_KEY = 'productionOeeCharts.v1';
@@ -60,11 +62,25 @@ Object.assign(translations.it, {
 let currentLanguage = loadLanguage();
 let showTableOeeColumns = loadTableOeeColumnsPreference();
 let showOeeCharts = loadOeeChartsPreference();
-function t(key) { return translations[currentLanguage]?.[key] || translations.de[key] || ''; }
+function t(key) { return translations[currentLanguage]?.[key] || translations[DEFAULT_LANGUAGE][key] || ''; }
+
+function normalizeLanguageCode(language) {
+  return String(language || '').trim().toLowerCase().split('-')[0];
+}
+
+function isSupportedLanguage(language) {
+  return SUPPORTED_LANGUAGES.includes(language);
+}
+
+function detectBrowserLanguage() {
+  const browserLanguages = Array.isArray(navigator.languages) && navigator.languages.length ? navigator.languages : [navigator.language];
+  const detectedLanguage = browserLanguages.map(normalizeLanguageCode).find(isSupportedLanguage);
+  return detectedLanguage || DEFAULT_LANGUAGE;
+}
 
 function loadLanguage() {
-  const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  return ['de', 'en', 'it'].includes(stored) ? stored : 'de';
+  const stored = normalizeLanguageCode(localStorage.getItem(LANGUAGE_STORAGE_KEY));
+  return isSupportedLanguage(stored) ? stored : detectBrowserLanguage();
 }
 
 function applyTranslations() {
@@ -254,7 +270,15 @@ if (copySummaryButton) copySummaryButton.addEventListener('click', copyManagemen
 document.querySelector('#export-csv').addEventListener('click', exportCsv);
 document.querySelector('#export-summary').addEventListener('click', exportManagementSummary);
 importInput.addEventListener('change', importCsv);
-if (languageSelect) languageSelect.addEventListener('change', () => { currentLanguage = languageSelect.value; localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage); applyTranslations(); renderMasterData(); render(); });
+if (languageSelect) languageSelect.addEventListener('change', () => {
+  const selectedLanguage = normalizeLanguageCode(languageSelect.value);
+  currentLanguage = isSupportedLanguage(selectedLanguage) ? selectedLanguage : DEFAULT_LANGUAGE;
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
+  languageSelect.value = currentLanguage;
+  applyTranslations();
+  renderMasterData();
+  render();
+});
 projectFilter.addEventListener('change', () => { selectedProjectFilter = projectFilter.value; render(); });
 partFilter.addEventListener('change', () => { selectedPartFilter = partFilter.value; render(); });
 machineFilter.addEventListener('change', () => { selectedMachineFilter = machineFilter.value; render(); });
