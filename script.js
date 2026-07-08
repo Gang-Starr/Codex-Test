@@ -62,6 +62,7 @@ function applyTranslations() {
   document.title = t('documentTitle');
   document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = t(element.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach((element) => { element.setAttribute('aria-label', t(element.dataset.i18nAria)); });
+  updateFooterDocumentationLink();
   updateWorkflowHint();
   normalizeHeaderTitleText();
   updateHeaderTitleAttributes();
@@ -122,6 +123,13 @@ function setText(selector, key) {
   else element.prepend(document.createTextNode(t(key)));
 }
 function setPlaceholder(selector, key) { const element = document.querySelector(selector); if (element) element.placeholder = t(key); }
+function updateFooterDocumentationLink() {
+  const link = document.querySelector('.footer-doc-link');
+  if (!link) return;
+  link.textContent = t('footerDocumentation');
+  link.setAttribute('aria-label', t('footerDocumentation'));
+  link.setAttribute('title', t('footerDocumentation'));
+}
 function updateWorkflowHint() {
   const element = document.querySelector('#workflow-hint');
   if (!element) return;
