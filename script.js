@@ -46,6 +46,17 @@ Object.assign(translations.en, {
   infoButton: 'ⓘ Info / Guide', infoCloseAria: 'Close info window', infoTitle: 'How to use this app', infoIntro: 'This app is used to enter daily production data. The data is stored locally in the browser and is not sent automatically.', infoWorkflowTitle: 'Workflow', infoWorkflow1: 'Enter production data', infoWorkflow2: 'Save entry', infoWorkflow3: 'Check entries', infoWorkflow4: 'Export CSV', infoWorkflow5: 'Send the CSV file back by email', infoNotesTitle: 'Important notes', infoNote1: 'This is an open test app.', infoNote2: 'Only enter production data approved for this use.', infoNote3: 'Do not enter personal data.', infoNote4: 'The data stays locally in the browser on this device.', infoNote5: 'If you open the app on another device, the locally saved data is not available there automatically.', infoOeeTitle: 'Optional OEE data', infoOeeText: 'OEE data only needs to be filled in if OEE should be calculated. If no OEE data is entered, the app shows n/a for OEE indicators.', infoCsvTitle: 'CSV', infoCsvText: 'Use Export CSV to download the entered data and send it back by email. Use Import CSV to load existing CSV data again.', infoResetTitle: 'Reset app', infoResetText: 'Use Reset app to delete all locally stored data from this browser. This step cannot be undone.', infoCloseButton: 'Close'
 });
 
+
+Object.assign(translations.de, {
+  copySummary: 'Zusammenfassung kopieren', summaryCopied: 'Zusammenfassung kopiert.'
+});
+Object.assign(translations.en, {
+  copySummary: 'Copy summary', summaryCopied: 'Summary copied.'
+});
+Object.assign(translations.it, {
+  copySummary: 'Copia riepilogo', summaryCopied: 'Riepilogo copiato.'
+});
+
 let currentLanguage = loadLanguage();
 let showTableOeeColumns = loadTableOeeColumnsPreference();
 let showOeeCharts = loadOeeChartsPreference();
@@ -83,7 +94,7 @@ function applyTranslations() {
   setText('#add-part', 'addPart'); setText('.master-data-add-grid label:nth-child(5)', 'newMachine'); document.querySelector('.master-data-add-grid label:nth-child(5)').append(document.querySelector('#new-machine-name'));
   setText('#add-machine', 'addMachine');
   setText('#projects-master-title', 'projectList'); setText('#parts-master-title', 'partList'); setText('#machines-master-title', 'machineList');
-  setText('#validate-data', 'validateData'); setText('#download-csv-template', 'downloadCsvTemplate'); setText('#export-csv', 'exportCsv'); setText('#export-summary', 'exportSummary'); setText('.file-button', 'importCsv');
+  setText('#validate-data', 'validateData'); setText('#download-csv-template', 'downloadCsvTemplate'); setText('#export-csv', 'exportCsv'); setText('#export-summary', 'exportSummary'); setText('#copy-summary', 'copySummary'); setText('.file-button', 'importCsv');
   setText('.tab[data-tab="project"]', 'project'); setText('.tab[data-tab="part"]', 'part'); setText('.tab[data-tab="machine"]', 'machine');
   setText('.dashboard-filter-card label:nth-child(1) span', 'projectFilter'); setText('.dashboard-filter-card label:nth-child(2) span', 'partFilter'); setText('.dashboard-filter-card label:nth-child(3) span', 'machineFilter');
   document.querySelector('.dashboard-filter-card label:nth-child(1)').append(projectFilter);
@@ -181,6 +192,8 @@ const importInput = document.querySelector('#import-csv');
 const validateDataButton = document.querySelector('#validate-data');
 const downloadCsvTemplateButton = document.querySelector('#download-csv-template');
 const validationResult = document.querySelector('#validation-result');
+const copySummaryButton = document.querySelector('#copy-summary');
+const copySummaryFeedback = document.querySelector('#copy-summary-feedback');
 const projectInput = document.querySelector('#project');
 const partInput = document.querySelector('#part');
 const machineInput = document.querySelector('#machine');
@@ -237,6 +250,7 @@ if (infoDialog) infoDialog.addEventListener('cancel', closeInfoDialog);
 if (resetDialog) resetDialog.addEventListener('cancel', closeResetDialog);
 if (validateDataButton) validateDataButton.addEventListener('click', validateStoredData);
 if (downloadCsvTemplateButton) downloadCsvTemplateButton.addEventListener('click', downloadCsvTemplate);
+if (copySummaryButton) copySummaryButton.addEventListener('click', copyManagementSummary);
 document.querySelector('#export-csv').addEventListener('click', exportCsv);
 document.querySelector('#export-summary').addEventListener('click', exportManagementSummary);
 importInput.addEventListener('change', importCsv);
@@ -479,7 +493,16 @@ function renderGroupSummary(rows) {
 function summaryItem(title, totals, subtitle) {
   return `<div class="summary-item"><div><strong>${escapeHtml(title)}</strong><br><small>${subtitle} · ${t('target')} ${formatPercent(totals.achievement)} · OEE ${formatPercent(totals.oee)}</small></div><div>${t('goodShort')}: <strong>${formatNumber(totals.good)}</strong><br><small>${t('scrap')} ${formatNumber(totals.scrap)}, ${t('deviationShort')} ${formatNumber(totals.deviation)}</small></div></div>`;
 }
-function renderManagementSummary(rows) { document.querySelector('#management-summary').textContent = buildManagementSummary(rows); }
+function renderManagementSummary(rows) {
+  document.querySelector('#management-summary').textContent = buildManagementSummary(rows);
+  updateCopySummaryState(rows);
+}
+function updateCopySummaryState(rows) {
+  if (!copySummaryButton) return;
+  copySummaryButton.disabled = !rows.length;
+  copySummaryButton.setAttribute('aria-disabled', String(!rows.length));
+  if (!rows.length && copySummaryFeedback) copySummaryFeedback.textContent = '';
+}
 function buildManagementSummary(rows) {
   if (!rows.length) return t('noDataSummary');
   const totals = aggregate(rows), redTargets = rows.filter((r) => r.targetStatus === 'red').length, warnings = rows.filter((r) => r.oeeWarning).length;
@@ -662,6 +685,39 @@ function clearDataValidationResult() {
 function downloadCsvTemplate() { downloadFile(`csv-vorlage-${today()}.csv`, CSV_HEADER.map(csvEscape).join(';') + '\n', 'text/csv;charset=utf-8'); }
 function exportCsv() { const csvHeader = currentLanguage === 'en' ? ['Date','Project','Part','Machine','Target quantity per day','Produced quantity','Scrap','Planned production time in minutes','Machine downtime in minutes','Ideal cycle time per part in seconds','Comment'] : currentLanguage === 'it' ? ['Data','Progetto','Componente','Macchina','Quantità target giornaliera','Quantità prodotta','Scarto','Tempo di produzione pianificato in minuti','Fermo macchina in minuti','Tempo ciclo ideale per pezzo in secondi','Commento'] : CSV_HEADER; const exportRows = entries.filter((e) => (selectedProjectFilter === 'ALL' || e.project === selectedProjectFilter) && (selectedPartFilter === 'ALL' || e.part === selectedPartFilter) && (selectedMachineFilter === 'ALL' || e.machine === selectedMachineFilter)); downloadFile(`produktionsdaten-${today()}.csv`, [csvHeader, ...exportRows.map((e) => [e.date,e.project,e.part,e.machine,e.target,e.produced,e.scrap,e.plannedTime,e.downtime,e.cycleTime,e.comment])].map((r) => r.map(csvEscape).join(';')).join('\n'), 'text/csv;charset=utf-8'); }
 function exportManagementSummary() { downloadFile(`management-zusammenfassung-${today()}.txt`, buildManagementSummary(filteredRows()), 'text/plain;charset=utf-8'); }
+async function copyManagementSummary() {
+  const rows = filteredRows();
+  if (!rows.length) { updateCopySummaryState(rows); return; }
+  const summaryText = buildManagementSummary(rows);
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(summaryText);
+    } else {
+      copyTextWithFallback(summaryText);
+    }
+    showCopySummaryFeedback();
+  } catch {
+    copyTextWithFallback(summaryText);
+    showCopySummaryFeedback();
+  }
+}
+function copyTextWithFallback(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-9999px';
+  document.body.append(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  textarea.remove();
+}
+function showCopySummaryFeedback() {
+  if (!copySummaryFeedback) return;
+  copySummaryFeedback.textContent = t('summaryCopied');
+  window.clearTimeout(showCopySummaryFeedback.timeoutId);
+  showCopySummaryFeedback.timeoutId = window.setTimeout(() => { copySummaryFeedback.textContent = ''; }, 2200);
+}
 function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:normalizeText(r[1]), part:normalizeText(r[2]), machine:normalizeText(r[3]), target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project, true); entry.part = ensureMasterValue('part', entry.part, true); entry.machine = ensureMasterValue('machine', entry.machine, true); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); persistDeletedMasterValues(); renderMasterData(); render(); importInput.value = ''; formError.textContent = `${t('importSuccess')} (${imported.length})`; }; reader.readAsText(file, 'utf-8'); }
 function parseCsv(text) { return text.trim().split(/\r?\n/).filter(Boolean).map((line) => { const cells = []; let current = '', quoted = false; for (let i = 0; i < line.length; i++) { const c = line[i], n = line[i + 1]; if (c === '"' && quoted && n === '"') { current += '"'; i++; } else if (c === '"') quoted = !quoted; else if (c === ';' && !quoted) { cells.push(current); current = ''; } else current += c; } cells.push(current); return cells; }); }
 function downloadFile(filename, content, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); }

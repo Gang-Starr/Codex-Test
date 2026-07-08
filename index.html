@@ -88,7 +88,12 @@
     </section>
 
     <section class="card" aria-labelledby="summary-title">
-      <div class="section-heading"><h2 id="summary-title" data-i18n="managementSummary">Management-Zusammenfassung</h2></div>
+      <div class="section-heading management-summary-heading"><h2 id="summary-title" data-i18n="managementSummary">Management-Zusammenfassung</h2>
+        <div class="summary-copy-controls">
+          <button id="copy-summary" class="secondary-button summary-copy-button" type="button" data-i18n="copySummary" disabled>Zusammenfassung kopieren</button>
+          <span id="copy-summary-feedback" class="summary-copy-feedback" role="status" aria-live="polite"></span>
+        </div>
+      </div>
       <div id="management-summary" class="management-summary"></div>
       <div class="kpi-grid">
         <article class="kpi"><span>Gesamt-Gutmenge</span><strong id="total-good">0</strong></article>

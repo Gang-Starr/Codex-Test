@@ -29,6 +29,7 @@ Die App dient zur einfachen Erfassung und Auswertung von Produktionsstückzahlen
 - Zielerreichung
 - optionale OEE-Kennzahlen
 - Tagesübersichten, Tabellen, Diagramme und eine kurze Management-Zusammenfassung
+- Kopieren der Management-Zusammenfassung per Button für E-Mail oder Teams
 
 ### Empfohlener Ablauf
 
@@ -184,6 +185,7 @@ The app is used to enter and review production quantities in a simple way. It ca
 - target achievement
 - optional OEE key figures
 - daily overviews, tables, charts, and a short management summary
+- copying the management summary via button for email or Teams
 
 ### Recommended process
 
@@ -339,6 +341,7 @@ L'app serve per inserire e controllare in modo semplice le quantità di produzio
 - raggiungimento del target
 - indicatori OEE opzionali
 - riepiloghi giornalieri, tabelle, grafici e un breve riepilogo per il management
+- copia del riepilogo per il management tramite pulsante per e-mail o Teams
 
 ### Procedura consigliata
 
