@@ -448,7 +448,7 @@ function render() {
   const rows = filteredRows();
   const chartFilteredRows = rows.filter((row) => isWithinSelectedPeriod(row.date));
   renderTable(rows); renderTotals(rows); renderDailyOverview(rows); renderGroupSummary(rows); renderManagementSummary(rows); renderCharts(chartFilteredRows);
-  document.querySelector('#entry-count').textContent = `${rows.length} ${t('entries')}`;
+  document.querySelector('#entry-count').textContent = `${formatInteger(rows.length)} ${t('entries')}`;
 }
 function enrichedRows() { return entries.map(enrich).sort((a, b) => a.date.localeCompare(b.date)); }
 function filteredRows() {
@@ -468,7 +468,7 @@ function renderTable(rows) {
     return `
     <tr class="${e.oeeWarning && showTableOeeColumns ? 'warning-row' : ''}">
       <td>${escapeHtml(formatDate(e.date))}</td><td>${escapeHtml(e.project)}</td><td>${escapeHtml(e.part)}</td><td>${escapeHtml(e.machine)}</td>
-      <td>${formatNumber(e.target)}</td><td>${formatNumber(e.produced)}</td><td>${formatNumber(e.scrap)}</td><td>${formatNumber(e.good)}</td><td>${formatNumber(e.deviation)}</td><td>${formatPercent(e.achievement)}</td>
+      <td>${formatInteger(e.target)}</td><td>${formatInteger(e.produced)}</td><td>${formatInteger(e.scrap)}</td><td>${formatInteger(e.good)}</td><td>${formatInteger(e.deviation)}</td><td>${formatPercent(e.achievement)}</td>
       ${oeeCells}
       <td>${escapeHtml(e.comment || '-')}</td><td><button class="delete-row" data-delete-id="${e.id}" type="button">${t('delete')}</button></td>
     </tr>`;
@@ -477,21 +477,21 @@ function renderTable(rows) {
 
 function renderTotals(rows) {
   const totals = sumRows(rows);
-  setKpiText('#total-good', formatNumber(totals.good)); setKpiText('#total-scrap', formatNumber(totals.scrap)); setKpiText('#total-deviation', formatNumber(totals.deviation));
+  setKpiText('#total-good', formatInteger(totals.good)); setKpiText('#total-scrap', formatInteger(totals.scrap)); setKpiText('#total-deviation', formatInteger(totals.deviation));
   setKpiPercent('#avg-achievement', avg(rows, 'achievement')); setKpiPercent('#avg-availability', avg(rows, 'availability'));
   setKpiPercent('#avg-performance', avg(rows, 'performance')); setKpiPercent('#avg-quality', avg(rows, 'quality')); setKpiPercent('#avg-oee', avg(rows, 'oee'));
-  setKpiText('#oee-count', formatNumber(rows.filter((r) => r.hasValidOeeData).length)); setKpiText('#no-oee-count', formatNumber(rows.filter((r) => !r.hasValidOeeData).length));
+  setKpiText('#oee-count', formatInteger(rows.filter((r) => r.hasValidOeeData).length)); setKpiText('#no-oee-count', formatInteger(rows.filter((r) => !r.hasValidOeeData).length));
 }
 
 function renderDailyOverview(rows) {
-  document.querySelector('#daily-overview').innerHTML = dailyRows(rows).map((day) => summaryItem(formatDate(day.date), day, `${day.count} ${t('entries')}`)).join('') || emptyState(t('noData'));
+  document.querySelector('#daily-overview').innerHTML = dailyRows(rows).map((day) => summaryItem(formatDate(day.date), day, `${formatInteger(day.count)} ${t('entries')}`)).join('') || emptyState(t('noData'));
 }
 function renderGroupSummary(rows) {
   const grouped = groupBy(rows, activeGroup);
-  document.querySelector('#group-summary').innerHTML = Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([name, items]) => summaryItem(name, aggregate(items), `${items.length} ${t('entries')}`)).join('') || emptyState(t('noData'));
+  document.querySelector('#group-summary').innerHTML = Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([name, items]) => summaryItem(name, aggregate(items), `${formatInteger(items.length)} ${t('entries')}`)).join('') || emptyState(t('noData'));
 }
 function summaryItem(title, totals, subtitle) {
-  return `<div class="summary-item"><div><strong>${escapeHtml(title)}</strong><br><small>${subtitle} · ${t('target')} ${formatPercent(totals.achievement)} · OEE ${formatPercent(totals.oee)}</small></div><div>${t('goodShort')}: <strong>${formatNumber(totals.good)}</strong><br><small>${t('scrap')} ${formatNumber(totals.scrap)}, ${t('deviationShort')} ${formatNumber(totals.deviation)}</small></div></div>`;
+  return `<div class="summary-item"><div><strong>${escapeHtml(title)}</strong><br><small>${subtitle} · ${t('target')} ${formatPercent(totals.achievement)} · OEE ${formatPercent(totals.oee)}</small></div><div>${t('goodShort')}: <strong>${formatInteger(totals.good)}</strong><br><small>${t('scrap')} ${formatInteger(totals.scrap)}, ${t('deviationShort')} ${formatInteger(totals.deviation)}</small></div></div>`;
 }
 function renderManagementSummary(rows) {
   document.querySelector('#management-summary').textContent = buildManagementSummary(rows);
@@ -509,15 +509,15 @@ function buildManagementSummary(rows) {
   const withOee = rows.filter((r) => r.hasValidOeeData).length, withoutOee = rows.length - withOee;
   const bestDay = dailyRows(rows).sort((a, b) => b.good - a.good)[0];
   if (currentLanguage === 'it') {
-    const oeeText = withOee ? `È stato possibile calcolare l’OEE per ${withOee} di ${rows.length} voci. L’OEE medio è ${formatPercent(totals.oee)}.` : 'Non sono ancora presenti dati OEE completi per il calcolo OEE.';
-    return `In totale sono stati raggiunti ${formatNumber(totals.good)} pezzi buoni con ${formatNumber(totals.scrap)} pezzi di scarto. Il raggiungimento target medio è ${formatPercent(totals.achievement)}. ${redTargets} voci sono sotto il 90 % di raggiungimento target. ${withOee} voci contengono dati OEE validi, ${withoutOee} voci non hanno dati OEE. ${oeeText} Il giorno migliore è ${formatDate(bestDay.date)} con ${formatNumber(bestDay.good)} pezzi buoni.${warnings ? ` Nota: ${warnings} valore/i OEE sono superiori al 100 % e devono essere controllati.` : ' Non sono stati rilevati valori OEE superiori al 100 %.'}`;
+    const oeeText = withOee ? `È stato possibile calcolare l’OEE per ${formatInteger(withOee)} di ${formatInteger(rows.length)} voci. L’OEE medio è ${formatPercent(totals.oee)}.` : 'Non sono ancora presenti dati OEE completi per il calcolo OEE.';
+    return `In totale sono stati raggiunti ${formatInteger(totals.good)} pezzi buoni con ${formatInteger(totals.scrap)} pezzi di scarto. Il raggiungimento target medio è ${formatPercent(totals.achievement)}. ${formatInteger(redTargets)} voci sono sotto il 90 % di raggiungimento target. ${formatInteger(withOee)} voci contengono dati OEE validi, ${formatInteger(withoutOee)} voci non hanno dati OEE. ${oeeText} Il giorno migliore è ${formatDate(bestDay.date)} con ${formatInteger(bestDay.good)} pezzi buoni.${warnings ? ` Nota: ${formatInteger(warnings)} valore/i OEE sono superiori al 100 % e devono essere controllati.` : ' Non sono stati rilevati valori OEE superiori al 100 %.'}`;
   }
   if (currentLanguage === 'en') {
-    const oeeText = withOee ? `OEE could be calculated for ${withOee} of ${rows.length} entries. The average OEE is ${formatPercent(totals.oee)}.` : 'There is no complete OEE data for OEE calculation yet.';
-    return `A total of ${formatNumber(totals.good)} good parts were achieved with ${formatNumber(totals.scrap)} scrap parts. The average target achievement is ${formatPercent(totals.achievement)}. ${redTargets} entries are below 90 % target achievement. ${withOee} entries have valid OEE data, ${withoutOee} entries have no OEE data. ${oeeText} The best day is ${formatDate(bestDay.date)} with ${formatNumber(bestDay.good)} good parts.${warnings ? ` Note: ${warnings} OEE value(s) are above 100 % and should be checked.` : ' No OEE values above 100 % were detected.'}`;
+    const oeeText = withOee ? `OEE could be calculated for ${formatInteger(withOee)} of ${formatInteger(rows.length)} entries. The average OEE is ${formatPercent(totals.oee)}.` : 'There is no complete OEE data for OEE calculation yet.';
+    return `A total of ${formatInteger(totals.good)} good parts were achieved with ${formatInteger(totals.scrap)} scrap parts. The average target achievement is ${formatPercent(totals.achievement)}. ${formatInteger(redTargets)} entries are below 90 % target achievement. ${formatInteger(withOee)} entries have valid OEE data, ${formatInteger(withoutOee)} entries have no OEE data. ${oeeText} The best day is ${formatDate(bestDay.date)} with ${formatInteger(bestDay.good)} good parts.${warnings ? ` Note: ${formatInteger(warnings)} OEE value(s) are above 100 % and should be checked.` : ' No OEE values above 100 % were detected.'}`;
   }
-  const oeeText = withOee ? `Für ${withOee} von ${rows.length} Einträgen konnte eine OEE berechnet werden. Die durchschnittliche OEE liegt bei ${formatPercent(totals.oee)}.` : 'Für die OEE-Berechnung liegen noch keine vollständigen OEE-Daten vor.';
-  return `Insgesamt wurden ${formatNumber(totals.good)} Gutteile bei ${formatNumber(totals.scrap)} Ausschussteilen erreicht. Die durchschnittliche Zielerreichung liegt bei ${formatPercent(totals.achievement)}. ${redTargets} Einträge liegen unter 90 % Zielerreichung. ${withOee} Einträge enthalten gültige OEE-Daten, ${withoutOee} Einträge liegen ohne OEE-Daten vor. ${oeeText} Stärkster Tag ist ${formatDate(bestDay.date)} mit ${formatNumber(bestDay.good)} Gutteilen.${warnings ? ` Hinweis: ${warnings} OEE-Wert(e) liegen über 100 % und sollten geprüft werden.` : ' Es wurden keine OEE-Werte über 100 % erkannt.'}`;
+  const oeeText = withOee ? `Für ${formatInteger(withOee)} von ${formatInteger(rows.length)} Einträgen konnte eine OEE berechnet werden. Die durchschnittliche OEE liegt bei ${formatPercent(totals.oee)}.` : 'Für die OEE-Berechnung liegen noch keine vollständigen OEE-Daten vor.';
+  return `Insgesamt wurden ${formatInteger(totals.good)} Gutteile bei ${formatInteger(totals.scrap)} Ausschussteilen erreicht. Die durchschnittliche Zielerreichung liegt bei ${formatPercent(totals.achievement)}. ${formatInteger(redTargets)} Einträge liegen unter 90 % Zielerreichung. ${formatInteger(withOee)} Einträge enthalten gültige OEE-Daten, ${formatInteger(withoutOee)} Einträge liegen ohne OEE-Daten vor. ${oeeText} Stärkster Tag ist ${formatDate(bestDay.date)} mit ${formatInteger(bestDay.good)} Gutteilen.${warnings ? ` Hinweis: ${formatInteger(warnings)} OEE-Wert(e) liegen über 100 % und sollten geprüft werden.` : ' Es wurden keine OEE-Werte über 100 % erkannt.'}`;
 }
 
 function renderCharts(rows) {
@@ -539,7 +539,7 @@ function drawBarChart(canvas, labels, series, options = {}) {
   const p = { l: 54, r: 18, t: 48, b: 58 }, w = canvas.width - p.l - p.r, h = canvas.height - p.t - p.b;
   const values = series.flatMap((s) => s.values.map((v) => Number(v) || 0)); const min = options.allowNegative ? Math.min(0, ...values) : 0; const max = Math.max(options.max || 1, ...values, 1); const span = max - min || 1; const zeroY = p.t + h - ((0 - min) / span) * h;
   ctx.strokeStyle = '#dce3ed'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, p.t + h); ctx.lineTo(p.l + w, p.t + h); ctx.stroke();
-  for (let i = 0; i <= 4; i++) { const y = p.t + (h / 4) * i; const val = max - (span / 4) * i; ctx.fillStyle = '#6b778c'; ctx.font = '11px Arial'; ctx.fillText(options.percent ? `${val.toFixed(0)}%` : Math.round(val), 8, y + 4); ctx.strokeStyle = '#eef2f7'; ctx.beginPath(); ctx.moveTo(p.l, y); ctx.lineTo(p.l + w, y); ctx.stroke(); }
+  for (let i = 0; i <= 4; i++) { const y = p.t + (h / 4) * i; const val = max - (span / 4) * i; ctx.fillStyle = '#6b778c'; ctx.font = '11px Arial'; ctx.fillText(options.percent ? formatPercent(val) : formatInteger(Math.round(val)), 8, y + 4); ctx.strokeStyle = '#eef2f7'; ctx.beginPath(); ctx.moveTo(p.l, y); ctx.lineTo(p.l + w, y); ctx.stroke(); }
   const groupW = w / labels.length, barW = Math.max(6, Math.min(34, (groupW - 12) / series.length));
   const labelStep = Math.max(1, Math.ceil(labels.length / Math.max(4, Math.floor(w / 72))));
   labels.forEach((label, i) => { series.forEach((s, si) => { const value = Number(s.values[i]) || 0; const barH = Math.abs(value / span) * h; const x = p.l + i * groupW + (groupW - barW * series.length) / 2 + si * barW; const y = value >= 0 ? zeroY - barH : zeroY; ctx.fillStyle = s.color; ctx.fillRect(x, y, Math.max(2, barW - 2), Math.max(1, barH)); }); if (i % labelStep === 0 || labels.length <= 10 || i === labels.length - 1) { ctx.save(); ctx.translate(p.l + i * groupW + groupW / 2, canvas.height - 17); ctx.rotate(labels.length > 6 ? -0.45 : 0); ctx.fillStyle = '#6b778c'; ctx.font = '11px Arial'; ctx.fillText(label, labels.length > 6 ? -26 : -18, 0); ctx.restore(); } });
@@ -557,7 +557,7 @@ function aggregateByPeriod(rows, bucketFn) {
   return Object.values(grouped).sort((a, b) => a.bucket.key.localeCompare(b.bucket.key)).map(({ bucket, rows }) => ({ date: bucket.key, label: bucket.label, ...aggregate(rows), count: rows.length, hasValidOeeData: rows.some((r) => r.hasValidOeeData) }));
 }
 function weekBucket(date) { const d = parseLocalDate(date); const year = isoWeekYear(d); const week = isoWeekNumber(d); return { key: `${year}-W${String(week).padStart(2, '0')}`, label: `${t('calendarWeekShort')} ${week}/${year}` }; }
-function monthBucket(date) { const d = parseLocalDate(date); const key = date.slice(0, 7); return { key, label: new Intl.DateTimeFormat(currentLanguage === 'en' ? 'en-US' : currentLanguage === 'it' ? 'it-IT' : 'de-DE', { month: 'short', year: 'numeric' }).format(d) }; }
+function monthBucket(date) { const d = parseLocalDate(date); const key = date.slice(0, 7); return { key, label: new Intl.DateTimeFormat(currentLocale(), { month: 'short', year: 'numeric' }).format(d) }; }
 function renderChartControls() { periodFilter.value = chartSettings.period; displayModeSelect.value = chartSettings.display; periodFromInput.value = chartSettings.from || ''; periodToInput.value = chartSettings.to || ''; document.querySelectorAll('.custom-date-filter').forEach((el) => el.classList.toggle('is-hidden', chartSettings.period !== 'CUSTOM')); const days = countDistinctDates(filteredRowsWithoutPeriod()); chartRecommendation.textContent = chartSettings.display === 'day' && days > 30 ? t('chartRecommendation') : ''; }
 function updateChartControlLabels() { setSelectOptions(periodFilter, [['ALL','allData'],['LAST_7','last7Days'],['LAST_14','last14Days'],['LAST_30','last30Days'],['CURRENT_WEEK','currentCalendarWeek'],['LAST_WEEK','lastCalendarWeek'],['CUSTOM','customPeriod']]); setSelectOptions(displayModeSelect, [['day','dailyValues'],['week','weeklyValues'],['month','monthlyValues']]); }
 function setSelectOptions(select, options) { if (!select) return; options.forEach(([value, key]) => { const option = select.querySelector(`option[value="${value}"]`); if (option) option.textContent = t(key); }); }
@@ -718,7 +718,7 @@ function showCopySummaryFeedback() {
   window.clearTimeout(showCopySummaryFeedback.timeoutId);
   showCopySummaryFeedback.timeoutId = window.setTimeout(() => { copySummaryFeedback.textContent = ''; }, 2200);
 }
-function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:normalizeText(r[1]), part:normalizeText(r[2]), machine:normalizeText(r[3]), target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project, true); entry.part = ensureMasterValue('part', entry.part, true); entry.machine = ensureMasterValue('machine', entry.machine, true); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); persistDeletedMasterValues(); renderMasterData(); render(); importInput.value = ''; formError.textContent = `${t('importSuccess')} (${imported.length})`; }; reader.readAsText(file, 'utf-8'); }
+function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:normalizeText(r[1]), part:normalizeText(r[2]), machine:normalizeText(r[3]), target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project, true); entry.part = ensureMasterValue('part', entry.part, true); entry.machine = ensureMasterValue('machine', entry.machine, true); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); persistDeletedMasterValues(); renderMasterData(); render(); importInput.value = ''; formError.textContent = `${t('importSuccess')} (${formatInteger(imported.length)})`; }; reader.readAsText(file, 'utf-8'); }
 function parseCsv(text) { return text.trim().split(/\r?\n/).filter(Boolean).map((line) => { const cells = []; let current = '', quoted = false; for (let i = 0; i < line.length; i++) { const c = line[i], n = line[i + 1]; if (c === '"' && quoted && n === '"') { current += '"'; i++; } else if (c === '"') quoted = !quoted; else if (c === ';' && !quoted) { cells.push(current); current = ''; } else current += c; } cells.push(current); return cells; }); }
 function downloadFile(filename, content, type) { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url); }
 function persistEntries() { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
@@ -860,9 +860,11 @@ function toNumber(value) { const number = Number(String(value ?? '').replace(','
 function toOptionalNumber(value) { if (value === null || value === undefined || String(value).trim() === '') return null; const number = Number(String(value).replace(',', '.')); return Number.isFinite(number) ? number : null; }
 function createId() { return window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`; }
 function today() { return new Date().toISOString().slice(0, 10); }
-function formatDate(date) { return date ? new Intl.DateTimeFormat(currentLanguage === 'en' ? 'en-US' : currentLanguage === 'it' ? 'it-IT' : 'de-DE').format(new Date(`${date}T00:00:00`)) : '-'; }
-function formatNumber(number) { return new Intl.NumberFormat(currentLanguage === 'en' ? 'en-US' : currentLanguage === 'it' ? 'it-IT' : 'de-DE', { maximumFractionDigits: 1 }).format(number || 0); }
-function formatNumberWithDigits(number, digits) { return new Intl.NumberFormat(currentLanguage === 'en' ? 'en-US' : currentLanguage === 'it' ? 'it-IT' : 'de-DE', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(number || 0); }
+function currentLocale() { return currentLanguage === 'en' ? 'en-US' : currentLanguage === 'it' ? 'it-IT' : 'de-DE'; }
+function formatDate(date) { return date ? new Intl.DateTimeFormat(currentLocale()).format(new Date(`${date}T00:00:00`)) : '-'; }
+function formatInteger(number) { return new Intl.NumberFormat(currentLocale(), { maximumFractionDigits: 0, useGrouping: true }).format(number || 0); }
+function formatNumber(number) { return new Intl.NumberFormat(currentLocale(), { maximumFractionDigits: 1, useGrouping: true }).format(number || 0); }
+function formatNumberWithDigits(number, digits) { return new Intl.NumberFormat(currentLocale(), { minimumFractionDigits: digits, maximumFractionDigits: digits, useGrouping: true }).format(number || 0); }
 function formatOptionalNumber(number) { return isCalculable(number) ? formatNumber(number) : formatNa(); }
 function formatPercent(value) { return isCalculable(value) ? `${formatNumberWithDigits(value, 1)} %` : NA_LABEL; }
 function formatOeePercent(value) { return isCalculable(value) ? `${formatNumberWithDigits(value, 1)} %` : formatNa(); }
