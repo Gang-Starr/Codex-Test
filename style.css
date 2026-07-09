@@ -954,38 +954,3 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   .summary-copy-controls, .summary-copy-button { width: 100%; }
   .summary-copy-controls { justify-content: stretch; }
 }
-
-.target-field {
-  position: relative;
-}
-.target-release-option {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: .86rem;
-  font-weight: 700;
-}
-.target-release-option input {
-  width: auto;
-  margin: 0;
-  accent-color: var(--primary);
-}
-.target-na-display {
-  display: none;
-  position: absolute;
-  left: 13px;
-  top: 34px;
-  color: #a8b1c2;
-  font-weight: 700;
-  pointer-events: none;
-}
-.target-field.target-unreleased-active input[type="number"] {
-  background: #f2f4f8;
-  color: transparent;
-  border-color: #e1e6ef;
-}
-.target-field.target-unreleased-active .target-na-display {
-  display: block;
-}
