@@ -41,7 +41,10 @@
         <label><span data-i18n="project">Projekt</span><input type="text" id="project" list="project-options" required placeholder="Projekt eingeben oder auswählen" autocomplete="off" /><datalist id="project-options"></datalist></label>
         <label><span data-i18n="part">Bauteil</span><input type="text" id="part" list="part-options" required placeholder="Bauteil eingeben oder auswählen" autocomplete="off" /><datalist id="part-options"></datalist></label>
         <label><span data-i18n="machine">Maschine</span><input type="text" id="machine" list="machine-options" required placeholder="Maschine eingeben oder auswählen" autocomplete="off" /><datalist id="machine-options"></datalist></label>
-        <label class="target-field"><span data-i18n="targetPerDay">Zielmenge pro Tag</span><input type="number" id="target" min="1" step="1" required /><span class="target-na-display" aria-hidden="true">n/a</span><span class="target-release-option"><input type="checkbox" id="target-unreleased" /><span data-i18n="targetUnreleased">Noch keine freigegebene Zielmenge</span></span></label>
+        <div class="target-entry-row full-width">
+          <label class="target-field"><span data-i18n="targetPerDay">Zielmenge pro Tag</span><input type="number" id="target" min="1" step="1" required /><span class="target-na-display" aria-hidden="true">n/a</span></label>
+          <label class="target-release-option"><input type="checkbox" id="target-unreleased" /><span data-i18n="targetUnreleased">Noch keine freigegebene Zielmenge</span></label>
+        </div>
         <label><span data-i18n="producedQty">Produzierte Stückzahl</span><input type="number" id="produced" min="0" step="1" required /></label>
         <label><span data-i18n="scrap">Ausschuss</span><input type="number" id="scrap" min="0" step="1" value="0" required /></label>
         <details class="oee-fieldset full-width" id="oee-details">
