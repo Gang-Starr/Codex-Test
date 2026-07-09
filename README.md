@@ -54,8 +54,6 @@ Für einen normalen Produktionseintrag werden diese Angaben benötigt:
 
 Ein Kommentar ist vor allem sinnvoll oder erforderlich, wenn es eine Zielabweichung, Ausschuss oder Stillstand gibt.
 
-In frühen Ramp-up-Phasen kann die Checkbox **Noch keine freigegebene Zielmenge** aktiviert werden. Dann wird die Zielmenge als **n/a** angezeigt und intern leer gespeichert. Zielerreichung und Abweichung werden für diesen Eintrag ebenfalls als **n/a** angezeigt; Gutmenge und Ausschuss werden weiterhin berechnet. Durchschnittliche Zielerreichung wird nur aus Einträgen mit freigegebener Zielmenge gebildet, und Einträge ohne Zielmenge werden in der Management-Zusammenfassung erwähnt.
-
 ### Optionale OEE-Daten
 
 OEE-Daten sind optional. Ein Eintrag kann auch ohne OEE-Daten gespeichert werden.
@@ -79,8 +77,6 @@ Die CSV enthält diese Kopfzeile:
 ```csv
 Datum;Projekt;Bauteil;Maschine;Zielmenge pro Tag;Produzierte Stückzahl;Ausschuss;Geplante Produktionszeit in Minuten;Maschinenstillstand in Minuten;Ideale Taktzeit je Stück in Sekunden;Kommentar
 ```
-
-Wenn noch keine Zielmenge freigegeben ist, steht in der Zielmengen-Spalte **n/a** bzw. beim Import kann die Zelle leer bleiben oder **n/a** enthalten. Die App interpretiert dies als fehlenden/null-Wert, nicht als 0.
 
 ### Stammdatenverwaltung
 
@@ -213,8 +209,6 @@ For a normal production entry, these fields are needed:
 - comment, if needed
 
 A comment is especially useful or required when there is a target deviation, scrap, or downtime.
-
-In early ramp-up phases, users can activate **No released target quantity yet**. The target quantity is then shown as **n/a** and stored internally as an empty/null value. Target achievement and deviation are also shown as **n/a** for that entry, while good quantity and scrap are still calculated. Average target achievement only uses entries with a released target quantity, and entries without a target are mentioned in the management summary.
 
 ### Optional OEE data
 
@@ -372,8 +366,6 @@ Per una normale voce di produzione sono necessari questi campi:
 
 Un commento è particolarmente utile o richiesto quando ci sono una differenza dal target, scarto o fermo macchina.
 
-Nelle prime fasi di ramp-up è possibile attivare **Nessuna quantità target rilasciata**. La quantità target viene visualizzata come **n/a** e salvata internamente come valore vuoto/null. Anche raggiungimento target e scostamento sono mostrati come **n/a** per quella voce, mentre pezzi buoni e scarto continuano a essere calcolati. Il raggiungimento target medio considera solo le voci con quantità target rilasciata, e le voci senza target vengono citate nel riepilogo per il management.
-
 ### Dati OEE opzionali
 
 I dati OEE sono opzionali. Una voce può essere salvata anche senza dati OEE.
@@ -397,8 +389,6 @@ Il CSV contiene questa intestazione:
 ```csv
 Data;Progetto;Componente;Macchina;Quantità target al giorno;Quantità prodotta;Scarto;Tempo di produzione pianificato in minuti;Fermo macchina in minuti;Tempo ciclo ideale per pezzo in secondi;Commento
 ```
-
-Se non è ancora stata rilasciata una quantità target, nella colonna target viene scritto **n/a**; in import la cella può anche rimanere vuota o contenere **n/a**. L’app lo interpreta come valore mancante/null, non come 0.
 
 ### Gestione dei dati anagrafici
 
