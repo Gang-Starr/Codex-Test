@@ -533,15 +533,45 @@ function buildManagementSummary(rows) {
   const withOee = rows.filter((r) => r.hasValidOeeData).length, withoutOee = rows.length - withOee;
   const bestDay = dailyRows(rows).sort((a, b) => b.good - a.good)[0];
   if (currentLanguage === 'it') {
-    const oeeText = withOee ? `È stato possibile calcolare l’OEE per ${formatInteger(withOee)} di ${formatInteger(rows.length)} voci. L’OEE medio è ${formatPercent(totals.oee)}.` : 'Non sono ancora presenti dati OEE completi per il calcolo OEE.';
-    return `In totale sono stati raggiunti ${formatInteger(totals.good)} pezzi buoni con ${formatInteger(totals.scrap)} pezzi di scarto. Il raggiungimento target medio è ${formatPercent(totals.achievement)}. ${formatInteger(redTargets)} voci sono sotto il 90 % di raggiungimento target. ${formatInteger(withOee)} voci contengono dati OEE validi, ${formatInteger(withoutOee)} voci non hanno dati OEE. ${oeeText} Il giorno migliore è ${formatDate(bestDay.date)} con ${formatInteger(bestDay.good)} pezzi buoni.${warnings ? ` Nota: ${formatInteger(warnings)} valore/i OEE sono superiori al 100 % e devono essere controllati.` : ' Non sono stati rilevati valori OEE superiori al 100 %.'}`;
+    const summaryParts = [
+      `In totale sono stati raggiunti ${formatInteger(totals.good)} pezzi buoni con ${formatInteger(totals.scrap)} pezzi di scarto.`,
+      `Il raggiungimento target medio è ${formatPercent(totals.achievement)}.`,
+      `${formatInteger(redTargets)} voci sono sotto il 90 % di raggiungimento target.`
+    ];
+    if (withOee) {
+      summaryParts.push(`${formatInteger(withOee)} voci contengono dati OEE validi, ${formatInteger(withoutOee)} voci non hanno dati OEE completi.`);
+      summaryParts.push(`È stato possibile calcolare l’OEE per ${formatInteger(withOee)} di ${formatInteger(rows.length)} voci. L’OEE medio è ${formatPercent(totals.oee)}.`);
+      summaryParts.push(warnings ? `Nota: ${formatInteger(warnings)} valore/i OEE sono superiori al 100 % e devono essere controllati.` : 'Non sono stati rilevati valori OEE superiori al 100 %.');
+    }
+    summaryParts.push(`Il giorno migliore è ${formatDate(bestDay.date)} con ${formatInteger(bestDay.good)} pezzi buoni.`);
+    return summaryParts.join(' ');
   }
   if (currentLanguage === 'en') {
-    const oeeText = withOee ? `OEE could be calculated for ${formatInteger(withOee)} of ${formatInteger(rows.length)} entries. The average OEE is ${formatPercent(totals.oee)}.` : 'There is no complete OEE data for OEE calculation yet.';
-    return `A total of ${formatInteger(totals.good)} good parts were achieved with ${formatInteger(totals.scrap)} scrap parts. The average target achievement is ${formatPercent(totals.achievement)}. ${formatInteger(redTargets)} entries are below 90 % target achievement. ${formatInteger(withOee)} entries have valid OEE data, ${formatInteger(withoutOee)} entries have no OEE data. ${oeeText} The best day is ${formatDate(bestDay.date)} with ${formatInteger(bestDay.good)} good parts.${warnings ? ` Note: ${formatInteger(warnings)} OEE value(s) are above 100 % and should be checked.` : ' No OEE values above 100 % were detected.'}`;
+    const summaryParts = [
+      `A total of ${formatInteger(totals.good)} good parts were achieved with ${formatInteger(totals.scrap)} scrap parts.`,
+      `The average target achievement is ${formatPercent(totals.achievement)}.`,
+      `${formatInteger(redTargets)} entries are below 90 % target achievement.`
+    ];
+    if (withOee) {
+      summaryParts.push(`${formatInteger(withOee)} entries have valid OEE data, ${formatInteger(withoutOee)} entries have no complete OEE data.`);
+      summaryParts.push(`OEE could be calculated for ${formatInteger(withOee)} of ${formatInteger(rows.length)} entries. The average OEE is ${formatPercent(totals.oee)}.`);
+      summaryParts.push(warnings ? `Note: ${formatInteger(warnings)} OEE value(s) are above 100 % and should be checked.` : 'No OEE values above 100 % were detected.');
+    }
+    summaryParts.push(`The best day is ${formatDate(bestDay.date)} with ${formatInteger(bestDay.good)} good parts.`);
+    return summaryParts.join(' ');
   }
-  const oeeText = withOee ? `Für ${formatInteger(withOee)} von ${formatInteger(rows.length)} Einträgen konnte eine OEE berechnet werden. Die durchschnittliche OEE liegt bei ${formatPercent(totals.oee)}.` : 'Für die OEE-Berechnung liegen noch keine vollständigen OEE-Daten vor.';
-  return `Insgesamt wurden ${formatInteger(totals.good)} Gutteile bei ${formatInteger(totals.scrap)} Ausschussteilen erreicht. Die durchschnittliche Zielerreichung liegt bei ${formatPercent(totals.achievement)}. ${formatInteger(redTargets)} Einträge liegen unter 90 % Zielerreichung. ${formatInteger(withOee)} Einträge enthalten gültige OEE-Daten, ${formatInteger(withoutOee)} Einträge liegen ohne OEE-Daten vor. ${oeeText} Stärkster Tag ist ${formatDate(bestDay.date)} mit ${formatInteger(bestDay.good)} Gutteilen.${warnings ? ` Hinweis: ${formatInteger(warnings)} OEE-Wert(e) liegen über 100 % und sollten geprüft werden.` : ' Es wurden keine OEE-Werte über 100 % erkannt.'}`;
+  const summaryParts = [
+    `Insgesamt wurden ${formatInteger(totals.good)} Gutteile bei ${formatInteger(totals.scrap)} Ausschussteilen erreicht.`,
+    `Die durchschnittliche Zielerreichung liegt bei ${formatPercent(totals.achievement)}.`,
+    `${formatInteger(redTargets)} Einträge liegen unter 90 % Zielerreichung.`
+  ];
+  if (withOee) {
+    summaryParts.push(`${formatInteger(withOee)} Einträge enthalten gültige OEE-Daten, ${formatInteger(withoutOee)} Einträge liegen ohne vollständige OEE-Daten vor.`);
+    summaryParts.push(`Für ${formatInteger(withOee)} von ${formatInteger(rows.length)} Einträgen konnte eine OEE berechnet werden. Die durchschnittliche OEE liegt bei ${formatPercent(totals.oee)}.`);
+    summaryParts.push(warnings ? `Hinweis: ${formatInteger(warnings)} OEE-Wert(e) liegen über 100 % und sollten geprüft werden.` : 'Es wurden keine OEE-Werte über 100 % erkannt.');
+  }
+  summaryParts.push(`Stärkster Tag ist ${formatDate(bestDay.date)} mit ${formatInteger(bestDay.good)} Gutteilen.`);
+  return summaryParts.join(' ');
 }
 
 function renderCharts(rows) {
