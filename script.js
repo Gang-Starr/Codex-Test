@@ -229,6 +229,7 @@ const oeeChartsContent = document.querySelector('#oee-charts-content');
 const languageSelect = ensureLanguageSwitcher();
 const oeeDetails = document.querySelector('#oee-details');
 const oeeInputs = oeeNumberFields.map((field) => document.querySelector(`#${field}`)).filter(Boolean);
+const quantityInputs = requiredNumberFields.map((field) => document.querySelector(`#${field}`)).filter(Boolean);
 const infoDialog = document.querySelector('#info-dialog');
 const infoButton = document.querySelector('#info-button');
 const infoCloseButton = document.querySelector('#info-close-button');
@@ -255,6 +256,10 @@ document.querySelector('#date').valueAsDate = new Date();
 form.addEventListener('submit', saveEntry);
 if (oeeDetails) oeeDetails.addEventListener('toggle', updateOeeSummaryLabel);
 oeeInputs.forEach((input) => input.addEventListener('input', keepOeeOpenWhenFilled));
+quantityInputs.forEach((input) => {
+  input.addEventListener('focus', unformatQuantityInput);
+  input.addEventListener('blur', formatQuantityInput);
+});
 if (infoButton) infoButton.addEventListener('click', openInfoDialog);
 if (infoCloseButton) infoCloseButton.addEventListener('click', closeInfoDialog);
 if (infoCloseX) infoCloseX.addEventListener('click', closeInfoDialog);
@@ -276,6 +281,7 @@ if (languageSelect) languageSelect.addEventListener('change', () => {
   localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
   languageSelect.value = currentLanguage;
   applyTranslations();
+  formatQuantityInputs();
   renderMasterData();
   render();
 });
@@ -301,6 +307,7 @@ entriesBody.addEventListener('click', (event) => {
 });
 window.addEventListener('resize', () => renderCharts(filteredRows()));
 applyTranslations();
+formatQuantityInputs();
 renderMasterData();
 render();
 
@@ -392,6 +399,7 @@ function updateOeeSummaryLabel() {
 function saveEntry(event) {
   event.preventDefault();
   formError.textContent = '';
+  formatQuantityInputs();
   const entry = {
     id: createId(), date: getValue('date'), project: getValue('project'), part: getValue('part'), machine: getValue('machine'),
     target: getNumber('target'), produced: getNumber('produced'), scrap: getNumber('scrap'), plannedTime: getOptionalNumber('plannedTime'),
@@ -410,7 +418,7 @@ function saveEntry(event) {
   if (oeeDetails) oeeDetails.open = false;
   updateOeeSummaryLabel();
   document.querySelector('#date').valueAsDate = new Date();
-  document.querySelector('#scrap').value = 0;
+  document.querySelector('#scrap').value = formatInteger(0);
   renderMasterData();
   render();
 }
@@ -908,10 +916,37 @@ function isoWeekNumber(date) { const copy = new Date(Date.UTC(date.getFullYear()
 function loadEntries() { try { const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY); return (JSON.parse(raw) || []).map(normalizeEntry); } catch { return []; } }
 function groupBy(rows, key) { return rows.reduce((g, r) => { const k = r[key] || t('noValue'); (g[k] ||= []).push(r); return g; }, {}); }
 function getValue(id) { return document.querySelector(`#${id}`).value.trim(); }
-function getNumber(id) { return toNumber(document.querySelector(`#${id}`).value); }
+function getNumber(id) { return parseQuantityNumber(document.querySelector(`#${id}`).value); }
 function getOptionalNumber(id) { return toOptionalNumber(document.querySelector(`#${id}`).value); }
 function toNumber(value) { const number = Number(String(value ?? '').replace(',', '.')); return Number.isFinite(number) ? number : 0; }
 function toOptionalNumber(value) { if (value === null || value === undefined || String(value).trim() === '') return null; const number = Number(String(value).replace(',', '.')); return Number.isFinite(number) ? number : null; }
+
+function formatQuantityInputs() {
+  quantityInputs.forEach(formatQuantityInput);
+}
+
+function formatQuantityInput(eventOrInput) {
+  const input = eventOrInput?.target || eventOrInput;
+  if (!input || input.value.trim() === '') return;
+  const number = parseQuantityNumber(input.value);
+  if (Number.isFinite(number)) input.value = formatInteger(number);
+}
+
+function unformatQuantityInput(event) {
+  const input = event.target;
+  const number = parseQuantityNumber(input.value);
+  if (Number.isFinite(number)) input.value = String(number);
+}
+
+function parseQuantityNumber(value) {
+  const text = String(value ?? '').trim();
+  if (!text) return NaN;
+  if (!/^[0-9.,\s]+$/.test(text)) return NaN;
+  const digits = text.replace(/[^0-9]/g, '');
+  if (!digits) return NaN;
+  return Number(digits);
+}
+
 function createId() { return window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`; }
 function today() { return new Date().toISOString().slice(0, 10); }
 function currentLocale() { return currentLanguage === 'en' ? 'en-US' : currentLanguage === 'it' ? 'it-IT' : 'de-DE'; }
