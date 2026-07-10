@@ -41,9 +41,9 @@
         <label><span data-i18n="project">Projekt</span><input type="text" id="project" list="project-options" required placeholder="Projekt eingeben oder auswählen" autocomplete="off" /><datalist id="project-options"></datalist></label>
         <label><span data-i18n="part">Bauteil</span><input type="text" id="part" list="part-options" required placeholder="Bauteil eingeben oder auswählen" autocomplete="off" /><datalist id="part-options"></datalist></label>
         <label><span data-i18n="machine">Maschine</span><input type="text" id="machine" list="machine-options" required placeholder="Maschine eingeben oder auswählen" autocomplete="off" /><datalist id="machine-options"></datalist></label>
-        <label><span data-i18n="targetPerDay">Zielmenge pro Tag</span><input type="number" id="target" min="1" step="1" required /></label>
-        <label><span data-i18n="producedQty">Produzierte Stückzahl</span><input type="number" id="produced" min="0" step="1" required /></label>
-        <label><span data-i18n="scrap">Ausschuss</span><input type="number" id="scrap" min="0" step="1" value="0" required /></label>
+        <label><span data-i18n="targetPerDay">Zielmenge pro Tag</span><input type="text" id="target" inputmode="numeric" pattern="[0-9., ]*" required /></label>
+        <label><span data-i18n="producedQty">Produzierte Stückzahl</span><input type="text" id="produced" inputmode="numeric" pattern="[0-9., ]*" required /></label>
+        <label><span data-i18n="scrap">Ausschuss</span><input type="text" id="scrap" inputmode="numeric" pattern="[0-9., ]*" value="0" required /></label>
         <details class="oee-fieldset full-width" id="oee-details">
           <summary><span class="oee-summary-title" data-i18n="showOeeData">OEE-Daten anzeigen</span><span class="oee-summary-status" data-i18n="optionalOee">Optionale OEE-Daten</span></summary>
           <p class="oee-help" data-i18n="oeeHelp">Nur ausfüllen, wenn OEE berechnet werden soll.</p>
