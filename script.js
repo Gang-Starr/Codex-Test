@@ -591,7 +591,7 @@ function renderCharts(rows) {
   drawBarChart(charts.scrap, labels, [{ label: t('scrap'), values: buckets.map((d) => d.scrap), color: '#d93025' }], { hideLegend: true });
   drawBarChart(charts.oee, oeeLabels, [{ label: 'OEE %', values: oeeBuckets.map((d) => d.oee ?? 0), color: '#6f42c1' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
   drawBarChart(charts.oeeParts, oeeLabels, [{ label: t('availability'), values: oeeBuckets.map((d) => d.availability ?? 0), color: '#1f6feb' }, { label: t('performance'), values: oeeBuckets.map((d) => d.performance ?? 0), color: '#f2b705' }, { label: t('quality'), values: oeeBuckets.map((d) => d.quality ?? 0), color: '#1f9d55' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
-  let cumulative = 0; drawLineChart(charts.cumulative, labels, { label: t('cumulativeDeviation'), values: buckets.map((d) => { cumulative += d.deviation; return cumulative; }), color: '#0f766e' }, { allowNegative: true });
+  let cumulative = 0; drawLineChart(charts.cumulative, labels, { label: t('cumulativeDeviation'), values: buckets.map((d) => { cumulative += d.deviation; return cumulative; }), color: '#0f766e' }, { allowNegative: true, cumulativeDeviation: true });
 }
 
 function chartNumber(value, percent = false) { return percent ? formatPercent(value) : formatInteger(Math.round(value)); }
@@ -611,9 +611,17 @@ function chartLayout(canvas, labels, series, options = {}) {
   const values = series.flatMap((s) => s.values.map((v) => Number(v) || 0));
   const min = options.allowNegative ? Math.min(0, ...values) : 0;
   const max = Math.max(options.max || 1, ...values, 1);
-  const pad = (max - min || max || 1) * 0.12;
-  const domainMin = options.allowNegative ? Math.min(0, min - pad) : 0;
-  const domainMax = Math.max(options.max || 1, max + (options.max ? 0 : pad));
+  const rangeBase = max - min || Math.max(Math.abs(max), Math.abs(min), 1);
+  let domainMin = options.allowNegative ? Math.min(0, min - rangeBase * 0.12) : 0;
+  let domainMax = Math.max(options.max || 1, max + (options.max ? 0 : rangeBase * 0.12));
+  if (options.cumulativeDeviation) {
+    const actualMin = Math.min(...values, 0);
+    const actualMax = Math.max(...values, 0);
+    const allNonPositive = values.length && actualMax <= 0;
+    const cumulativeRange = actualMax - actualMin || Math.max(Math.abs(actualMin), 1);
+    domainMin = Math.min(0, actualMin - cumulativeRange * 0.18);
+    domainMax = allNonPositive ? 0 : actualMax + cumulativeRange * 0.12;
+  }
   const span = domainMax - domainMin || 1;
   const zeroY = p.t + h - ((0 - domainMin) / span) * h;
   return { ctx, p, w, h, min: domainMin, max: domainMax, span, zeroY };
@@ -631,8 +639,13 @@ function drawChartFrame(ctx, layout, options = {}) {
     ctx.fillText(chartNumber(val, options.percent), p.l - 10, y + 4);
     ctx.strokeStyle = '#eef2f7'; ctx.beginPath(); ctx.moveTo(p.l, y); ctx.lineTo(p.l + w, y); ctx.stroke();
   }
-  if (options.allowNegative) {
-    ctx.strokeStyle = '#b8c2d0'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(p.l, zeroY); ctx.lineTo(p.l + w, zeroY); ctx.stroke();
+  if (options.allowNegative && zeroY >= p.t && zeroY <= p.t + h) {
+    ctx.save();
+    ctx.strokeStyle = options.cumulativeDeviation ? '#98a2b3' : '#b8c2d0';
+    ctx.lineWidth = options.cumulativeDeviation ? 1.7 : 1.4;
+    if (options.cumulativeDeviation) ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(p.l, zeroY); ctx.lineTo(p.l + w, zeroY); ctx.stroke();
+    ctx.restore();
   }
 }
 
@@ -656,6 +669,11 @@ function drawLegend(ctx, series, layout, options = {}) {
 function drawDataLabel(ctx, text, x, y, value) {
   ctx.fillStyle = '#344054'; ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
   ctx.fillText(text, x, y + (value < 0 ? 14 : -6));
+}
+
+function drawLineDataLabel(ctx, text, x, y, value) {
+  ctx.fillStyle = '#344054'; ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
+  ctx.fillText(text, x, y + (value < 0 ? 20 : -10));
 }
 
 function attachChartTooltip(canvas, points) {
@@ -696,10 +714,12 @@ function drawLineChart(canvas, labels, series, options = {}) {
   const layout = chartLayout(canvas, labels, [series], { ...options, hideLegend: true }), { ctx, p, w, h, min, span } = layout;
   if (!labels.length) { ctx.fillStyle = '#6b778c'; ctx.font = '14px Arial'; ctx.fillText(options.emptyMessage || t('noData'), 24, 52); return; }
   drawChartFrame(ctx, layout, options);
-  const step = labels.length > 1 ? w / (labels.length - 1) : w;
-  const points = labels.map((label, i) => { const value = Number(series.values[i]) || 0; return { label, series: series.label, value, x: p.l + (labels.length > 1 ? i * step : w / 2), y: p.t + h - ((value - min) / span) * h }; });
-  ctx.strokeStyle = series.color; ctx.lineWidth = 2.5; ctx.beginPath(); points.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)); ctx.stroke();
-  points.forEach((point, i) => { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(point.x, point.y, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = series.color; ctx.lineWidth = 2; ctx.stroke(); if (labels.length <= 18 || i % Math.ceil(labels.length / 18) === 0) drawDataLabel(ctx, chartNumber(point.value), point.x, point.y, point.value); });
+  const edgePadding = options.cumulativeDeviation ? Math.min(30, Math.max(16, w * 0.05)) : 0;
+  const lineW = Math.max(1, w - edgePadding * 2);
+  const step = labels.length > 1 ? lineW / (labels.length - 1) : lineW;
+  const points = labels.map((label, i) => { const value = Number(series.values[i]) || 0; return { label, series: series.label, value, x: p.l + edgePadding + (labels.length > 1 ? i * step : lineW / 2), y: p.t + h - ((value - min) / span) * h }; });
+  ctx.strokeStyle = series.color; ctx.lineWidth = options.cumulativeDeviation ? 2.1 : 2.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.beginPath(); points.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)); ctx.stroke();
+  points.forEach((point, i) => { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(point.x, point.y, options.cumulativeDeviation ? 3.6 : 4.5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = series.color; ctx.lineWidth = options.cumulativeDeviation ? 1.8 : 2; ctx.stroke(); if (labels.length <= 18 || i % Math.ceil(labels.length / 18) === 0) (options.cumulativeDeviation ? drawLineDataLabel : drawDataLabel)(ctx, chartNumber(point.value), point.x, point.y, point.value); });
   drawAxisLabels(ctx, labels, layout); attachChartTooltip(canvas, points.map((p) => ({ ...p, hit: 14, value: chartNumber(p.value) })));
 }
 
